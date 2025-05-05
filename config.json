@@ -1,0 +1,50 @@
+{ 
+  "vehicle": {
+    "id": 1,
+    "type": "COPTER"
+  },
+
+  "protocol": {
+    "start_byte": 84,
+    "terminal_byte": 67,
+    "version": 1
+  },
+
+  "interface": {
+    "_comment": "Options: UART, UDP, MOCK_UART",
+    "comm_type": "MOCK_UART"
+  },
+
+  "uart": {
+    "port": "/dev/ttyUSB0",
+    "baudrate": 57600,
+    "timeout": 0.1
+  },
+
+  "udp": {
+    "_comment": "Used only if selected as active interface",
+    "local_ip": "0.0.0.0",
+    "local_port": 6000,
+    "remote_ip": "127.0.0.1",
+    "remote_port": 6001
+  },
+
+  "ardupilot_uart": {
+    "port": "tcp:127.0.0.1:5762",
+    "baudrate": 115200
+  },
+
+  "logging": {
+  "_comment_enabled": "true = enable logging system globally",
+  "enabled": true,
+
+  "_comment_level": "Options: DEBUG, INFO, WARNING, ERROR, CRITICAL",
+  "level": "DEBUG",
+
+  "_comment_clear": "true = clear previous log file on every startup",
+  "clear_on_start": true,
+
+  "_comment_to_file": "true = log messages will also be written to logs/system.log",
+  "write_to_file": true
+}
+}
