@@ -1,6 +1,6 @@
 # src/serializers/ack_serializer.py
 
-from src.tools.logger import logger
+from src.tools.log.logger import logger
 
 # Status code to name mapping
 STATUS_NAMES = {

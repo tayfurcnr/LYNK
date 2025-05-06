@@ -1,9 +1,0 @@
-1-) mavlink_handler.py has been added.
-
-2-) Updates will be made to the mavlink_handler.py file.
-
-3-) The command_handler.py file will be modified in accordance with the updates made to mavlink_handler.py.
-
-4-) MAVLink tests will be conducted by establishing a connection with the Pixhawk.
-
-5-) A framework will be prepared to run system tests within the Gazebo environment.
