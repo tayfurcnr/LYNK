@@ -1,4 +1,4 @@
-# tools/telemetry.py
+# src/tools//telemetry/telemetry.py
 
 from src.serializers.telemetry_serializer import serialize_telemetry
 from src.core.frame_codec import build_mesh_frame
