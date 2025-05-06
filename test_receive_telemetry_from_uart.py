@@ -1,6 +1,3 @@
-# tests/telemetry/test_receive_telemetry_from_uart.py
-
-from src.handlers.comm.mock_handler import MockUARTHandler
 from src.core.frame_router import route_frame
 from src.core.frame_codec import parse_mesh_frame
 from src.tools.telemetry.telemetry import build_telemetry_frame
@@ -10,12 +7,14 @@ from src.tools.telemetry.telemetry_cache import (
     get_active_device_ids,
     reset_cache
 )
+from src.tools.comm.interface_factory import create_interface  # Import the factory function
 
-def test_receive_multiple_telemetry_frames(frames, expected_latest):
+def test_receive_multiple_telemetry_frames(frames, expected_latest, config_path="config.json"):
     reset_cache()
-    uart = MockUARTHandler()
-    uart.start()
 
+    # Use the create_interface function to create the interface (it will choose UART, MOCK_UART, or UDP)
+    interface = create_interface(config_path)
+    
     for device_id, lat, lon, alt, src_id in frames:
         frame = build_telemetry_frame(
             device_id=device_id,
@@ -25,13 +24,11 @@ def test_receive_multiple_telemetry_frames(frames, expected_latest):
             src_id=src_id,
             dst_id=1
         )
-        uart.inject_frame(frame)
-        raw = uart.read()
+        interface.uart.send(frame)  # Assuming UARTInterface has a send method for injecting frames
+        raw = interface.uart.read()
         assert raw is not None, "Frame could not be read from UART"
         parsed = parse_mesh_frame(raw)
-        route_frame(parsed, uart_handler=uart)
-
-    uart.stop()
+        route_frame(parsed, uart_handler=interface.uart)
 
     print("\n📡 Received Telemetry Data:")
     for device_id, lat, lon, alt, src_id in frames:
@@ -57,7 +54,7 @@ def test_receive_multiple_telemetry_frames(frames, expected_latest):
 
 def main():
     test_receive_multiple_telemetry_frames(
-        frames=[
+        frames=[ 
             (11, 37.1111, 35.1111, 100.0, 0x11),
             (22, 37.2222, 35.2222, 200.0, 0x22),
             (33, 37.3333, 35.3333, 300.0, 0x33),
