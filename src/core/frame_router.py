@@ -1,4 +1,4 @@
-# src/frame_router.py
+# src/core/frame_router.py
 
 from src.handlers.command.command_handler import handle_command
 from src.handlers.telemetry.telemetry_handler import handle_telemetry
@@ -6,7 +6,6 @@ from src.handlers.swarm.swarm_handler import handle_swarm
 from src.handlers.ack.ack_handler import handle_ack
 
 from src.core.frame_codec import load_device_id
-from src.tools.comm.interfaces import UARTInterface  # ✅ interface soyutlamasını getir
 from src.tools.log.logger import logger
 
 # Frame Type → Handler Mapping
