@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.png" alt="LYNK Logo" width="300"/>
+</p>
+
 # 🧠 LYNK – Layered Your-Node Kernel
 
 **LYNK** is a modular and layered communication kernel designed for autonomous systems and multi-drone networks. It provides low-latency, reliable, and scalable communication between nodes using a handler-based infrastructure. LYNK supports multiple communication types such as UART, UDP, and simulated MOCK interfaces, making it suitable for both hardware deployment and testing environments.
