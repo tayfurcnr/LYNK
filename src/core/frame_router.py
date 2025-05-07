@@ -17,7 +17,7 @@ dispatch_table = {
     'A': handle_ack
 }
 
-def route_frame(frame_dict: dict, uart_handler=None):
+def route_frame(frame_dict: dict, interface):
     """
     Routes a decoded mesh frame to the appropriate handler.
     """
@@ -43,10 +43,6 @@ def route_frame(frame_dict: dict, uart_handler=None):
             logger.info(f"[ROUTER] RECEIVED | FRAME_TYPE='{frame_type}' | SRC: {frame_dict['src_id']} -> DST: {frame_dict['dst_id']}")
             logger.info(f"[ROUTER] DISPATCHED | FRAME_TYPE='{frame_type}' | HANDLER: {handler.__name__}")
 
-            # ✅ interface üretimi
-            interface = UARTInterface(uart_handler)
-
-            # ✅ handler çağrısına interface gönder
             handler(payload, frame_dict, interface)
         else:
             logger.warning(f"[ROUTER] UNKNOWN FRAME_TYPE | '{frame_type}' from SRC: {frame_dict['src_id']}")
