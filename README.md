@@ -1,16 +1,16 @@
 # 🧠 LYNK – Layered Your-Node Kernel
 
-**LYNK** is a modular and layered communication kernel designed for autonomous systems and multi-drone networks. It provides low-latency, reliable, and scalable communication between drones using a handler infrastructure that supports UART, UDP, and simulation environments.
+**LYNK** is a modular and layered communication kernel designed for autonomous systems and multi-drone networks. It provides low-latency, reliable, and scalable communication between nodes using a handler-based infrastructure. LYNK supports multiple communication types such as UART, UDP, and simulated MOCK interfaces, making it suitable for both hardware deployment and testing environments.
 
 ---
 
 ## 🚀 Key Features
 
-- 📡 **Communication Types:** UART, UDP, MOCK (for test environments)
-- 🔄 **Protocol Core:** Start/terminal bytes, version control, device ID support
+- 📡 **Communication Types:** UART, UDP, MOCK (for testing)
+- 🧠 **Protocol Logic:** Start/terminal bytes, versioning, and structured device addressing
 - 📦 **Message Types:** Command, Telemetry, ACK/NACK, and Swarm messages
-- 🧱 **Modular Architecture:** Includes Handlers, Serializers, Tools, and Swarm modules
-- 🧪 **Testability:** Full mock support and `pytest`-compatible structure
+- 🧱 **Modular Design:** Handler-Serializer-Tool architecture for easy extensibility
+- 🧪 **Testable:** Fully compatible with `pytest`, supporting mock-based tests
 
 ---
 
@@ -18,26 +18,28 @@
 
 ```plaintext
 lynk-root/
-├── config.json               # Protocol and communication settings
+├── config.json               # Main protocol and communication settings
 ├── requirements.txt          # Python dependencies
-├── README.md                 # Project documentation
-├── logs/                     # System logs
-├── docs/                     # Technical documents and visual assets
+├── project_tree.txt          # Auto-generated file tree of the repo
+├── README.md                 # Project documentation (this file)
+├── docs/                     # Technical reports, diagrams, and documents
+├── logs/                     # Log files (e.g., system.log)
 │
-├── src/                      # Main application source code
-│   ├── core/                 # Core logic: frame routing and encoding
-│   ├── handlers/             # UART, UDP, MOCK, and MAVLink handlers
-│   ├── serializers/          # Data serialization/deserialization modules
-│   ├── swarm/                # Swarm control modules
-│   └── tools/                # Supporting modules (logging, interface, transmission)
+├── src/                      # Main source code
+│   ├── core/                 # Core components like frame routing and encoding
+│   ├── handlers/             # Message handlers (Command, Telemetry, ACK, etc.)
+│   ├── serializers/          # Serialization and deserialization modules
+│   ├── swarm/                # Swarm coordination and task assignment
+│   └── tools/                # Utility modules (interface, logger, transmitter, etc.)
 │
-└── tests/                    # Modular test structure
-    ├── command/              # Command handling tests
-    ├── comm/                 # Interface and transmission tests
-    ├── core/                 # Frame routing and logic tests
-    ├── telemetry/            # Telemetry processing tests
-    ├── swarm/                # Swarm coordination tests
-    └── test_all_commands.py  # Unified test script
+└── tests/                    # Pytest-based modular test structure
+    ├── ack/                  # ACK-related tests
+    ├── command/              # Command dispatch and handling
+    ├── comm/                 # Communication layer tests
+    ├── core/                 # Frame routing logic tests
+    ├── telemetry/            # Telemetry flow and caching tests
+    ├── swarm/                # Swarm command and structure tests
+    └── integration/          # Full-system flow and integration tests
 ```
 
 ---
@@ -54,53 +56,56 @@ pip install -r requirements.txt
 
 ## ⚡ Usage
 
-Select the communication type in the `config.json` file:
+Update the `config.json` file to select the interface type:
 
 ```json
 "interface": {
-    "comm_type": "UART"  // or "UDP", "MOCK_UART"
+    "comm_type": "MOCK_UART"  // or "UART", "UDP"
 }
 ```
 
-To run the basic test script:
+To run a basic system test:
 
 ```bash
-python -m tests.test_all_commands
+python -m tests.integration.test_lynk_integration
 ```
 
 ---
 
-## 🧪 Testing
+## 🧪 Running Tests
 
-To run all tests:
+Run all tests with:
 
 ```bash
 pytest tests/
 ```
 
-Each module includes its own `__init__.py`, ensuring full test modularity.
+Each test submodule is fully independent and can be run standalone. For example:
+
+```bash
+pytest tests/ack/test_ack_multithread.py
+```
 
 ---
 
-## 🧠 Developer Notes
+## 🧠 Developer Guide
 
-- To add a new frame type:
-  - Implement a serializer in the `serializers/` folder
-  - Implement a handler in the `handlers/` folder
-- Use `register_handler()` to dynamically register frame handlers (`frame_router.py`)
-- `mock_handler.py` provides complete test simulation capability
-- `swarm_commander.py` and `swarm_manager.py` manage swarm goals and behavior
-- All activity is logged via `logger.py` into `logs/system.log`
+- To **add a new frame type**:
+  - Create a serializer in `src/serializers/`
+  - Implement a handler in `src/handlers/`
+  - Register the handler in `frame_router.py`
+- Use `mock_handler.py` in `handlers/comm/` for local testing
+- Use `logger.py` to log all frame activity to `logs/system.log`
+- Swarm behavior is defined in `swarm_commander.py` and `swarm_manager.py`
 
 ---
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a new branch
-3. Write your code and test it
-4. Submit a Pull Request (PR)
+2. Create a new feature branch
+3. Add your changes and tests
+4. Make sure all tests pass with `pytest`
+5. Submit a Pull Request (PR)
 
-Before submitting, please format your code using `black` or `autopep8`.
-
----
+We recommend formatting your code with [`black`](https://black.readthedocs.io/) before committing.
