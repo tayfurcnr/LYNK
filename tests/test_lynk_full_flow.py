@@ -31,9 +31,12 @@ def send_all_test_telemetries(interface):
     """İki farklı cihazdan örnek telemetri verileri gönderir."""
     send_tlm_gps(interface, lat=37.1111, lon=35.1111, alt=100.0, dst=1, src=1)
     send_tlm_imu(interface, roll=1.1, pitch=2.2, yaw=3.3, dst=1, src=1)
+    send_tlm_battery(interface, voltage=11.1, current=4.2, level=95.0, dst=1, src=1)
+
 
     send_tlm_gps(interface, lat=36.1111, lon=33.1111, alt=90.0, dst=1, src=2)
     send_tlm_imu(interface, roll=15.1, pitch=5.0, yaw=7.0, dst=1, src=2)
+    send_tlm_battery(interface, voltage=10.9, current=4.1, level=77.0, dst=1, src=2)
 
 
 def verify_telemetry_cache(src_id: int):
@@ -104,3 +107,12 @@ if __name__ == "__main__":
 
     list_active_devices()
     print_full_cache()
+
+    battery_data = get_device_data(2, "battery")
+
+    if battery_data:
+        print("\n🔋 [BATTERY] Cihaz 2 için battery verisi:")
+        for k, v in battery_data.items():
+            print(f"   {k}: {v}")
+    else:
+        print("\n❌ [BATTERY] Cihaz 2 için battery verisi bulunamadı.")

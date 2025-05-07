@@ -37,6 +37,19 @@ def handle_imu_data(data: dict, src_id: int, data_type: str):
         f"Pitch: {data['imu_pitch']:.2f}, Yaw: {data['imu_yaw']:.2f}"
     )
 
+def handle_battery_data(data: dict, src_id: int, data_type: str):
+    battery_data = {
+        "voltage": data["voltage"],
+        "current": data["current"],
+        "level": data["level"]
+    }
+    set_device_data(src_id, data_type, battery_data)
+    logger.info(f"[TELEMETRY] Received BATTERY data from SRC: {src_id}")
+    logger.debug(
+        f"[TELEMETRY] -> Voltage: {data['voltage']:.2f}, "
+        f"Current: {data['current']:.2f}, Level: {data['level']:.2f}"
+    )
+
 # 🧠 Central Telemetry Handler
 def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
     """
@@ -61,6 +74,8 @@ def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
             handle_gps_data(data, src_id, data_type)
         elif data_type == "imu":
             handle_imu_data(data, src_id, data_type)
+        elif tlm_id == 0x03:
+            handle_battery_data(data, src_id, data_type)
         else:
             logger.warning(f"[TELEMETRY] Unknown telemetry type (tlm_id: {tlm_id}) from SRC: {src_id}")
 

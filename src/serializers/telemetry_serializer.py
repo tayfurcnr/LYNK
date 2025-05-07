@@ -56,4 +56,10 @@ def deserialize_telemetry(payload: bytes) -> dict:
             "imu_yaw": data[2],
         })
     
+    elif tlm_id == 0x03:  # BATTERY verisi
+        result.update({
+            "voltage": data[0],
+            "current": data[1],
+            "level": data[2],
+        })
     return result
