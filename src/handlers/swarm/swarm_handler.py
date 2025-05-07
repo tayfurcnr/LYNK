@@ -2,7 +2,7 @@
 
 import time
 from src.serializers.swarm_serializer import deserialize_swarm_command
-from src.tools.command.ack_dispatcher import send_ack
+from src.tools.ack.ack_dispatcher import send_ack
 
 def handle_swarm(payload: bytes, frame_meta: dict, uart_handler):
     """

@@ -2,7 +2,7 @@
 
 from src.tools.log.logger import logger
 from src.serializers.command_serializer import deserialize_command
-from src.tools.command.ack_dispatcher import send_ack
+from src.tools.ack.ack_dispatcher import send_ack
 from src.tools.ack.status_codes import STATUS_SUCCESS, STATUS_INVALID_PARAMS, STATUS_EXCEPTION, STATUS_UNKNOWN_COMMAND
 import struct
 from collections import namedtuple
