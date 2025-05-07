@@ -4,7 +4,7 @@ import time
 from src.handlers.comm.mock_handler import MockUARTHandler
 from src.core.frame_router import route_frame
 from src.core.frame_codec import parse_mesh_frame
-from src.tools.telemetry.telemetry import build_telemetry_frame
+from tools.telemetry.telemetry_builder import build_telemetry_frame
 from src.handlers.telemetry.telemetry_handler import (
     get_all_telemetry,
     get_latest_device_id,

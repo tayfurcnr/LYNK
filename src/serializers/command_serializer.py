@@ -17,7 +17,6 @@ def serialize_command(command_id: int, params: bytes = b'') -> bytes:
     logger.debug(f"[COMMAND] SERIALIZED | CMD_ID: {command_id} | PARAM_LEN: {len(params)}")
     return payload
 
-
 def deserialize_command(payload: bytes) -> dict:
     """
     Deserializes a binary payload into command structure.

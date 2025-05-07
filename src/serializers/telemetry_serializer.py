@@ -1,22 +1,25 @@
-# src/serializers/telemetry_serializer.py
-
 import struct
 
-def serialize_telemetry(device_id: int, gps_lat: float, gps_lon: float, gps_alt: float) -> bytes:
+def serialize_telemetry(tlm_id: int, *params) -> bytes:
     """
-    Cihazın GPS verilerini binary formatta serialize eder.
+    Telemetri verilerini binary formatta serialize eder.
 
     Parameters:
-        device_id (int): Cihaz ID'si
-        gps_lat (float): GPS enlem
-        gps_lon (float): GPS boylam
-        gps_alt (float): Yükseklik
+        tlm_id (int): Telemetry Type ID (e.g., GPS, IMU)
+        *params (tuple): Parametreler (örneğin, [lat, lon, alt])
 
     Returns:
         bytes: Serialleşmiş telemetry verisi
     """
-    # >Bfff: > : Big-endian, B : unsigned char (1 byte), f : float (4 bytes)
-    return struct.pack(">Bfff", device_id, gps_lat, gps_lon, gps_alt)
+    # İlk olarak, tlm_id'yi serialize ediyoruz
+    serialized_data = struct.pack(">B", tlm_id)  # tlm_id'yi tek bir byte olarak serialize et
+
+    # Parametreleri serialize ediyoruz (tüm parametreler float olarak kabul edilir, diğer türler için genişletilebilir)
+    for param in params:
+        serialized_data += struct.pack(">f", param)  # Her parametreyi float olarak serialize ediyoruz
+
+    return serialized_data
+
 
 def deserialize_telemetry(payload: bytes) -> dict:
     """
@@ -26,17 +29,31 @@ def deserialize_telemetry(payload: bytes) -> dict:
         payload (bytes): Serialleşmiş telemetry verisi
 
     Returns:
-        dict: device_id, gps_lat, gps_lon, gps_alt
+        dict: Parsed telemetry data (e.g., tlm_id, gps_lat, gps_lon, gps_alt)
     """
-    if len(payload) != 13:
-        raise ValueError("Telemetry payload uzunluğu geçersiz (beklenen 13 byte)")
+    # İlk olarak, tlm_id'yi çözümlüyoruz
+    tlm_id, = struct.unpack(">B", payload[:1])  # İlk byte'ı tlm_id olarak alıyoruz
     
-    # >Bfff: > : Big-endian, B : unsigned char (1 byte), f : float (4 bytes)
-    device_id, gps_lat, gps_lon, gps_alt = struct.unpack(">Bfff", payload)
+    # Geriye kalan veriyi float olarak çözümlüyoruz (bu örnek tüm verilerin float olduğunu varsayar)
+    data = struct.unpack(f">{len(payload[1:]) // 4}f", payload[1:])  # Geriye kalanları float olarak çöz
+
+    # Sonuç dictionary'sini tlm_id'ye göre oluşturuyoruz
+    result = {"tlm_id": tlm_id}
     
-    return {
-        "device_id": device_id,
-        "gps_lat": gps_lat,
-        "gps_lon": gps_lon,
-        "gps_alt": gps_alt
-    }
+    # Eğer tlm_id GPS verisi ise
+    if tlm_id == 0x01:  # GPS verisi
+        result.update({
+            "gps_lat": data[0],
+            "gps_lon": data[1],
+            "gps_alt": data[2],
+        })
+    
+    # IMU verisi gibi başka türler eklemek için aşağıdaki gibi genişletebilirsiniz
+    elif tlm_id == 0x02:  # IMU verisi
+        result.update({
+            "imu_roll": data[0],
+            "imu_pitch": data[1],
+            "imu_yaw": data[2],
+        })
+    
+    return result

@@ -1,60 +1,54 @@
-# src/tools/telemetry/telemetry_cache.py
-
 import time
-from typing import Any, Dict, Optional, List
-from src.tools.log.logger import logger
+from typing import Any, Dict, Optional
 
-# Internal cache: {device_id: {data_type: {data_dict + timestamp}}}
 _device_cache: Dict[int, Dict[str, Dict[str, Any]]] = {}
 
 def _current_timestamp() -> float:
     return time.time()
 
-# 🔹 Set data for a specific device and type
-def set_device_data(device_id: int, data_type: str, data: Dict[str, Any]):
-    if device_id not in _device_cache:
-        _device_cache[device_id] = {}
+def set_device_data(src_id: int, data_type: str, data: Dict[str, Any]):
+    if not isinstance(src_id, int):
+        raise TypeError(f"'src_id' must be int, got {type(src_id).__name__}")
+    if not isinstance(data_type, str):
+        raise TypeError(f"'data_type' must be str, got {type(data_type).__name__}")
+    if not isinstance(data, dict):
+        raise TypeError(f"'data' must be dict, got {type(data).__name__}")
 
     data["timestamp"] = _current_timestamp()
-    _device_cache[device_id][data_type] = data
+    data["src_id"] = src_id
 
-    logger.debug(f"[TELEMETRY_CACHE] Updated | Device: {device_id}, Type: {data_type}, Data: {data}")
+    if src_id not in _device_cache:
+        _device_cache[src_id] = {}
 
-# 🔹 Get data for a specific device and type
-def get_device_data(device_id: int, data_type: str) -> Optional[Dict[str, Any]]:
-    return _device_cache.get(device_id, {}).get(data_type)
+    _device_cache[src_id][data_type] = data
 
-# 🔹 Get all data types for a specific device
-def get_all_data_for_device(device_id: int) -> Optional[Dict[str, Dict[str, Any]]]:
-    return _device_cache.get(device_id)
+def get_device_data(src_id: int, data_type: str) -> Optional[Dict[str, Any]]:
+    return _device_cache.get(src_id, {}).get(data_type)
 
-# 🔹 Get the full cache
-def get_all_devices_data() -> Dict[int, Dict[str, Dict[str, Any]]]:
-    return _device_cache.copy()
-
-# 🔹 Get the latest device ID (based on any data type)
-def get_latest_device_id() -> Optional[int]:
-    latest = None
-    latest_ts = -1
-    for device_id, types in _device_cache.items():
-        for data in types.values():
-            if data.get("timestamp", 0) > latest_ts:
-                latest = device_id
-                latest_ts = data["timestamp"]
-    return latest
-
-# 🔹 Get active device IDs based on timeout
-def get_active_device_ids(timeout: float = 5.0) -> List[int]:
+def get_active_device_ids(timeout: float = 5.0) -> list[int]:
+    """
+    Son `timeout` saniye içinde veri gönderen aktif cihazların src_id listesini döner.
+    """
     now = _current_timestamp()
     active_ids = []
-    for device_id, types in _device_cache.items():
+    for src_id, types in _device_cache.items():
         for data in types.values():
             if now - data.get("timestamp", 0) <= timeout:
-                active_ids.append(device_id)
+                active_ids.append(src_id)
                 break
     return sorted(active_ids)
 
-# 🔹 Clear the entire cache (useful for tests)
+def get_all_data_for_device(src_id: int) -> Optional[Dict[str, Dict[str, Any]]]:
+    """
+    Belirli bir cihazın (src_id) tuttuğu tüm telemetry data_type'larını döner.
+    """
+    return _device_cache.get(src_id)
+
+def get_all_cached_data() -> Dict[int, Dict[str, Dict[str, Any]]]:
+    """
+    Cache'teki tüm cihazların tüm telemetry verilerini döner.
+    """
+    return _device_cache
+
 def reset_cache():
     _device_cache.clear()
-    logger.info("[TELEMETRY_CACHE] Cache Has Been Cleared.")
