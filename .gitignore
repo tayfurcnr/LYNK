@@ -1,7 +1,27 @@
+# Python cache & bytecode
 __pycache__/
 *.pyc
 *.pyo
+
+# Log files
 *.log
-.env
-.vscode/
 logs/
+
+# Environment files
+.env
+
+# IDE / Editor folders
+.vscode/
+
+# Pytest & test artifacts
+.pytest_cache/
+*.pytest_cache/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Archives or temporary files
+*.zip
+*.tar
+*.bak
