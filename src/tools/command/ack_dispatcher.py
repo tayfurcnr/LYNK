@@ -4,6 +4,13 @@ from src.tools.command.ack_builder import build_ack_frame
 from src.tools.comm.transmitter import send_frame
 from src.tools.log.logger import logger
 
+# Status code to name mapping
+STATUS_NAMES = {
+    0: "SUCCESS",
+    1: "INVALID_PARAMS",
+    2: "UNSUPPORTED"
+}
+
 def send_ack(interface, command_id: int, target_id: int,
              success: bool = True, status_code: int = 0, src: int = None):
     """
@@ -13,5 +20,6 @@ def send_ack(interface, command_id: int, target_id: int,
     send_frame(interface, frame)
 
     ack_type = "ACK" if success else "NACK"
-    logger.info(f"[{ack_type}] SENT | CMD_ID: {command_id} -> DST: {target_id} | STATUS: {status_code}")
+    status_name = STATUS_NAMES.get(status_code, f"UNKNOWN({status_code})")
+    logger.info(f"[{ack_type}] SENT | CMD_ID: {command_id} -> DST: {target_id} | STATUS: {status_name}")
 
