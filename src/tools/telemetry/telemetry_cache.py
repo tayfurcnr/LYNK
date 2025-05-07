@@ -15,7 +15,7 @@ def set_device_data(src_id: int, data_type: str, data: Dict[str, Any]):
         raise TypeError(f"'data' must be dict, got {type(data).__name__}")
 
     data["timestamp"] = _current_timestamp()
-    data["src_id"] = src_id
+    #data["src_id"] = src_id
 
     if src_id not in _device_cache:
         _device_cache[src_id] = {}
@@ -47,8 +47,15 @@ def get_all_data_for_device(src_id: int) -> Optional[Dict[str, Dict[str, Any]]]:
 def get_all_cached_data() -> Dict[int, Dict[str, Dict[str, Any]]]:
     """
     Cache'teki tüm cihazların tüm telemetry verilerini döner.
+    'src_id' alanı her alt veriden çıkarılır.
     """
-    return _device_cache
+    clean_cache = {}
+    for src_id, data_types in _device_cache.items():
+        clean_cache[src_id] = {}
+        for dtype, data in data_types.items():
+            filtered = {k: v for k, v in data.items() if k != "src_id"}
+            clean_cache[src_id][dtype] = filtered
+    return clean_cache
 
 def reset_cache():
     _device_cache.clear()

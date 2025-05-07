@@ -43,17 +43,17 @@ def deserialize_telemetry(payload: bytes) -> dict:
     # Eğer tlm_id GPS verisi ise
     if tlm_id == 0x01:  # GPS verisi
         result.update({
-            "gps_lat": data[0],
-            "gps_lon": data[1],
-            "gps_alt": data[2],
+            "lat": data[0],
+            "lon": data[1],
+            "alt": data[2],
         })
     
     # IMU verisi gibi başka türler eklemek için aşağıdaki gibi genişletebilirsiniz
     elif tlm_id == 0x02:  # IMU verisi
         result.update({
-            "imu_roll": data[0],
-            "imu_pitch": data[1],
-            "imu_yaw": data[2],
+            "roll": data[0],
+            "pitch": data[1],
+            "yaw": data[2],
         })
     
     elif tlm_id == 0x03:  # BATTERY verisi

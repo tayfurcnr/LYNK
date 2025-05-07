@@ -12,29 +12,29 @@ TELEMETRY_TYPE_MAP = {
 # 🚀 Handle GPS data
 def handle_gps_data(data: dict, src_id: int, data_type: str):
     gps_data = {
-        "gps_lat": data["gps_lat"],
-        "gps_lon": data["gps_lon"],
-        "gps_alt": data["gps_alt"],
+        "lat": data["lat"],
+        "lon": data["lon"],
+        "alt": data["alt"],
     }
     set_device_data(src_id, data_type, gps_data)
     logger.info(f"[TELEMETRY] Received GPS data from SRC: {src_id}")
     logger.debug(
-        f"[TELEMETRY] -> LAT: {data['gps_lat']:.6f}, "
-        f"LON: {data['gps_lon']:.6f}, ALT: {data['gps_alt']:.2f}"
+        f"[TELEMETRY] -> LAT: {data['lat']:.6f}, "
+        f"LON: {data['lon']:.6f}, ALT: {data['alt']:.2f}"
     )
 
 # 🚀 Handle IMU data
 def handle_imu_data(data: dict, src_id: int, data_type: str):
     imu_data = {
-        "imu_roll": data["imu_roll"],
-        "imu_pitch": data["imu_pitch"],
-        "imu_yaw": data["imu_yaw"],
+        "roll": data["roll"],
+        "pitch": data["pitch"],
+        "yaw": data["yaw"],
     }
     set_device_data(src_id, data_type, imu_data)
     logger.info(f"[TELEMETRY] Received IMU data from SRC: {src_id}")
     logger.debug(
-        f"[TELEMETRY] -> Roll: {data['imu_roll']:.2f}, "
-        f"Pitch: {data['imu_pitch']:.2f}, Yaw: {data['imu_yaw']:.2f}"
+        f"[TELEMETRY] -> Roll: {data['roll']:.2f}, "
+        f"Pitch: {data['pitch']:.2f}, Yaw: {data['yaw']:.2f}"
     )
 
 def handle_battery_data(data: dict, src_id: int, data_type: str):
