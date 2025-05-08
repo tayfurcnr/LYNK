@@ -6,7 +6,8 @@ from src.tools.log.logger import logger
 TELEMETRY_TYPE_MAP = {
     0x01: "gps",
     0x02: "imu",
-    0x03: "battery"
+    0x03: "battery",
+    0x04: "heartbeat"
 }
 
 # 🚀 Handle GPS data
@@ -50,6 +51,22 @@ def handle_battery_data(data: dict, src_id: int, data_type: str):
         f"Current: {data['current']:.2f}, Level: {data['level']:.2f}"
     )
 
+def handle_heartbeat_data(data: dict, src_id: int, data_type: str):
+    heartbeat_data = {
+        "mode": data["mode"],
+        "health": data["health"],
+        "is_armed": data["is_armed"],
+        "gps_fix": data["gps_fix"],
+        "sat_count": data["sat_count"]
+    }
+    set_device_data(src_id, data_type, heartbeat_data)
+    logger.info(f"[TELEMETRY] Received HEARTBEAT from SRC: {src_id}")
+    logger.debug(
+        f"[TELEMETRY] -> MODE: {data['mode']}, "
+        f"HEALTH: {data['health']}, "
+        f"ARMED: {data['is_armed']}, GPS_FIX: {data['gps_fix']}, SATS: {data['sat_count']}"
+    )
+
 # 🧠 Central Telemetry Handler
 def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
     """
@@ -74,8 +91,10 @@ def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
             handle_gps_data(data, src_id, data_type)
         elif data_type == "imu":
             handle_imu_data(data, src_id, data_type)
-        elif tlm_id == 0x03:
+        elif data_type == "battery":
             handle_battery_data(data, src_id, data_type)
+        elif data_type == "heartbeat":
+            handle_heartbeat_data(data, src_id, data_type)
         else:
             logger.warning(f"[TELEMETRY] Unknown telemetry type (tlm_id: {tlm_id}) from SRC: {src_id}")
 

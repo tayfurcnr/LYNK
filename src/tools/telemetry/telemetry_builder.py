@@ -8,11 +8,40 @@ def build_tlm_frame(tlm_id: int, params: list, dst: int = 0xFF, src: int = None)
     payload = serialize_telemetry(tlm_id, *params)
     return build_mesh_frame('T', src, dst, payload)
 
-def build_tlm_gps(lat: float, lon: float, alt: float, dst: int = 0xFF, src: int = None) -> bytes:
+def build_tlm_gps(
+    lat: float,
+    lon: float,
+    alt: float,
+    dst: int = 0xFF,
+    src: int = None
+) -> bytes:
     return build_tlm_frame(0x01, [lat, lon, alt], dst, src)
 
-def build_tlm_imu(roll: float, pitch: float, yaw: float, dst: int = 0xFF, src: int = None) -> bytes:
+def build_tlm_imu(
+    roll: float,
+    pitch: float,
+    yaw: float,
+    dst: int = 0xFF,
+    src: int = None
+) -> bytes:
     return build_tlm_frame(0x02, [roll, pitch, yaw], dst, src)
 
-def build_tlm_battery(voltage: float, current: float, level: float, dst: int = 0xFF, src: int = None) -> bytes:
+def build_tlm_battery(
+    voltage: float, 
+    current: float, 
+    level: float, 
+    dst: int = 0xFF, 
+    src: int = None
+) -> bytes:
     return build_tlm_frame(0x03, [voltage, current, level], dst, src)
+
+def build_tlm_heartbeat(
+    mode: str,
+    health: str,
+    is_armed: bool,
+    gps_fix: bool,
+    sat_count: int,
+    dst: int = 0xFF,
+    src: int = None
+) -> bytes:
+    return build_tlm_frame(0x04, [mode, health, is_armed, gps_fix, sat_count], dst, src)
