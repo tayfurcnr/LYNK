@@ -1,8 +1,8 @@
 import json
 from src.tools.comm.interfaces import UARTInterface, UDPInterface
-from src.handlers.comm.mock_handler import MockUARTHandler
-from src.handlers.comm.uart_handler import UARTHandler
-from src.handlers.comm.udp_handler import UDPHandler
+from src.tools.comm.mock_handler import MockUARTHandler
+from src.tools.comm.uart_handler import UARTHandler
+from src.tools.comm.udp_handler import UDPHandler
 from src.tools.log.logger import logger
 
 def create_interface(config_path="config.json"):
