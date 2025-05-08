@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.png" alt="LYNK Logo" width="300"/>
+  <img src="docs/logo.png" alt="LYNK Logo" width="1200"/>
 </p>
 
 # 🧠 LYNK – Layered Your-Node Kernel
