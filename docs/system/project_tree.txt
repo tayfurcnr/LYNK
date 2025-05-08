@@ -3,14 +3,20 @@ LYNK/
 ├── README.md
 ├── config.json
 ├── docs
-│   ├── document.docx
-│   └── logo.png
+│   ├── frame_format.md
+│   ├── logo.png
+│   ├── system
+│   │   ├── project_tree.txt
+│   │   ├── system_flowchart.drawio
+│   │   └── system_flowchart.png
+│   └── telemetry
+│       └── extending_telemetry_format.md
 ├── logs
 │   └── system.log
-├── project_tree.txt
 ├── requirements.txt
 ├── src
 │   ├── core
+│   │   ├── __init__.py
 │   │   ├── frame_codec.py
 │   │   ├── frame_router.py
 │   │   └── vehicle_factory.py
@@ -19,11 +25,6 @@ LYNK/
 │   │   ├── ack
 │   │   │   ├── __init__.py
 │   │   │   └── ack_handler.py
-│   │   ├── comm
-│   │   │   ├── __init__.py
-│   │   │   ├── mock_handler.py
-│   │   │   ├── uart_handler.py
-│   │   │   └── udp_handler.py
 │   │   ├── command
 │   │   │   ├── __init__.py
 │   │   │   └── command_handler.py
@@ -56,7 +57,10 @@ LYNK/
 │       │   ├── __init__.py
 │       │   ├── interface_factory.py
 │       │   ├── interfaces.py
-│       │   └── transmitter.py
+│       │   ├── mock_handler.py
+│       │   ├── transmitter.py
+│       │   ├── uart_handler.py
+│       │   └── udp_handler.py
 │       ├── command
 │       │   ├── README.md
 │       │   ├── __init__.py
@@ -73,20 +77,27 @@ LYNK/
 │           ├── telemetry_cache.py
 │           └── telemetry_dispatcher.py
 └── tests
+    ├── README.md
     ├── __init__.py
     ├── ack
     │   ├── __init__.py
-    │   └── test_ack_multithread.py
+    │   └── test_ack_basic.py
     ├── comm
-    │   └── __init__.py
+    │   ├── __init__.py
+    │   └── test_mock_uart.py
     ├── command
-    │   └── __init__.py
+    │   ├── __init__.py
+    │   └── test_command_serialization.py
     ├── core
-    │   └── __init__.py
+    │   ├── __init__.py
+    │   └── test_frame_codec.py
     ├── integration
     │   ├── __init__.py
+    │   ├── test_ack_multithread.py
     │   └── test_lynk_integration.py
     ├── swarm
-    │   └── __init__.py
+    │   ├── __init__.py
+    │   └── test_swarm_commander.py
     └── telemetry
-        └── __init__.py
+        ├── __init__.py
+        └── test_telemetry_cache.py
