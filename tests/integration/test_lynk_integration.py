@@ -1,9 +1,9 @@
 import time
-from src.tools.comm.interface_factory import create_interface
+import src.tools.comm.interface_factory as factory
 from src.serializers.telemetry_serializer import serialize_telemetry
 from src.serializers.command_serializer import serialize_command
 from src.core.frame_router import route_frame
-from src.core.frame_codec import parse_mesh_frame, build_mesh_frame
+import src.core.frame_codec as codec
 from src.tools.telemetry.telemetry_dispatcher import (
     send_tlm_gps,
     send_tlm_imu,
@@ -28,7 +28,7 @@ def process_all_frames(interface):
         raw = interface.uart.read()
         if not raw:
             break
-        frame_dict = parse_mesh_frame(raw)
+        frame_dict = codec.parse_mesh_frame(raw)
         route_frame(frame_dict, interface)
 
 
@@ -56,7 +56,7 @@ def test_lynk_full_flow():
     Full end-to-end test of the LYNK telemetry and command system.
     """
     print("\n🚀 [LYNK TEST] Starting interface...")
-    interface = create_interface()
+    interface = factory.create_interface()
     reset_cache()
 
     send_all_test_telemetries(interface)
@@ -111,4 +111,8 @@ def test_lynk_full_flow():
 
     # ✅ Final telemetry cache printout
     print("\n📦 [CACHE] All cached telemetry data:")
-    print(get_all_cached_data())
+    all_telemetry = get_all_cached_data()
+    print(all_telemetry)
+
+    single_gps_data = all_telemetry[1]['gps']['lat']
+    print(single_gps_data)
