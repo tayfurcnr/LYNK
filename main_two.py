@@ -47,7 +47,7 @@ def job_frame_processing(interface):
 
 def send_command(interface, src, dst, key):
     """
-    Tuşa göre doğru cmd_* fonksiyonunu çağırır.
+    Tuşa göre doğru cmd_* fonksiyonunu çağırır.TTTTTttt
     """
     if key == 'T':            # Takeoff
         print("[CMD] TAKEOFF")
@@ -105,7 +105,7 @@ def main():
     reset_cache()
 
     my_src_id = 1
-    other_dst_id = 1
+    other_dst_id = 2
 
     sched = BackgroundScheduler()
     sched.add_job(job_telemetry, 'interval', seconds=1, args=(interface, my_src_id, other_dst_id), id="telemetry")
