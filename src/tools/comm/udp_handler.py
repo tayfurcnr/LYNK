@@ -31,17 +31,21 @@ class UDPHandler:
         #
         # Multicast’te tüm ara yüzlerden geleni dinle:
         self.sock.bind(('', self.local_port))
-
+        self.sock.setsockopt(
+            socket.IPPROTO_IP,
+            socket.IP_MULTICAST_IF,
+            socket.inet_aton(self.local_ip)
+        )
         # ●●● MULTICAST GRUBUNA KATILIM ●●●
         # Sadece multicast kullanacaksan burayı yorumdan çıkar
         mreq = struct.pack(
             "4s4s",
-            socket.inet_aton(self.remote_ip),   # config.json’daki multicast adres
-            socket.inet_aton(self.local_ip)     # genellikle '0.0.0.0'
+            socket.inet_aton(self.remote_ip),
+            socket.inet_aton(self.local_ip)
         )
 
         self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 0)
 
         self.sock.setblocking(False)
 
