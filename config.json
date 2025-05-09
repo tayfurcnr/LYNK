@@ -6,13 +6,13 @@
 
   "protocol": {
     "start_byte": 84,
-    "terminal_byte": 67,
+    "terminal_byte": 199,
     "version": 1
   },
 
   "interface": {
     "_comment": "Options: UART, UDP, MOCK_UART",
-    "comm_type": "MOCK_UART"
+    "comm_type": "UDP"
   },
 
   "uart": {
@@ -24,9 +24,9 @@
   "udp": {
     "_comment": "Used only if selected as active interface",
     "local_ip": "0.0.0.0",
-    "local_port": 6000,
-    "remote_ip": "127.0.0.1",
-    "remote_port": 6001
+    "local_port": 5001,
+    "remote_ip": "239.1.2.3",
+    "remote_port": 5001
   },
 
   "ardupilot_uart": {

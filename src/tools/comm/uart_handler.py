@@ -5,10 +5,12 @@ import threading
 import time
 import json
 from queue import Queue
+from src.core.frame_codec import load_protocol_config
 
 class UARTHandler:
     def __init__(self, config_path="config.json"):
         self._load_config(config_path)
+        _, self.terminal_byte, _ = load_protocol_config(config_path)
         self.ser = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
         self.rx_queue = Queue()
         self.running = False
@@ -41,14 +43,15 @@ class UARTHandler:
 
     def _rx_worker(self):
         buffer = bytearray()
+        term = bytes([self.terminal_byte])
         while self.running:
             if self.ser.in_waiting:
                 data = self.ser.read(self.ser.in_waiting)
                 buffer.extend(data)
 
                 # terminal_byte = 0x43 (ASCII 'C') ile çerçeve sonu belirleme
-                while b'\x43' in buffer:
-                    index = buffer.index(0x43) + 1
+                while term in buffer:
+                    index = buffer.index(term) + 1
                     frame = buffer[:index]
                     self.rx_queue.put(frame)
                     buffer = buffer[index:]
