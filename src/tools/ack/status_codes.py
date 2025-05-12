@@ -1,27 +1,45 @@
 # src/tools/ack/status_codes.py
 
-# ✅ Successful operation
-STATUS_SUCCESS = 0  # The command was executed successfully.
+"""
+Status Codes Module
 
-# ❌ General error codes
-STATUS_INVALID_PARAMS = 1        # The provided parameters are invalid or malformed.
-STATUS_UNKNOWN_COMMAND = 2       # The command ID is not recognized.
-STATUS_EXECUTION_FAILED = 3      # The command failed during execution due to an internal error.
+Defines standardized status codes for ACK/NACK responses and provides
+human-readable labels for each code.
+"""
 
-# ⚙️ System-related status codes
-STATUS_NOT_MASTER = 10           # Operation is not allowed because the device is not the master.
-STATUS_MISSING_TELEMETRY = 11    # Required telemetry data is missing or unavailable.
+from typing import Final, Dict
 
-# ⚠️ Application-level exceptions
-STATUS_EXCEPTION = 99            # A general exception or unhandled error occurred.
+# === Status code definitions ===
 
-# 🏷️ Optional: Human-readable labels for status codes
-STATUS_LABELS = {
-    0:  "SUCCESS",
-    1:  "INVALID_PARAMS",
-    2:  "UNKNOWN_COMMAND",
-    3:  "EXECUTION_FAILED",
-    10: "NOT_MASTER",
-    11: "MISSING_TELEMETRY",
-    99: "EXCEPTION"
+# ✅ Success
+STATUS_SUCCESS: Final[int] = 0  
+"""Operation completed successfully."""
+
+# ❌ General errors
+STATUS_INVALID_PARAMS: Final[int]    = 1  
+"""Parameters provided to the command are invalid or malformed."""
+STATUS_UNKNOWN_COMMAND: Final[int]    = 2  
+"""The specified command ID is not recognized."""
+STATUS_EXECUTION_FAILED: Final[int]   = 3  
+"""The command failed during execution due to an internal error."""
+
+# ⚙️ System-level restrictions
+STATUS_NOT_MASTER: Final[int]         = 10  
+"""Operation not allowed because this device is not the master."""
+STATUS_MISSING_TELEMETRY: Final[int]  = 11  
+"""Required telemetry data is missing or unavailable."""
+
+# ⚠️ Application-level exception
+STATUS_EXCEPTION: Final[int]          = 99  
+"""A general or unhandled exception occurred."""
+
+# === Mapping to human-readable labels ===
+STATUS_LABELS: Final[Dict[int, str]] = {
+    STATUS_SUCCESS:         "SUCCESS",
+    STATUS_INVALID_PARAMS:  "INVALID_PARAMS",
+    STATUS_UNKNOWN_COMMAND: "UNKNOWN_COMMAND",
+    STATUS_EXECUTION_FAILED:"EXECUTION_FAILED",
+    STATUS_NOT_MASTER:      "NOT_MASTER",
+    STATUS_MISSING_TELEMETRY:"MISSING_TELEMETRY",
+    STATUS_EXCEPTION:       "EXCEPTION",
 }

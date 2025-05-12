@@ -4,6 +4,7 @@ from src.handlers.command.command_handler import handle_command
 from src.handlers.telemetry.telemetry_handler import handle_telemetry
 from src.handlers.swarm.swarm_handler import handle_swarm
 from src.handlers.ack.ack_handler import handle_ack
+from src.handlers.ftp.file_handler import handle_file
 
 from src.core.frame_codec import load_device_id
 from src.tools.log.logger import logger
@@ -13,7 +14,8 @@ dispatch_table = {
     'C': handle_command,
     'T': handle_telemetry,
     'S': handle_swarm,
-    'A': handle_ack
+    'A': handle_ack,
+    'F': handle_file
 }
 
 def route_frame(frame_dict: dict, interface):

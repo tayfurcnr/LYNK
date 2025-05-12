@@ -1,4 +1,4 @@
-# src/handlers/uart_handler.py
+# src/tools/comm/uart_handler.py
 
 import serial
 import threading

@@ -1,37 +1,61 @@
 # src/tools/ack/ack_tracker.py
 
-import time
-from typing import Dict, Tuple, Optional
+"""
+ACK Tracker Module
 
-# (cmd_name, dst_id) → {status, timestamp}
+Maintains a registry of acknowledgment statuses for issued commands,
+allowing retrieval, expiration checks, and buffer management.
+"""
+
+import time
+from typing import Dict, Tuple, Optional, Union
+
+# Internal buffer:
+# Key: (command_name_uppercase, destination_id)
+# Value: {"status": int, "timestamp": float}
 _ack_buffer: Dict[Tuple[str, int], Dict[str, float]] = {}
 
-def _now() -> float:
+
+def _current_time() -> float:
+    """
+    Return the current time as a UNIX timestamp.
+    """
     return time.time()
 
-def register_ack(cmd_name: str, dst_id: int, status: int):
+
+def register_ack(cmd_name: str, dst_id: int, status: int) -> None:
     """
-    Gelen bir ACK mesajını buffer'a kaydeder.
+    Record an ACK/NACK for a specific command and destination.
 
     Args:
-        cmd_name (str): Komut ismi (örneğin "TAKEOFF")
-        dst_id (int): Komutun gönderildiği cihaz ID'si
-        status (int): Komutun sonucu (örneğin 0 → SUCCESS)
+        cmd_name (str): Command name (e.g., "TAKEOFF").
+        dst_id (int): Destination device ID that sent the ACK.
+        status (int): Status code (e.g., 0 for SUCCESS).
     """
-    _ack_buffer[(cmd_name.upper(), dst_id)] = {
+    key = (cmd_name.upper(), dst_id)
+    _ack_buffer[key] = {
         "status": status,
-        "timestamp": _now()
+        "timestamp": _current_time()
     }
 
-def get_ack_status(cmd_name: str, dst_id: int, timeout: float = 5.0) -> Optional[str]:
+
+def get_ack_status(
+    cmd_name: str,
+    dst_id: int,
+    timeout: float = 5.0
+) -> Optional[Union[int, str]]:
     """
-    Belirtilen komutun son ACK durumunu döner.
+    Retrieve the most recent ACK status for a given command and destination.
+
+    Args:
+        cmd_name (str): Command name to query.
+        dst_id (int): Destination device ID.
+        timeout (float): Time window in seconds before an entry expires.
 
     Returns:
-        - "SUCCESS" (0)
-        - "EXPIRED" (süre dolmuş)
-        - None (henüz yok)
-        - int (başka bir status)
+        int: The recorded status code if within timeout.
+        "EXPIRED": If the recorded entry is older than `timeout`.
+        None: If no ACK has been recorded.
     """
     key = (cmd_name.upper(), dst_id)
     entry = _ack_buffer.get(key)
@@ -39,16 +63,37 @@ def get_ack_status(cmd_name: str, dst_id: int, timeout: float = 5.0) -> Optional
     if entry is None:
         return None
 
-    if _now() - entry["timestamp"] > timeout:
+    elapsed = _current_time() - entry["timestamp"]
+    if elapsed > timeout:
         return "EXPIRED"
 
     return entry["status"]
 
-def clear_ack(cmd_name: str, dst_id: int):
+
+def clear_ack(cmd_name: str, dst_id: int) -> None:
+    """
+    Remove the ACK entry for a given command and destination, if present.
+
+    Args:
+        cmd_name (str): Command name.
+        dst_id (int): Destination device ID.
+    """
     _ack_buffer.pop((cmd_name.upper(), dst_id), None)
 
-def clear_all_acks():
+
+def clear_all_acks() -> None:
+    """
+    Clear all recorded ACK entries.
+    """
     _ack_buffer.clear()
 
+
 def get_all_acks() -> Dict[Tuple[str, int], Dict[str, float]]:
+    """
+    Return a snapshot of all recorded ACK entries.
+
+    Returns:
+        Dict[(str, int), {"status": int, "timestamp": float}]:
+            Copy of the internal ACK buffer.
+    """
     return dict(_ack_buffer)

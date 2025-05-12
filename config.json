@@ -1,26 +1,22 @@
-{ 
+{
   "vehicle": {
     "id": 1,
     "type": "COPTER"
   },
-
   "protocol": {
     "start_byte": 84,
     "terminal_byte": 199,
     "version": 1
   },
-
   "interface": {
     "_comment": "Options: UART, UDP, MOCK_UART",
-    "comm_type": "UDP"
+    "comm_type": "MOCK_UART"
   },
-
   "uart": {
     "port": "/dev/ttyUSB0",
     "baudrate": 57600,
     "timeout": 0.1
   },
-
   "udp": {
     "_comment": "Used only if selected as active interface",
     "local_ip": "0.0.0.0",
@@ -28,23 +24,28 @@
     "remote_ip": "239.1.2.3",
     "remote_port": 5001
   },
-
   "ardupilot_uart": {
     "port": "tcp:127.0.0.1:5762",
     "baudrate": 115200
   },
-
   "logging": {
-  "_comment_enabled": "true = enable logging system globally",
-  "enabled": true,
-
-  "_comment_level": "Options: DEBUG, INFO, WARNING, ERROR, CRITICAL",
-  "level": "DEBUG",
-
-  "_comment_clear": "true = clear previous log file on every startup",
-  "clear_on_start": true,
-
-  "_comment_to_file": "true = log messages will also be written to logs/system.log",
-  "write_to_file": true
-}
+    "_comment_enabled": "true = enable logging system globally",
+    "enabled": true,
+    "_comment_level": "Options: DEBUG, INFO, WARNING, ERROR, CRITICAL",
+    "level": "DEBUG",
+    "_comment_clear": "true = clear previous log file on every startup",
+    "clear_on_start": true,
+    "_comment_to_file": "true = log messages will also be written to logs/system.log",
+    "write_to_file": true
+  },
+  "file_transfer": {
+    "_comment_packet_size": "Size in bytes of each fragment; adjust per hardware capability",
+    "packet_size": 512,
+    "_comment_timeout_ms": "Time in milliseconds to wait for an ACK before retrying",
+    "timeout_ms": 1000,
+    "_comment_max_retries": "Maximum number of resend attempts per fragment before giving up",
+    "max_retries": 5,
+    "_comment_download_dir": "Directory where received files will be stored",
+    "download_dir": "C:\\Users\\KAIROS\\Desktop\\Communication\\LYNK\\ftp"
+  }
 }
