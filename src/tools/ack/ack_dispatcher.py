@@ -52,29 +52,17 @@ def send_ack(
 def send_ftp_ack(
     interface,
     target_id: int,
+    phase: str,
     success: bool = True,
-    status_code: int = 0,
-    src: int = None
+    status_code: int = 0
 ) -> None:
     """
-    Build and send an FTP-specific ACK/NACK frame for START, CHUNK, or END.
-
-    Args:
-        interface: Communication interface (e.g., UARTInterface).
-        target_id (int): Node ID of the FTP sender.
-        success (bool): True for ACK, False for NACK.
-        status_code (int):
-            0   – START or END acknowledgment (empty payload).
-            >0  – Chunk sequence number being acknowledged.
-        src (int, optional): Source device ID; if None, loaded internally.
+    phase ∈ {"START","CHUNK","END"}
     """
     frame = build_ftp_ack_frame(
         target_id=target_id,
+        phase=phase,
         success=success,
-        status_code=status_code,
-        src=src
+        status_code=status_code
     )
-    send_frame(interface, frame)
-
-    ack_label = "FTP-ACK" if success else "FTP-NACK"
-    logger.info(f"[{ack_label}] SENT | DST: {target_id} | SEQ: {status_code}")
+    interface.send(frame)

@@ -35,14 +35,15 @@ def handle_file(payload: bytes, frame_dict: dict, interface):
         }
         # START-ACK
         send_ftp_ack(interface,
+                     phase="START",
                      target_id=src,
-                     success=True,
-                     status_code=0)
+                     success=True)
         register_ack("FTP_START", src, status=0)
         logger.info(f"[FTP] START received, filename={filename}")
         return
 
     # 2) END frame
+    # payload uzunluğu 4 bayt olunca END mesajı
     if len(payload) == 4:
         total = deserialize_ftp_end(payload)
         transfer = _transfers[fid]
@@ -55,6 +56,7 @@ def handle_file(payload: bytes, frame_dict: dict, interface):
             # Eksik seq’leri NACK ile bildir
             for seq in missing:
                 send_ftp_ack(interface,
+                             phase="CHUNK",
                              target_id=src,
                              success=False,
                              status_code=seq)
@@ -68,9 +70,9 @@ def handle_file(payload: bytes, frame_dict: dict, interface):
             logger.info(f"[FTP] Transfer complete: {transfer['stream'].name}")
             # END-ACK
             send_ftp_ack(interface,
+                         phase="END",
                          target_id=src,
-                         success=True,
-                         status_code=0)
+                         success=True)
             register_ack("FTP_END", src, status=0)
             del _transfers[fid]
 
@@ -81,6 +83,7 @@ def handle_file(payload: bytes, frame_dict: dict, interface):
     _transfers[fid]["chunks"][seq] = data
     # CHUNK-ACK
     send_ftp_ack(interface,
+                 phase="CHUNK",
                  target_id=src,
                  success=True,
                  status_code=seq)
