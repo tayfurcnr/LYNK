@@ -4,6 +4,7 @@ import threading
 import time
 import sys
 import os
+import sched
 
 # Windows ve Unix uyumlu
 try:
@@ -13,7 +14,6 @@ except ImportError:
 
 import select
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from src.tools.comm.interface_factory import create_interface
 from src.tools.telemetry.telemetry_dispatcher import (
     send_tlm_gps, send_tlm_imu, send_tlm_battery, send_tlm_heartbeat
@@ -26,7 +26,11 @@ from src.core.frame_codec import parse_mesh_frame
 from src.core.frame_router import route_frame
 from src.tools.telemetry.telemetry_cache import reset_cache, get_all_cached_data
 
-def job_telemetry(interface, src, dst):
+# Tek scheduler objesi
+scheduler = sched.scheduler(time.time, time.sleep)
+
+def job_telemetry(interface, src, dst, interval=1.0):
+    """Periyodik telemetri gönderimi ve kendini yeniden zamanlama."""
     send_tlm_gps(interface, lat=37.0 + src*0.001, lon=35.0 + src*0.001,
                  alt=100.0, dst=dst, src=src)
     send_tlm_imu(interface, roll=1.0 + src, pitch=2.0 + src,
@@ -37,20 +41,22 @@ def job_telemetry(interface, src, dst):
     send_tlm_heartbeat(interface, mode="AUTO", health="OK",
                        is_armed=True, gps_fix=True,
                        sat_count=10 + src, dst=dst, src=src)
+    # Kendini yeniden planla
+    scheduler.enter(interval, 1, job_telemetry, (interface, src, dst, interval))
 
-def job_frame_processing(interface):
+def job_frame_processing(interface, interval=0.05):
+    """Periyodik frame okuma ve işleme, sonra yeniden zamanlama."""
     raw = interface.read()
-    if not raw:
-        return
-    try:
-        frame = parse_mesh_frame(raw)
-    except ValueError as e:
-        print(f"[ERROR] Frame parse edilemedi: {e} raw={raw.hex()}")
-        return
-
-    route_frame(frame, interface)
-    cache = get_all_cached_data()
-    print(f"[CACHE] {cache}")
+    if raw:
+        try:
+            frame = parse_mesh_frame(raw)
+            route_frame(frame, interface)
+        except ValueError as e:
+            print(f"[ERROR] Frame parse edilemedi: {e} raw={raw.hex()}")
+        cache = get_all_cached_data()
+        print(f"[CACHE] {cache}")
+    # Kendini yeniden planla
+    scheduler.enter(interval, 1, job_frame_processing, (interface, interval,))
 
 def send_command(interface, src, dst, key):
     if key == 'T':
@@ -62,19 +68,15 @@ def send_command(interface, src, dst, key):
     elif key == 'G':
         print("[CMD] GOTO")
         cmd_goto(interface,
-                 target_lat=37.001,
-                 target_lon=35.002,
-                 target_alt=50.0,
-                 src=src,
-                 dst=dst)
+                 target_lat=37.001, target_lon=35.002,
+                 target_alt=50.0, src=src, dst=dst)
     elif key == 'W':
         print("[CMD] WAYPOINTS")
         waypoints = [(37.001, 35.002, 50.0),
                      (37.002, 35.003, 60.0)]
         cmd_waypoints(interface,
                       waypoints=waypoints,
-                      src=src,
-                      dst=dst)
+                      src=src, dst=dst)
     elif key == 'F':
         path = r"C:\Users\KAIROS\Desktop\example.png"
         if not os.path.isfile(path):
@@ -100,14 +102,12 @@ Tuş atamaları:
     while True:
         ch = None
         if msvcrt:
-            # Windows: doğrudan msvcrt ile oku
             if msvcrt.kbhit():
                 ch = msvcrt.getch().decode(errors='ignore')
             else:
                 time.sleep(0.1)
                 continue
         else:
-            # Unix: select ile stdin
             dr, _, _ = select.select([sys.stdin], [], [], 0.1)
             if dr:
                 ch = sys.stdin.read(1)
@@ -125,43 +125,25 @@ def main():
     interface = create_interface()
     interface.start()
 
-    # 1) Cache'i tamamen temizle
+    # Önce cache'i temizle
     reset_cache()
 
     my_src_id = 2
     other_dst_id = 1
 
-    # 2) Scheduler ile iş parçacıklarını planla
-    sched = BackgroundScheduler()
-    sched.add_job(job_telemetry,
-                  'interval',
-                  seconds=1,
-                  args=(interface, my_src_id, other_dst_id),
-                  id="telemetry")
-    sched.add_job(job_frame_processing,
-                  'interval',
-                  seconds=0.05,
-                  args=(interface,),
-                  id="frame_proc")
-    sched.start()
+    # Scheduler'a ilk işlerin eklenmesi
+    #scheduler.enter(0, 1, job_telemetry, (interface, my_src_id, other_dst_id, 1.0))
+    scheduler.enter(0, 1, job_frame_processing, (interface, 0.05))
 
-    # 3) Klavye dinleyicisini başlat
-    kb_thread = threading.Thread(
-        target=keyboard_listener,
-        args=(interface, my_src_id, other_dst_id),
-        daemon=True
-    )
-    kb_thread.start()
+    # Scheduler'ı ayrı bir thread'te çalıştır
+    threading.Thread(target=scheduler.run, daemon=True).start()
 
-    try:
-        while kb_thread.is_alive():
-            time.sleep(0.5)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        sched.shutdown(wait=False)
-        interface.stop()
-        print("Program sonlandırıldı.")
+    # Klavye dinleyicisini başlat
+    keyboard_listener(interface, my_src_id, other_dst_id)
+
+    # Program sonlandırma
+    interface.stop()
+    print("Program sonlandırıldı.")
 
 if __name__ == "__main__":
     main()
