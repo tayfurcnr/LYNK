@@ -75,6 +75,9 @@ def send_ftp_ack(
         status_code=status_code,
         src=src
     )
+
+    logger.debug(f"[FTP ACK] RAW FRAME bytes={frame!r}")
+    
     send_frame(interface, frame)
 
     ack_type = "ACK" if success else "NACK"

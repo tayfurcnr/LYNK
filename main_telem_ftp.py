@@ -71,7 +71,7 @@ def send_command(interface, src, dst, key):
         cmd_waypoints(interface, waypoints=waypoints, src=src, dst=dst)
 
     elif key == 'F':          # FTP File transfer
-        path = r"C:\Users\KAIROS\Desktop\LX7.step"
+        path = r"C:\Users\KAIROS\Desktop\example.png"
         if not os.path.isfile(path):
             print(f"[FTP] Hata: Dosya bulunamadı: {path}")
         else:
@@ -118,12 +118,12 @@ def main():
     interface.start()
     reset_cache()
 
-    my_src_id = 1
+    my_src_id = 2
     other_dst_id = 1
 
     sched = BackgroundScheduler()
     sched.add_job(job_telemetry, 'interval', seconds=1, args=(interface, my_src_id, other_dst_id), id="telemetry")
-    sched.add_job(job_frame_processing, 'interval', seconds=0.05, args=(interface,), id="frame_proc")
+    sched.add_job(job_frame_processing, 'interval', seconds=1, args=(interface,), id="frame_proc")
     sched.start()
 
     kb_thread = threading.Thread(

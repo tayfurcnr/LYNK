@@ -1,6 +1,6 @@
 {
   "vehicle": {
-    "id": 1,
+    "id": 2,
     "type": "COPTER"
   },
   "protocol": {
@@ -19,7 +19,7 @@
   },
   "udp": {
     "_comment": "Used only if selected as active interface",
-    "local_ip": "0.0.0.0",
+    "local_ip": "192.168.1.100",
     "local_port": 5001,
     "remote_ip": "239.1.2.3",
     "remote_port": 5001

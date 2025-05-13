@@ -13,6 +13,7 @@ from src.tools.ack.ack_tracker import register_ack
 # transfer state: (src_id, dst_id) → { stream, chunks: {seq: bytes}, total: Optional[int] }
 _transfers = {}
 
+
 def handle_file(payload: bytes, frame_dict: dict, interface):
     """
     FTP transfer için gelen frame’leri işler:
@@ -24,28 +25,34 @@ def handle_file(payload: bytes, frame_dict: dict, interface):
     dst = frame_dict["dst_id"]
     fid = (src, dst)
 
+    # Ham payload logu
+    logger.debug(f"[FTP DEBUG] RAW payload hex={payload.hex()}")
+
     # 1) START frame
     if fid not in _transfers:
-        filename = deserialize_ftp_start(payload)
+        try:
+            filename = deserialize_ftp_start(payload)
+        except Exception as e:
+            logger.error(f"[FTP] START deserialization failed: {e}")
+            return
         stream = open_download_stream(filename)
         _transfers[fid] = {
             "stream": stream,
             "chunks": {},
             "total": None
         }
-        # START-ACK
-        send_ftp_ack(interface,
-                     phase="START",
-                     target_id=src,
-                     success=True)
+        send_ftp_ack(interface, phase="START", target_id=src, success=True)
         register_ack("FTP_START", src, status=0)
         logger.info(f"[FTP] START received, filename={filename}")
         return
 
-    # 2) END frame
-    # payload uzunluğu 4 bayt olunca END mesajı
+    # 2) END frame (4 baytlık payload)
     if len(payload) == 4:
-        total = deserialize_ftp_end(payload)
+        try:
+            total = deserialize_ftp_end(payload)
+        except Exception as e:
+            logger.error(f"[FTP] END deserialization failed: {e}")
+            return
         transfer = _transfers[fid]
         transfer["total"] = total
 
@@ -53,39 +60,31 @@ def handle_file(payload: bytes, frame_dict: dict, interface):
         missing = set(range(total)) - received
 
         if missing:
-            # Eksik seq’leri NACK ile bildir
             for seq in missing:
-                send_ftp_ack(interface,
-                             phase="CHUNK",
-                             target_id=src,
-                             success=False,
-                             status_code=seq)
+                send_ftp_ack(interface, phase="CHUNK", target_id=src, success=False, status_code=seq)
                 register_ack(f"FTP_CHUNK_{seq}", src, status=1)
             logger.warning(f"[FTP] END received but missing chunks: {missing}")
         else:
-            # Tüm parçaları sırayla yaz ve tamamla
             for i in range(total):
                 transfer["stream"].write(transfer["chunks"][i])
             transfer["stream"].close()
             logger.info(f"[FTP] Transfer complete: {transfer['stream'].name}")
-            # END-ACK
-            send_ftp_ack(interface,
-                         phase="END",
-                         target_id=src,
-                         success=True)
+            send_ftp_ack(interface, phase="END", target_id=src, success=True)
             register_ack("FTP_END", src, status=0)
             del _transfers[fid]
-
         return
 
     # 3) CHUNK frame
+    # Seq ve data parse
+    if len(payload) < 4:
+        logger.error(f"[FTP] Invalid CHUNK payload, too short: {len(payload)} bytes")
+        return
     seq, data = deserialize_ftp_chunk(payload)
-    _transfers[fid]["chunks"][seq] = data
-    # CHUNK-ACK
-    send_ftp_ack(interface,
-                 phase="CHUNK",
-                 target_id=src,
-                 success=True,
-                 status_code=seq)
+    logger.debug(f"[FTP DEBUG] parsed seq={seq}, data_length={len(data)} bytes")
+
+    transfer = _transfers[fid]
+    transfer["chunks"][seq] = data
+
+    send_ftp_ack(interface, phase="CHUNK", target_id=src, success=True, status_code=seq)
     register_ack(f"FTP_CHUNK_{seq}", src, status=0)
     logger.debug(f"[FTP] Chunk received seq={seq}, size={len(data)} bytes")
