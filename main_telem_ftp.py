@@ -71,7 +71,7 @@ def send_command(interface, src, dst, key):
         cmd_waypoints(interface, waypoints=waypoints, src=src, dst=dst)
 
     elif key == 'F':          # FTP File transfer
-        path = r"C:\Users\KAIROS\Desktop\example.png"
+        path = r"C:\Users\KAIROS\Desktop\LX7.step"
         if not os.path.isfile(path):
             print(f"[FTP] Hata: Dosya bulunamadı: {path}")
         else:

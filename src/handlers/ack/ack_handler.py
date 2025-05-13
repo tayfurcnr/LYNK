@@ -3,6 +3,7 @@
 from src.serializers.ack_serializer import deserialize_ack
 from src.handlers.command.command_handler import command_definitions, CommandDefinition
 from src.tools.ack.ack_tracker import register_ack
+from src.tools.ack.ftp_ack_builder import COMMAND_IDS as FTP_COMMAND_IDS
 from src.tools.log.logger import logger
 
 # Status description map
@@ -16,8 +17,17 @@ def handle_ack(payload: bytes, frame_meta: dict, uart_handler=None):
     """
     Handles 'A' (ACK/NACK) type frames received in the mesh protocol.
     Logs the command status, source, and routing info.
-    Also registers ACK into the ack_tracker system.
+    Also registers ACK into the ack_tracker system, except for FTP phases.
     """
+
+    # FTP phase ACK'lerini daha deserialize etmeden atlamak için
+    # payload yapısı: [ack_code, command_id, status_code]
+    cmd_id = payload[1]
+    if cmd_id in FTP_COMMAND_IDS.values():
+        src_id = frame_meta["src_id"]
+        logger.debug(f"[ACK] FTP Phase ACK atlandı | CMD_ID={cmd_id} | SRC={src_id}")
+        return
+
     try:
         ack = deserialize_ack(payload)
         src_id = frame_meta["src_id"]
@@ -45,7 +55,7 @@ def handle_ack(payload: bytes, frame_meta: dict, uart_handler=None):
                 f"| SRC: {src_id} -> DST: {dst_id}"
             )
 
-        # 🔁 ACK Tracker'a kayıt (komut adıyla)
+        # 🔁 Normal ACK Tracker'a kayıt
         register_ack(cmd_name, src_id, ack["status_code"])
 
     except Exception as e:

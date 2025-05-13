@@ -5,12 +5,11 @@ import threading
 import time
 import json
 from queue import Queue
-from src.core.frame_codec import load_protocol_config
 
 class UARTHandler:
     def __init__(self, config_path="config.json"):
         self._load_config(config_path)
-        _, self.terminal_byte, _ = load_protocol_config(config_path)
+        # artık terminal_byte yok
         self.ser = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
         self.rx_queue = Queue()
         self.running = False
@@ -42,27 +41,31 @@ class UARTHandler:
             self.ser.close()
 
     def _rx_worker(self):
-        buffer = bytearray()
-        term = bytes([self.terminal_byte])
+        """
+        Gelen tüm ham byte'ları kuyruğa ekliyoruz.
+        Frame ayrımı ve CRC kontrolü parse_mesh_frame'de yapılacak.
+        """
         while self.running:
             if self.ser.in_waiting:
                 data = self.ser.read(self.ser.in_waiting)
-                buffer.extend(data)
-
-                # terminal_byte = 0x43 (ASCII 'C') ile çerçeve sonu belirleme
-                while term in buffer:
-                    index = buffer.index(term) + 1
-                    frame = buffer[:index]
-                    self.rx_queue.put(frame)
-                    buffer = buffer[index:]
+                # doğrudan ham veriyi kuyruğa bırak
+                self.rx_queue.put(data)
             time.sleep(0.01)
 
-    def read(self):
+    def read(self) -> bytes | None:
+        """
+        Kuyruktan bir seferde okunan ham veriyi döner.
+        Üst katmanda parse_mesh_frame ile işlenecek.
+        """
         if not self.rx_queue.empty():
             return self.rx_queue.get()
         return None
 
     def send(self, data: bytes):
+        """
+        build_mesh_frame ile hazırlanmış çerçeveyi direkt yollar.
+        CRC zaten içinde, ekstra bayta gerek yok.
+        """
         if self.ser.is_open:
             self.ser.write(data)
         else:

@@ -5,12 +5,12 @@
   },
   "protocol": {
     "start_byte": 84,
-    "terminal_byte": 199,
+    "start_byte_2": 199,
     "version": 1
   },
   "interface": {
     "_comment": "Options: UART, UDP, MOCK_UART",
-    "comm_type": "MOCK_UART"
+    "comm_type": "UDP"
   },
   "uart": {
     "port": "/dev/ttyUSB0",
