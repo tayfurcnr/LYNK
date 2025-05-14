@@ -55,8 +55,16 @@ def job_frame_processing(interface, interval=0.05):
             print(f"[ERROR] Frame parse edilemedi: {e} raw={raw.hex()}")
         cache = get_all_cached_data()
         print(f"[CACHE] {cache}")
-    # Kendini yeniden planla
     scheduler.enter(interval, 1, job_frame_processing, (interface, interval,))
+
+def send_file(interface, path, src, dst):
+    if not os.path.isfile(path):
+        print(f"[FTP] Hata: Dosya bulunamadı: {path}")
+    else:
+        print(f"[FTP] Otomatik gönderiliyor: {path}")
+        send_ftp_file(interface, filepath=path, src=src, dst=dst)
+        print("[FTP] Gönderim tamamlandı.")
+
 
 def send_command(interface, src, dst, key):
     if key == 'T':
@@ -73,18 +81,15 @@ def send_command(interface, src, dst, key):
     elif key == 'W':
         print("[CMD] WAYPOINTS")
         waypoints = [(37.001, 35.002, 50.0),
-                     (37.002, 35.003, 60.0)]
+                     (37.002, 35.003, 60.0),
+                     (37.003, 35.004, 70.0)]
         cmd_waypoints(interface,
                       waypoints=waypoints,
                       src=src, dst=dst)
     elif key == 'F':
-        path = r"C:\Users\KAIROS\Desktop\example.png"
-        if not os.path.isfile(path):
-            print(f"[FTP] Hata: Dosya bulunamadı: {path}")
-        else:
-            print(f"[FTP] Otomatik gönderiliyor: {path}")
-            send_ftp_file(interface, filepath=path, src=src, dst=dst)
-            print("[FTP] Gönderim tamamlandı.")
+        send_file(interface, r"C:\Users\KAIROS\Desktop\example.png", src, 2)
+    elif key == 'B':
+        send_file(interface, r"C:\Users\KAIROS\Desktop\example.png", src, 3)
     else:
         print(f"[CMD] Tanımsız tuş: {key}")
 
@@ -128,8 +133,8 @@ def main():
     # Önce cache'i temizle
     reset_cache()
 
-    my_src_id = 2
-    other_dst_id = 1
+    my_src_id = 1
+    other_dst_id = 0xFF
 
     # Scheduler'a ilk işlerin eklenmesi
     #scheduler.enter(0, 1, job_telemetry, (interface, my_src_id, other_dst_id, 1.0))
