@@ -1,12 +1,13 @@
 # src/tools/comm/uart_handler.py
 
-import serial
+from serial import SerialException, Serial
 import threading
 import time
 import json
 import struct
 from queue import Queue
 import crcmod
+from src.tools.log.logger import logger
 
 # CRC-16-CCITT-FALSE
 CRC_FUNC = crcmod.predefined.mkPredefinedCrcFun('crc-ccitt-false')
@@ -20,7 +21,7 @@ class BadFrame(Exception):
 class UARTHandler:
     def __init__(self, config_path="config.json"):
         self._load_config(config_path)
-        self.ser = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
+        self.ser = Serial(self.port, self.baudrate, timeout=self.timeout)
         self.rx_queue = Queue()
         self.running = False
         self.thread = None
@@ -57,12 +58,20 @@ class UARTHandler:
                 data = self.ser.read(self.ser.in_waiting)
                 self.rx_queue.put(data)
             time.sleep(0.01)
-
-    def send(self, data: bytes):
-        if self.ser.is_open:
+        
+    def send(self, data: bytes) -> bool:
+        if not self.ser.is_open:
+            try:
+                self.ser.open()
+            except SerialException as e:
+                logger.error(f"UART port is not open: {e}")
+                return False
+        try:
             self.ser.write(data)
-        else:
-            raise RuntimeError("UART port is not open")
+            return True
+        except SerialException as e:
+            logger.error(f"UART write error: {e}")
+            return False
 
     def read(self) -> bytes | None:
         # 1) Gelen tüm chunk'ları buffer'a ekle
