@@ -134,10 +134,10 @@ def main():
     reset_cache()
 
     my_src_id = 1
-    other_dst_id = 0xFF
+    other_dst_id = 2
 
     # Scheduler'a ilk işlerin eklenmesi
-    #scheduler.enter(0, 1, job_telemetry, (interface, my_src_id, other_dst_id, 1.0))
+    scheduler.enter(0, 1, job_telemetry, (interface, my_src_id, other_dst_id, 1.0))
     scheduler.enter(0, 1, job_frame_processing, (interface, 0.05))
 
     # Scheduler'ı ayrı bir thread'te çalıştır
