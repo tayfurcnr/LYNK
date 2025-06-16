@@ -1,4 +1,4 @@
-# /src/tools/telemetry/telemetry_dispatcher.py
+# /src/telemetry/tools/dispatcher.py
 
 """
 Telemetry Dispatcher Module
@@ -8,7 +8,7 @@ Each function builds a specific telemetry payload (GPS, IMU, Battery, Heartbeat)
 and transmits it, while logging the action for traceability.
 """
 
-from src.tools.telemetry.telemetry_builder import (
+from src.telemetry.tools.builder import (
     build_tlm_gps,
     build_tlm_imu,
     build_tlm_battery,

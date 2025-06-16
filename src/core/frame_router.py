@@ -1,7 +1,7 @@
 # src/core/frame_router.py
 
 from src.handlers.command.command_handler import handle_command
-from src.handlers.telemetry.telemetry_handler import handle_telemetry
+from src.telemetry.handler.dispatcher import handle_telemetry
 from src.handlers.swarm.swarm_handler import handle_swarm
 from src.handlers.ack.ack_handler import handle_ack
 from src.handlers.ftp.file_handler import handle_file

@@ -1,4 +1,4 @@
-# src/tools//telemetry/telemetry_builder.py
+# /src/telemetry/tools/builder.py
 
 """
 Telemetry Builder Module
@@ -11,12 +11,11 @@ function corresponds to a specific telemetry ID.
 from typing import Any, List, Optional
 
 from src.core.frame_codec import build_mesh_frame, load_device_id
-from src.serializers.telemetry_serializer import serialize_telemetry
-
+from src.telemetry.definitions import telemetry_definitions
 
 def build_tlm_frame(
-    tlm_id: int,
-    params: List[Any],
+    name: str,
+    params: list,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
@@ -24,7 +23,7 @@ def build_tlm_frame(
     Construct a generic telemetry mesh frame.
 
     Args:
-        tlm_id (int): Telemetry identifier (e.g., 0x01 for GPS).
+        name (str): Telemetry name (e.g., "GPS").
         params (List[Any]): Ordered list of parameters matching the telemetry schema.
         dst (int, optional): Destination device ID (default: 0xFF for broadcast).
         src (int | None, optional): Source device ID; if None, loaded from config.
@@ -33,7 +32,19 @@ def build_tlm_frame(
         bytes: Complete mesh frame ready for transmission.
     """
     source_id = src if src is not None else load_device_id()
-    payload = serialize_telemetry(tlm_id, *params)
+
+    for defn in telemetry_definitions.values():
+        if defn.name == name:
+            tlm_id = defn.id
+            serializer = defn.serialize
+            break
+    else:
+        raise ValueError(f"Telemetry name not found: {name}")
+
+    # 🧩 ID'yi en başa ekle
+    payload_body = serializer(*params)
+    payload = bytes([tlm_id]) + payload_body
+
     return build_mesh_frame('T', source_id, dst, payload)
 
 
@@ -57,7 +68,7 @@ def build_tlm_gps(
     Returns:
         bytes: Mesh frame containing serialized GPS data.
     """
-    return build_tlm_frame(0x01, [lat, lon, alt], dst, src)
+    return build_tlm_frame("GPS", [lat, lon, alt], dst, src)
 
 
 def build_tlm_imu(
@@ -80,7 +91,7 @@ def build_tlm_imu(
     Returns:
         bytes: Mesh frame containing serialized IMU data.
     """
-    return build_tlm_frame(0x02, [roll, pitch, yaw], dst, src)
+    return build_tlm_frame("IMU", [roll, pitch, yaw], dst, src)
 
 
 def build_tlm_battery(
@@ -103,7 +114,7 @@ def build_tlm_battery(
     Returns:
         bytes: Mesh frame containing serialized battery data.
     """
-    return build_tlm_frame(0x03, [voltage, current, level], dst, src)
+    return build_tlm_frame("BATTERY", [voltage, current, level], dst, src)
 
 
 def build_tlm_heartbeat(
@@ -131,7 +142,7 @@ def build_tlm_heartbeat(
         bytes: Mesh frame containing serialized heartbeat data.
     """
     return build_tlm_frame(
-        0x04,
+        "HEARTBEAT",
         [mode, health, is_armed, gps_fix, sat_count],
         dst,
         src

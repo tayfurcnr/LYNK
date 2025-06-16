@@ -1,4 +1,4 @@
-# /src/tools/telemetry/telemetry_cache.py
+# /src/telemetry/tools/cache.py
 
 """
 Telemetry Cache Module
