@@ -1,6 +1,6 @@
 # src/core/frame_router.py
 
-from src.handlers.command.command_handler import handle_command
+from src.command.handler.dispatcher import handle_command
 from src.telemetry.handler.dispatcher import handle_telemetry
 from src.handlers.swarm.swarm_handler import handle_swarm
 from src.handlers.ack.ack_handler import handle_ack

@@ -1,7 +1,7 @@
 # src/handlers/ack/ack_handler.py
 
 from src.serializers.ack_serializer import deserialize_ack
-from src.handlers.command.command_handler import command_definitions, CommandDefinition
+from src.command.definitions import command_definitions, CommandDefinition
 from src.tools.ack.ack_tracker import register_ack
 from src.tools.ack.ftp_ack_builder import COMMAND_IDS as FTP_COMMAND_IDS
 from src.tools.log.logger import logger
@@ -62,9 +62,9 @@ def handle_ack(payload: bytes, frame_meta: dict, uart_handler=None):
         status_str  = status_map.get(status_code, f"UNKNOWN({status_code})")
 
         # Resolve command name
-        cmd_def  = command_definitions.get(
+        cmd_def = command_definitions.get(
             command,
-            CommandDefinition(f"CMD_{command}", None)
+            CommandDefinition(command, f"CMD_{command}", None)
         )
         cmd_name = cmd_def.name
 

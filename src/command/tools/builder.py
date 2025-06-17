@@ -12,7 +12,7 @@ import struct
 from typing import Any, List, Optional
 
 from src.core.frame_codec import build_mesh_frame, load_device_id
-from src.serializers.command_serializer import serialize_command
+from src.command.serializer.dispatcher import serialize_command
 
 
 def build_cmd_frame(

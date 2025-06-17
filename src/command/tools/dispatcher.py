@@ -9,7 +9,7 @@ over a communication interface, while logging each action.
 
 from typing import Any, List, Optional, Protocol
 
-from src.tools.command.command_builder import (
+from src.command.tools.builder import (
     build_cmd_reboot,
     build_cmd_set_mode,
     build_cmd_takeoff,

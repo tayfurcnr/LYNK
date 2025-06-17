@@ -16,7 +16,7 @@ def serialize_ack(command_id: int, status_code: int, is_ack: bool = True, ftp: b
     If ftp=True, status_code is packed as 4 bytes; otherwise as 1 byte.
     """
     # Komut adını almak için import işlemini fonksiyon içinde yap (circular import önlemi)
-    from src.handlers.command.command_handler import command_definitions, CommandDefinition
+    from src.command.definitions import command_definitions, CommandDefinition
 
     ack_code = 0xAA if is_ack else 0xFF
 
@@ -30,8 +30,9 @@ def serialize_ack(command_id: int, status_code: int, is_ack: bool = True, ftp: b
     ack_type = "ACK" if is_ack else "NACK"
     status_name = STATUS_NAMES.get(status_code, f"UNKNOWN({status_code})")
 
-    # Komut adını bul
-    cmd_def = command_definitions.get(command_id, CommandDefinition(f"CMD_{command_id}", None))
+    cmd_def = command_definitions.get(command_id)
+    if cmd_def is None:
+        cmd_def = CommandDefinition(command_id, f"CMD_{command_id}", None)
     cmd_name = cmd_def.name
 
     logger.debug(
@@ -62,8 +63,8 @@ def deserialize_ack(payload: bytes, ftp: bool = False) -> dict:
 
     # Komut adını almak için import burada yapılır (circular import önlemi)
     try:
-        from src.handlers.command.command_handler import command_definitions, CommandDefinition
-        cmd_def = command_definitions.get(command_id, CommandDefinition(f"CMD_{command_id}", None))
+        from src.command.definitions import command_definitions, CommandDefinition
+        cmd_def = command_definitions.get(command_id, CommandDefinition(command_id, f"CMD_{command_id}", None))
         cmd_name = cmd_def.name
     except ImportError:
         cmd_name = f"CMD_{command_id}"

@@ -1,6 +1,6 @@
-# src/serializers/command_serializer.py
+# src/command/serializer/dispatcher.py
 
-from src.tools.log.logger import logger  # Optional: Remove if logging not needed
+from src.tools.log.logger import logger
 
 def serialize_command(command_id: int, params: bytes = b'') -> bytes:
     """

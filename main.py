@@ -17,7 +17,7 @@ import select
 import src.tools.comm.interface_factory         as iface
 import src.telemetry.tools.dispatcher           as tlm
 import src.telemetry.tools.cache                as cache
-import src.tools.command.command_dispatcher     as cmd
+import src.command.tools.dispatcher             as cmd
 import src.core.frame_codec                     as codec
 import src.core.frame_router                    as router
 
@@ -159,7 +159,7 @@ def main():
     cache.reset_cache()
 
     # Schedule tasks
-    scheduler.enter(0, 1, task_send_telemetry, (interface, 1.0))
+    #scheduler.enter(0, 1, task_send_telemetry, (interface, 1.0))
     scheduler.enter(0, 1, task_receiver_line, (interface, 0.05))
 
     threading.Thread(target=scheduler.run, daemon=True).start()
