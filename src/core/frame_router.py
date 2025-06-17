@@ -1,11 +1,11 @@
 # src/core/frame_router.py
 
-from src.command.handler.dispatcher import handle_command
-from src.telemetry.handler.dispatcher import handle_telemetry
-from src.ack.handler.dispatcher import handle_ack
+from src.application.command.handler.dispatcher import handle_command
+from src.application.telemetry.handler.dispatcher import handle_telemetry
+from src.application.ack.handler.dispatcher import handle_ack
 
 from src.core.frame_codec import load_device_id
-from src.tools.log.logger import logger
+from src.shared.log.logger import logger
 
 # Frame Type → Handler Mapping
 dispatch_table = {

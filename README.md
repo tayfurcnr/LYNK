@@ -31,10 +31,9 @@ lynk-root/
 │
 ├── src/                      # Main source code
 │   ├── core/                 # Core components like frame routing and encoding
-│   ├── handlers/             # Message handlers (Command, Telemetry, ACK, etc.)
-│   ├── serializers/          # Serialization and deserialization modules
-│   ├── swarm/                # Swarm coordination and task assignment
-│   └── tools/                # Utility modules (interface, logger, transmitter, etc.)
+│   ├── application/          # Application-specific modules (ACK, Command, Telemetry)
+│   ├── handlers/             # Message handlers (Mavlink)
+│   └── shared/               # Shared utilities (comm, log, dev)
 │
 └── tests/                    # Pytest-based modular test structure
     ├── ack/                  # ACK-related tests
@@ -95,12 +94,11 @@ pytest tests/ack/test_ack_multithread.py
 ## 🧠 Developer Guide
 
 - To **add a new frame type**:
-  - Create a serializer in `src/serializers/`
-  - Implement a handler in `src/handlers/`
-  - Register the handler in `frame_router.py`
-- Use `mock_handler.py` in `handlers/comm/` for local testing
-- Use `logger.py` to log all frame activity to `logs/system.log`
-- Swarm behavior is defined in `swarm_commander.py` and `swarm_manager.py`
+  - Create a serializer in `src/application/<frame_type>/serializer/`
+  - Implement a handler in `src/application/<frame_type>/handler/`
+  - Register the handler in `src/core/frame_router.py`
+- Use `src/shared/comm/mock_handler.py` for local testing
+- Use `src/shared/log/logger.py` to log all frame activity to `logs/system.log`
 
 ---
 
