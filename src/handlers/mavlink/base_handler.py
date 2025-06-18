@@ -1,14 +1,12 @@
-import json
+from src.shared.config.manager import get_config
 from pymavlink import mavutil
 
 class MAVLinkBaseHandler:
-    def __init__(self, config_file: str = 'config.json'):
-        with open(config_file, 'r') as f:
-            cfg = json.load(f)
-
-        ap_cfg   = cfg['ardupilot_uart']
-        port     = ap_cfg['port']
-        baudrate = ap_cfg['baudrate']
+    def __init__(self):
+        cfg = get_config()
+        ap_cfg = cfg["ardupilot_uart"]
+        port = ap_cfg["port"]
+        baudrate = ap_cfg["baudrate"]
 
         self.master = mavutil.mavlink_connection(port, baud=baudrate)
         print(f"[MAVLinkBaseHandler] Bağlantı açıldı: port={port}, baud={baudrate}")

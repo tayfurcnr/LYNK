@@ -3,65 +3,59 @@
 """
 Logging Configuration Module
 
-Loads logging settings from `config.json` and initializes a logger instance
-for the application. Supports console output, optional file output, and
-runtime configuration of level and startup behavior.
+Loads logging settings from the centralized config manager and initializes
+a logger instance for the application. Supports console output, optional
+file output, and runtime configuration of level and startup behavior.
 """
 
 import logging
 import os
-import json
-from typing import Any, Dict
 
-# === Load logging configuration from config.json ===
-with open("config.json", "r", encoding="utf-8") as f:
-    _config: Dict[str, Any] = json.load(f)
-
-_log_cfg = _config.get("logging", {})
-LOG_ENABLED: bool = _log_cfg.get("enabled", True)
-LOG_LEVEL: str = _log_cfg.get("level", "INFO").upper()
-CLEAR_LOG_ON_START: bool = _log_cfg.get("clear_on_start", False)
-WRITE_TO_FILE: bool = _log_cfg.get("write_to_file", False)
+try:
+    from src.shared.config.manager import get
+    LOG_ENABLED = get("logging.enabled", True)
+    LOG_LEVEL = get("logging.level", "INFO").upper()
+    CLEAR_LOG_ON_START = get("logging.clear_on_start", False)
+    WRITE_TO_FILE = get("logging.write_to_file", False)
+except RuntimeError:
+    # Config not loaded yet – use default values
+    LOG_ENABLED = True
+    LOG_LEVEL = "INFO"
+    CLEAR_LOG_ON_START = False
+    WRITE_TO_FILE = False
 
 # === File-based logging settings ===
-LOG_DIR: str = "logs"
-LOG_FILE: str = "system.log"
-LOG_PATH: str = os.path.join(LOG_DIR, LOG_FILE)
+LOG_DIR = "logs"
+LOG_FILE = "system.log"
+LOG_PATH = os.path.join(LOG_DIR, LOG_FILE)
 
 # === Initialize the application logger ===
 logger = logging.getLogger("LYNK")
 
 if LOG_ENABLED:
-    # Configure logger level
     logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
 
-    # Ensure log directory exists
     os.makedirs(LOG_DIR, exist_ok=True)
 
-    # Optionally clear the existing log file at startup
     if CLEAR_LOG_ON_START and os.path.isfile(LOG_PATH):
         open(LOG_PATH, "w", encoding="utf-8").close()
 
-    # Console handler for standard output
-    _console_handler = logging.StreamHandler()
-    _console_handler.setFormatter(
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(
         logging.Formatter("[%(levelname)s] %(message)s")
     )
-    logger.addHandler(_console_handler)
+    logger.addHandler(console_handler)
 
-    # Optional file handler for persistent logs
     if WRITE_TO_FILE:
-        _file_handler = logging.FileHandler(LOG_PATH, mode="a", encoding="utf-8")
-        _file_handler.setFormatter(
+        file_handler = logging.FileHandler(LOG_PATH, mode="a", encoding="utf-8")
+        file_handler.setFormatter(
             logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
         )
-        logger.addHandler(_file_handler)
+        logger.addHandler(file_handler)
 
-    # Disable propagation to avoid duplicate entries
     logger.propagate = False
 
 else:
-    # No-op logger when logging is disabled
     class _NullLogger:
         def debug(self, *args, **kwargs): pass
         def info(self, *args, **kwargs): pass

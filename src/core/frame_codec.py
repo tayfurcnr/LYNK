@@ -1,47 +1,30 @@
-import os
 import struct
-import json
 import crcmod
+from src.shared.config.manager import get_config
 
 # CRC-16-CCITT-FALSE (poly=0x1021, init=0xFFFF)
 CRC_FUNC = crcmod.predefined.mkPredefinedCrcFun('crc-ccitt-false')
 
-def load_protocol_config(config_path=None):
-    """
-    Config'ten protokol sabitlerini alır:
-      - start_byte: frame'in ilk baytı
-      - start_byte_2: frame'in ikinci baytı
-      - version: protokol versiyonu
-    """
-    if config_path is None:
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
-        config_path = os.path.join(base_dir, "config.json")
-    with open(config_path, "r") as f:
-        cfg = json.load(f)
-        proto = cfg.get("protocol", {})
-        return proto["start_byte"], proto["start_byte_2"], proto["version"]
+def load_protocol_config():
+    """Config'ten protokol sabitlerini alır."""
+    proto = get_config().get("protocol", {})
+    return proto["start_byte"], proto["start_byte_2"], proto["version"]
 
-def load_device_id(config_path=None):
+def load_device_id():
     """Config'ten cihaz ID'sini alır."""
-    if config_path is None:
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
-        config_path = os.path.join(base_dir, "config.json")
-    with open(config_path, "r") as f:
-        cfg = json.load(f)
-        return cfg["vehicle"]["id"]
+    return get_config()["vehicle"]["id"]
 
-def build_mesh_frame(frame_type: str, src_id: int, dst_id: int, payload: bytes, config_path=None) -> bytes:
+def build_mesh_frame(frame_type: str, src_id: int, dst_id: int, payload: bytes) -> bytes:
     """
     Frame oluşturma:
       [start_byte][start_byte_2][version][frame_type][src_id][dst_id][payload_len]
       [payload...]
       [CRC-16 (2 bytes)]
     """
-    start_byte, start_byte_2, version = load_protocol_config(config_path)
+    start_byte, start_byte_2, version = load_protocol_config()
     frame_type_byte = ord(frame_type)
     payload_len = len(payload)
 
-    # Header: iki start baytı, versiyon, frame tipi, src_id, dst_id, payload uzunluğu
     header = struct.pack(
         ">BBBBBBH",
         start_byte,
@@ -57,39 +40,31 @@ def build_mesh_frame(frame_type: str, src_id: int, dst_id: int, payload: bytes, 
     crc = CRC_FUNC(frame_wo_crc)
     return frame_wo_crc + struct.pack(">H", crc)
 
-def parse_mesh_frame(data: bytes, config_path=None) -> dict:
+def parse_mesh_frame(data: bytes) -> dict:
     """
     Frame çözümleme ve doğrulama:
-      - İlk iki baytı kontrol et (start bytes)
-      - Header unpack et
-      - Payload ve CRC'yi ayır, CRC doğrula
+      - Start bytes kontrolü
+      - Header parse
+      - CRC doğrulama
     """
-    start_byte, start_byte_2, version_expected = load_protocol_config(config_path)
+    start_byte, start_byte_2, version_expected = load_protocol_config()
 
-    # En kısa frame: 2 start + 1 versiyon + 1 tip + 1 src + 1 dst + 2 len + 2 CRC = 10 bayt
-    min_len = 1 + 1 + 1 + 1 + 1 + 1 + 2 + 2
+    min_len = 10  # 2 start + 1 vers + 1 type + 1 src + 1 dst + 2 len + 2 crc
     if len(data) < min_len:
         raise ValueError("Frame çok kısa")
 
-    # Başlangıç baytları kontrolü
     if data[0] != start_byte or data[1] != start_byte_2:
         raise ValueError("Geçersiz start bytes")
 
-    # Header alanını çöz
-    # bytes 2-7: version(1), frame_type(1), src_id(1), dst_id(1), payload_len(2)
-    version, frame_type, src_id, dst_id, payload_len = struct.unpack(
-        ">BBBBH",
-        data[2:8]
-    )
+    version, frame_type, src_id, dst_id, payload_len = struct.unpack(">BBBBH", data[2:8])
+
+    expected_len = min_len + payload_len - 10  # since min_len already includes CRC + header
+    if len(data) != min_len + payload_len:
+        raise ValueError(f"Frame uzunluğu hatalı: {len(data)} ≠ {min_len + payload_len}")
 
     if version != version_expected:
         raise ValueError(f"Protokol versiyonu uyuşmuyor: {version} ≠ {version_expected}")
 
-    expected_len = min_len + payload_len
-    if len(data) != expected_len:
-        raise ValueError(f"Frame uzunluğu hatalı: {len(data)} ≠ {expected_len}")
-
-    # Payload ve CRC ayırma
     payload_start = 8
     payload = data[payload_start:payload_start + payload_len]
 
