@@ -12,5 +12,6 @@ command_definitions = {
     0x05: CommandDefinition(0x05, "GIMBAL_CTRL", handler.gimbal),
     0x06: CommandDefinition(0x06, "GOTO",        handler.goto),
     0x07: CommandDefinition(0x07, "FOLLOW_ME",   handler.follow_me),
-    0x09: CommandDefinition(0x08, "WAYPOINTS",   handler.waypoints),
+    0x09: CommandDefinition(0x09, "WAYPOINTS",   handler.waypoints),
+    0x0A: CommandDefinition(0x10, "TASK_RELAY",  handler.task_relay),
 }

@@ -225,3 +225,29 @@ def build_cmd_waypoints(
         for lat, lon, alt in waypoints
     )
     return build_cmd_frame(0x09, params, dst, src)
+
+
+def build_cmd_task_relay(
+    task_id: int,
+    lat: float,
+    lon: float,
+    alt: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    """
+    Build a RELAY command frame to relay a message to another device with task details.
+
+    Args:
+        task_id (int): Task ID for the relay command.
+        lat (float): Latitude for the relay task.
+        lon (float): Longitude for the relay task.
+        alt (float): Altitude for the relay task.
+        dst (int, optional): Destination device ID.
+        src (int | None, optional): Source device ID.
+
+    Returns:
+        bytes: Mesh frame for relay command.
+    """
+    params = struct.pack(">Ifff", task_id, lat, lon, alt)
+    return build_cmd_frame(0x0A, params, dst, src)

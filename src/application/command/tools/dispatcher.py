@@ -7,6 +7,7 @@ Defines high‐level command functions that build and send specific command fram
 over a communication interface, while logging each action.
 """
 
+import struct
 from typing import Any, List, Optional, Protocol
 
 from src.application.command.tools.builder import (
@@ -17,10 +18,13 @@ from src.application.command.tools.builder import (
     build_cmd_gimbal,
     build_cmd_goto,
     build_cmd_simple_follow_me,
-    build_cmd_waypoints
+    build_cmd_waypoints,
+    build_cmd_task_relay
 )
 from src.shared.comm.transmitter import send_frame
 from src.shared.log.logger import logger
+from src.application.ack.tools.dispatcher import send_ack_ok, send_ack_invalid_cmd
+from src.application.command.tools.cache import set_last_command
 
 
 class SendableInterface(Protocol):
@@ -212,3 +216,29 @@ def cmd_waypoints(
     frame = build_cmd_waypoints(waypoints, dst, src)
     send_frame(interface, frame)
     logger.info(f"[COMMAND] SENT | WAYPOINTS(count={len(waypoints)}) -> DST: {dst}")
+
+
+def cmd_task_relay(
+    interface: SendableInterface,
+    task_id: int,
+    lat: float,
+    lon: float,
+    alt: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    """
+    Send a RELAY command to relay a message to another device with task details.
+
+    Args:
+        interface: Communication interface instance.
+        task_id (int): Task ID for the relay command.
+        lat (float): Latitude for the relay task.
+        lon (float): Longitude for the relay task.
+        alt (float): Altitude for the relay task.
+        dst (int, optional): Destination device ID.
+        src (int | None, optional): Source device ID.
+    """
+    frame = build_cmd_task_relay(task_id, lat, lon, alt, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | RELAY(task_id={task_id}, lat={lat}, lon={lon}, alt={alt}) -> DST: {dst}")
