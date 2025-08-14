@@ -1,3 +1,4 @@
+from __future__ import annotations
 def test_ack_response_format():
     from src.tools.ack.status_codes import STATUS_LABELS
     assert isinstance(STATUS_LABELS, dict)

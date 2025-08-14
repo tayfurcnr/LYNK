@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/application/telemetry/serializer/dispatcher.py
 
 import struct

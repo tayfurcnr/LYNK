@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/shared/comm/interface_factory.py
 
 from typing import Literal

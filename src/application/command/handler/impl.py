@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/handlers/command_handler.py
 
 from src.shared.log.logger import logger

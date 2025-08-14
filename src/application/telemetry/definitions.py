@@ -1,3 +1,4 @@
+from __future__ import annotations
 from collections import namedtuple
 import src.application.telemetry.handler.impl as handler
 import src.application.telemetry.serializer.impl as codec

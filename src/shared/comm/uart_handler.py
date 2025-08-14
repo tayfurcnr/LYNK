@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/shared/comm/uart_handler.py
 
 import threading

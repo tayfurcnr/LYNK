@@ -1,3 +1,4 @@
+from __future__ import annotations
 def test_mock_uart_interface_send_and_read():
     from src.tools.comm.interface_factory import create_interface
 

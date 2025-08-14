@@ -1,3 +1,4 @@
+from __future__ import annotations
 from src.application.command.serializer.dispatcher import deserialize_command
 from src.application.command.definitions import command_definitions
 from src.shared.log.logger import logger

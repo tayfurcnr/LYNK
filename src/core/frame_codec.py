@@ -1,3 +1,4 @@
+from __future__ import annotations
 import struct
 import crcmod
 from src.shared.config.manager import get_config

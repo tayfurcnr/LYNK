@@ -1,3 +1,4 @@
+from __future__ import annotations
 from src.application.telemetry.serializer.dispatcher import deserialize_telemetry
 from src.application.telemetry.definitions import telemetry_definitions
 from src.shared.log.logger import logger

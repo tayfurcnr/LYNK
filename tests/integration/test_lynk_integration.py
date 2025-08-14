@@ -1,3 +1,4 @@
+from __future__ import annotations
 import time
 import src.tools.comm.interface_factory as factory
 from src.serializers.telemetry_serializer import serialize_telemetry

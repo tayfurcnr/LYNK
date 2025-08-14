@@ -1,3 +1,4 @@
+from __future__ import annotations
 def test_serialize_command():
     from src.serializers.command_serializer import serialize_command, deserialize_command
     frame = serialize_command(0x03, b'\x00\x64')

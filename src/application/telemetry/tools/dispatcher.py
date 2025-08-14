@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/application/telemetry/tools/dispatcher.py
 
 """

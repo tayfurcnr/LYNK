@@ -1,3 +1,4 @@
+from __future__ import annotations
 from src.shared.config.manager import get_config
 from pymavlink import mavutil
 

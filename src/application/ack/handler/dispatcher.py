@@ -1,3 +1,4 @@
+from __future__ import annotations
 from src.application.ack.serializer.dispatcher import deserialize_ack
 from src.application.ack.definitions import ack_definitions
 from src.shared.log.logger import logger

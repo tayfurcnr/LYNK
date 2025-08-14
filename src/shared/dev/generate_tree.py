@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/tools/dev/generate_tree.py
 
 """

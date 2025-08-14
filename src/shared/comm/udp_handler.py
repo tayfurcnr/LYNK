@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/tools/comm/udp_handler.py
 
 import socket

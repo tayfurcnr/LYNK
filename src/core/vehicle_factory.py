@@ -1,3 +1,4 @@
+from __future__ import annotations
 from src.shared.config.manager import get_config
 from src.handlers.mavlink.copter_handler import CopterHandler
 from src.handlers.mavlink.plane_handler import PlaneHandler

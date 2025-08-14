@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/command/serializer/dispatcher.py
 
 from src.shared.log.logger import logger

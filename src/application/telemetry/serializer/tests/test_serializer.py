@@ -1,3 +1,4 @@
+from __future__ import annotations
 # powershell -> pytest src/telemetry/serializer/tests/test_serializer.py
 import sys
 import os

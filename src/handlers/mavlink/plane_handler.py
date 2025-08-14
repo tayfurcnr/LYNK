@@ -1,3 +1,4 @@
+from __future__ import annotations
 import time
 from pymavlink import mavutil
 from src.handlers.mavlink.base_handler import MAVLinkBaseHandler

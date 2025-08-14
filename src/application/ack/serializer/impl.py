@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/ack/serializer/impl.py
 
 import struct

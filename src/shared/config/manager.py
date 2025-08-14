@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/shared/config/manager.py
 
 import json

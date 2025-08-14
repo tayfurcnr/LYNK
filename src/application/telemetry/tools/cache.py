@@ -1,3 +1,4 @@
+from __future__ import annotations
 # /src/telemetry/tools/cache.py
 
 """

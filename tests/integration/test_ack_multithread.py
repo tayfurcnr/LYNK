@@ -1,3 +1,4 @@
+from __future__ import annotations
 # tests/test_ack_multithread.py
 
 import threading

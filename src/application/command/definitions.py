@@ -1,3 +1,4 @@
+from __future__ import annotations
 from collections import namedtuple
 import src.application.command.handler.impl as handler
 import src.application.command.serializer.impl as codec

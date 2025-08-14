@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/application/telemetry/handler/impl.py
 
 from src.application.telemetry.tools.cache import set_device_data

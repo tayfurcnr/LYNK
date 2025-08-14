@@ -1,3 +1,4 @@
+from __future__ import annotations
 from collections import namedtuple
 import src.application.ack.handler.impl as handler
 import src.application.ack.serializer.impl as codec

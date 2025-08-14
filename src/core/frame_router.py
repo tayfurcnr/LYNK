@@ -1,3 +1,4 @@
+from __future__ import annotations
 # src/core/frame_router.py
 
 from src.application.command.handler.dispatcher import handle_command
