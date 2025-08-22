@@ -20,7 +20,16 @@ from src.application.command.tools.builder import (
     build_cmd_goto,
     build_cmd_simple_follow_me,
     build_cmd_waypoints,
-    build_cmd_task_relay
+    build_cmd_task_relay,
+    build_cmd_set_speed,
+    build_cmd_set_direction,
+    build_cmd_set_drone_id,
+    build_cmd_swarm_formater,
+    build_cmd_swarm_leader,
+    build_cmd_swarm_merge,
+    build_cmd_set_mission_status,
+    build_cmd_ack_command,
+    build_cmd_stream_video
 )
 from src.shared.comm.transmitter import send_frame
 from src.shared.log.logger import logger
@@ -243,3 +252,94 @@ def cmd_task_relay(
     frame = build_cmd_task_relay(task_id, lat, lon, alt, dst, src)
     send_frame(interface, frame)
     logger.info(f"[COMMAND] SENT | RELAY(task_id={task_id}, lat={lat}, lon={lon}, alt={alt}) -> DST: {dst}")
+
+def cmd_set_speed(
+    interface: SendableInterface,
+    speed: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_set_speed(speed, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SET_SPEED({speed}) -> DST: {dst}")
+
+def cmd_set_direction(
+    interface: SendableInterface,
+    direction: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_set_direction(direction, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SET_DIRECTION({direction}) -> DST: {dst}")
+
+def cmd_set_drone_id(
+    interface: SendableInterface,
+    drone_id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_set_drone_id(drone_id, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SET_DRONE_ID({drone_id}) -> DST: {dst}")
+
+def cmd_swarm_formater(
+    interface: SendableInterface,
+    formation: str,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_swarm_formater(formation, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SWARM_FORMATER(formation={formation}) -> DST: {dst}")
+
+def cmd_swarm_leader(
+    interface: SendableInterface,
+    leader_id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_swarm_leader(leader_id, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SWARM_LEADER(leader_id={leader_id}) -> DST: {dst}")
+
+def cmd_swarm_merge(
+    interface: SendableInterface,
+    target_id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_swarm_merge(target_id, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SWARM_MERGE(target_id={target_id}) -> DST: {dst}")
+
+def cmd_set_mission_status(
+    interface: SendableInterface,
+    status: str,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_set_mission_status(status, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SET_MISSION_STATUS(status={status}) -> DST: {dst}")
+
+
+
+def cmd_ack_command(
+    interface: SendableInterface,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_ack_command(dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | ACK_COMMAND -> DST: {dst}")
+
+def cmd_stream_video(
+    interface: SendableInterface,
+    status: bool,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_stream_video(status, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | STREAM_VIDEO({status}) -> DST: {dst}")
