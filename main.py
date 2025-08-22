@@ -24,13 +24,10 @@ import src.core.frame_codec                         as codec
 import src.core.frame_router                        as router
 from src.shared.config import manager               as cfg_manager
 
-# --- Argument Parser ---
-parser = argparse.ArgumentParser(description="Run LYNK node with custom configuration.")
-parser.add_argument("--config", type=str, default="config.json", help="Path to config file")
-args = parser.parse_args()
-
 # --- Load Config ---
-cfg_manager.load_config(args.config)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, "config.json")
+cfg_manager.load_config(config_path)
 cfg = cfg_manager.get_config()
 
 MY_SRC_ID    = cfg["vehicle"]["id"]
@@ -77,17 +74,59 @@ def task_command_line(interface, key):
     elif key == 'R':
         print("[CMD] RELAY")
         cmd.cmd_task_relay(interface, task_id=1, lat=37.005, lon=35.006, alt=80.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'S':
+        print("[CMD] SET_SPEED")
+        cmd.cmd_set_speed(interface, speed=15.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'D':
+        print("[CMD] SET_DIRECTION")
+        cmd.cmd_set_direction(interface, direction=90.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'I':
+        print("[CMD] SET_DRONE_ID")
+        cmd.cmd_set_drone_id(interface, drone_id=10, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'F':
+        print("[CMD] SWARM_FORMATER")
+        cmd.cmd_swarm_formater(interface, formation="line", src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'H':
+        print("[CMD] SWARM_LEADER")
+        cmd.cmd_swarm_leader(interface, leader_id=1, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'M':
+        print("[CMD] SWARM_MERGE")
+        cmd.cmd_swarm_merge(interface, target_id=2, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'P':
+        #"Enter mission status (e.g., PAUSE, RESUME, STOP): ")
+        cmd.cmd_set_mission_status(interface, status="PAUSE", src=MY_SRC_ID, dst=OTHER_DST_ID)
+    #elif key == 'U':
+    #    print("[CMD] MISSION_UPLOAD")
+    #    cmd.cmd_mission_upload(interface, mission_data="mission1.txt", src=MY_SRC_ID, dst=OTHER_DST_ID)
+    #elif key == 'C':
+    #    print("[CMD] MISSION_CANCEL")
+    #    cmd.cmd_mission_cancel(interface, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'A':
+        print("[CMD] ACK_COMMAND")
+        cmd.cmd_ack_command(interface, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'V':
+        print("[CMD] STREAM_VIDEO")
+        cmd.cmd_stream_video(interface, status=True, src=MY_SRC_ID, dst=OTHER_DST_ID)
     else:
         print(f"[CMD] Undefined key: {key}")
 
 def keyboard_listener(interface):
     print("""
 Key assignments:
-  T → TAKEOFF
-  L → LANDING
-  G → GOTO
-  W → WAYPOINTS
-  R → RELAY
+  T → TAKEOFF              [OKAY]
+  L → LANDING              [OKAY]
+  G → GOTO                 [OKAY]
+  W → WAYPOINTS            [OKAY]
+  R → RELAY                [OKAY]
+  S → SET_SPEED          + [OKAY]
+  D → SET_DIRECTION        [OKAY]
+  I → SET_DRONE_ID         [OKAY] İÇERİSİNDE CONFİG DOSYASINI İŞLEYECEK BİR YAPI KURULACAK. (TAYFUR)
+  F → SWARM_FORMATER     + [OKAY]
+  H → SWARM_LEADER       + [OKAY]
+  M → SWARM_MERGE        + [OKAY]
+  P → SET_MISSION_STATUS   [OKAY]
+  A → ACK_COMMAND        + [OKAY]
+  V → STREAM_VIDEO         [OKAY]
   Q → QUIT
 """)
     while True:
@@ -106,6 +145,8 @@ Key assignments:
                 continue
 
         key = ch.upper() if ch else ''
+        if not key:
+            continue
         if key == 'Q':
             print("Exiting...")
             break
@@ -118,7 +159,7 @@ def main():
     tlm_cache.reset_cache()
     cmd_cache.reset_command_cache()
 
-    scheduler.enter(0, 1, task_send_telemetry, (interface, 1.0))
+    #scheduler.enter(0, 1, task_send_telemetry, (interface, 1.0))
     scheduler.enter(0, 1, task_receiver_line, (interface, 0.05))
 
     threading.Thread(target=scheduler.run, daemon=True).start()
