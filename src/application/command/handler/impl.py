@@ -119,3 +119,112 @@ def task_relay(cmd_id, params, src_id, interface):
     else:
         logger.warning(f"[COMMAND] INVALID PARAMS | CMD: TASK_RELAY | PRM LEN: {len(params)}")
         send_ack_invalid_cmd(interface, f"Invalid parameters for TASK_RELAY. Expected 16 bytes, got {len(params)}", dst=src_id)
+def set_speed(cmd_id, params, src_id, interface):
+    if len(params) == 4:
+        speed, = struct.unpack(">f", params)
+        parsed = {"speed": speed}
+        logger.info(f"[COMMAND] SENT | CMD: SET_SPEED | SPEED: {speed}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Set speed to {speed}", dst=src_id)
+    else:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SET_SPEED | PRM LEN: {len(params)}")
+        send_ack_invalid_cmd(interface, f"Invalid parameters for SET_SPEED. Expected 4 bytes, got {len(params)}", dst=src_id)
+
+def set_direction(cmd_id, params, src_id, interface):
+    if len(params) == 4:
+        direction, = struct.unpack(">f", params)
+        parsed = {"direction": direction}
+        logger.info(f"[COMMAND] SENT | CMD: SET_DIRECTION | DIRECTION: {direction}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Set direction to {direction}", dst=src_id)
+    else:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SET_DIRECTION | PRM LEN: {len(params)}")
+        send_ack_invalid_cmd(interface, f"Invalid parameters for SET_DIRECTION. Expected 4 bytes, got {len(params)}", dst=src_id)
+
+def set_drone_id(cmd_id, params, src_id, interface):
+    if len(params) == 4:
+        drone_id, = struct.unpack(">I", params)
+        parsed = {"drone_id": drone_id}
+        logger.info(f"[COMMAND] SENT | CMD: SET_DRONE_ID | ID: {drone_id}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Set drone ID to {drone_id}", dst=src_id)
+    else:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SET_DRONE_ID | PRM LEN: {len(params)}")
+        send_ack_invalid_cmd(interface, f"Invalid parameters for SET_DRONE_ID. Expected 4 bytes, got {len(params)}", dst=src_id)
+
+def swarm_formater(cmd_id, params, src_id, interface):
+    try:
+        formation = params.decode('utf-8')
+        parsed = {"formation": formation}
+        logger.info(f"[COMMAND] SENT | CMD: SWARM_FORMATER | FORMATION: {formation}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Swarm formater command executed with formation: {formation}", dst=src_id)
+    except UnicodeDecodeError:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SWARM_FORMATER | Could not decode formation string")
+        send_ack_invalid_cmd(interface, "Invalid UTF-8 string for formation parameter", dst=src_id)
+
+def swarm_leader(cmd_id, params, src_id, interface):
+    if len(params) == 4:
+        leader_id, = struct.unpack(">I", params)
+        parsed = {"leader_id": leader_id}
+        logger.info(f"[COMMAND] SENT | CMD: SWARM_LEADER | LEADER_ID: {leader_id}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Swarm leader set to {leader_id}", dst=src_id)
+    else:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SWARM_LEADER | PRM LEN: {len(params)}")
+        send_ack_invalid_cmd(interface, f"Invalid parameters for SWARM_LEADER. Expected 4 bytes, got {len(params)}", dst=src_id)
+
+def swarm_merge(cmd_id, params, src_id, interface):
+    if len(params) == 4:
+        target_id, = struct.unpack(">I", params)
+        parsed = {"target_id": target_id}
+        logger.info(f"[COMMAND] SENT | CMD: SWARM_MERGE | TARGET_ID: {target_id}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Swarm merge initiated with target {target_id}", dst=src_id)
+    else:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SWARM_MERGE | PRM LEN: {len(params)}")
+        send_ack_invalid_cmd(interface, f"Invalid parameters for SWARM_MERGE. Expected 4 bytes, got {len(params)}", dst=src_id)
+
+def set_mission_status(cmd_id, params, src_id, interface):
+    try:
+        status = params.decode('utf-8')
+        parsed = {"status": status}
+        logger.info(f"[COMMAND] SENT | CMD: SET_MISSION_STATUS | STATUS: {status}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Mission status set to {status}", dst=src_id)
+    except UnicodeDecodeError:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SET_MISSION_STATUS | Could not decode status string")
+        send_ack_invalid_cmd(interface, "Invalid UTF-8 string for status parameter", dst=src_id)
+
+def mission_upload(cmd_id, params, src_id, interface):
+    try:
+        mission_data = params.decode('utf-8')
+        parsed = {"mission_data": mission_data}
+        logger.info(f"[COMMAND] SENT | CMD: MISSION_UPLOAD | DATA: {mission_data}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Mission upload command executed with data: {mission_data}", dst=src_id)
+    except UnicodeDecodeError:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: MISSION_UPLOAD | Could not decode mission data string")
+        send_ack_invalid_cmd(interface, "Invalid UTF-8 string for mission_data parameter", dst=src_id)
+
+def mission_cancel(cmd_id, params, src_id, interface):
+    logger.info("[COMMAND] SENT | CMD: MISSION_CANCEL | Mission execution has been canceled.")
+    set_last_command(cmd_id, params, {"status": "canceled"})
+    send_ack_ok(interface, "Mission cancel command executed", dst=src_id)
+
+def ack_command(cmd_id, params, src_id, interface):
+    last_command = get_last_command()
+    logger.info(f"[COMMAND] SENT | CMD: ACK_COMMAND | Responding with last command: {last_command}")
+    set_last_command(cmd_id, params, {})
+    send_ack_ok(interface, f"Last command was: {last_command}", dst=src_id)
+
+def stream_video(cmd_id, params, src_id, interface):
+    if len(params) == 1:
+        stream_status, = struct.unpack("?", params)
+        parsed = {"status": stream_status}
+        logger.info(f"[COMMAND] SENT | CMD: STREAM_VIDEO | STATUS: {stream_status}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Stream video set to {stream_status}", dst=src_id)
+    else:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: STREAM_VIDEO | PRM LEN: {len(params)}")
+        send_ack_invalid_cmd(interface, f"Invalid parameters for STREAM_VIDEO. Expected 1 byte, got {len(params)}", dst=src_id)
