@@ -252,3 +252,75 @@ def build_cmd_task_relay(
     """
     params = struct.pack(">Ifff", task_id, lat, lon, alt)
     return build_cmd_frame(0x0A, params, dst, src)
+
+def build_cmd_set_speed(
+    speed: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">f", speed)
+    return build_cmd_frame(0x0B, params, dst, src)
+
+def build_cmd_set_direction(
+    direction: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">f", direction)
+    return build_cmd_frame(0x0C, params, dst, src)
+
+def build_cmd_set_drone_id(
+    drone_id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">I", drone_id)
+    return build_cmd_frame(0x0D, params, dst, src)
+
+def build_cmd_swarm_formater(
+    formation: str,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = formation.encode('utf-8')
+    return build_cmd_frame(0x0E, params, dst, src)
+
+def build_cmd_swarm_leader(
+    leader_id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">I", leader_id)
+    return build_cmd_frame(0x0F, params, dst, src)
+
+def build_cmd_swarm_merge(
+    target_id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">I", target_id)
+    return build_cmd_frame(0x10, params, dst, src)
+
+def build_cmd_set_mission_status(
+    status: str,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = status.encode('utf-8')
+    return build_cmd_frame(0x11, params, dst, src)
+
+
+
+def build_cmd_ack_command(
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    return build_cmd_frame(0x14, dst=dst, src=src)
+
+def build_cmd_stream_video(
+    status: bool,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">?", status)
+    return build_cmd_frame(0x15, params, dst, src)
