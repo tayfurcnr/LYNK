@@ -18,7 +18,7 @@ def handle_ack(payload: bytes, frame_meta: dict, interface=None):
 
         ack_def = ack_definitions.get(ack_id, None)
         if ack_def:
-            logger.info(f"[ACK] RECEIVED | ACK_ID: {ack_id} ({ack_def.name}) FROM SRC: {src_id}")
+            logger.debug(f"[ACK] RECEIVED | ACK_ID: {ack_id} ({ack_def.name}) FROM SRC: {src_id}")
             ack_def.handler(data, src_id)
         else:
             handler.unknown(data, src_id, ack_id)

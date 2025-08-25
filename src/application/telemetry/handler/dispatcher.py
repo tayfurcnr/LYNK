@@ -20,7 +20,7 @@ def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
 
         tlm_def = telemetry_definitions.get(tlm_id, None)
         if tlm_def:
-            logger.info(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_def.name}) FROM SRC: {src_id}")
+            logger.debug(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_def.name}) FROM SRC: {src_id}")
             tlm_def.handler(data, src_id)
         else:
             unknown(data, src_id, tlm_id)

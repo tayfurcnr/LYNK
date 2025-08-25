@@ -38,8 +38,8 @@ def route_frame(frame_dict: dict, interface):
         handler = dispatch_table.get(frame_type)
 
         if handler:
-            logger.info(f"[ROUTER] RECEIVED | FRAME_TYPE='{frame_type}' | SRC: {frame_dict['src_id']} -> DST: {frame_dict['dst_id']}")
-            logger.info(f"[ROUTER] DISPATCHED | FRAME_TYPE='{frame_type}' | HANDLER: {handler.__name__}")
+            logger.debug(f"[ROUTER] RECEIVED | FRAME_TYPE='{frame_type}' | SRC: {frame_dict['src_id']} -> DST: {frame_dict['dst_id']}")
+            logger.debug(f"[ROUTER] DISPATCHED | FRAME_TYPE='{frame_type}' | HANDLER: {handler.__name__}")
 
             handler(payload, frame_dict, interface)
         else:

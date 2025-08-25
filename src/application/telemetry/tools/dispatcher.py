@@ -39,7 +39,7 @@ def send_tlm_gps(
     """
     frame = build_tlm_gps(lat, lon, alt, dst, src)
     send_frame(interface, frame)
-    logger.info(
+    logger.debug(
         f"[TELEMETRY] SENT GPS | DST: {dst} | LAT: {lat:.6f}, LON: {lon:.6f}, ALT: {alt:.2f}"
     )
 
@@ -65,7 +65,7 @@ def send_tlm_imu(
     """
     frame = build_tlm_imu(roll, pitch, yaw, dst, src)
     send_frame(interface, frame)
-    logger.info(
+    logger.debug(
         f"[TELEMETRY] SENT IMU | DST: {dst} | ROLL: {roll:.2f}, PITCH: {pitch:.2f}, YAW: {yaw:.2f}"
     )
 
@@ -91,7 +91,7 @@ def send_tlm_battery(
     """
     frame = build_tlm_battery(voltage, current, level, dst, src)
     send_frame(interface, frame)
-    logger.info(
+    logger.debug(
         f"[TELEMETRY] SENT BATTERY | DST: {dst} | VOLT: {voltage:.2f} V, CURR: {current:.2f} A, LEVEL: {level:.1f}%"
     )
 
@@ -121,7 +121,7 @@ def send_tlm_heartbeat(
     """
     frame = build_tlm_heartbeat(mode, health, is_armed, gps_fix, sat_count, dst, src)
     send_frame(interface, frame)
-    logger.info(
+    logger.debug(
         f"[TELEMETRY] SENT HEARTBEAT | DST: {dst} | MODE: {mode}, HEALTH: {health}, "
         f"ARMED: {is_armed}, GPS_FIX: {gps_fix}, SATS: {sat_count}"
     )

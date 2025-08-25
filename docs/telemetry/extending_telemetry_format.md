@@ -72,7 +72,7 @@ Create a sender function that uses the builder:
 def send_tlm_heartbeat(interface, mode, health, is_armed, gps_fix, sat_count, dst=0xFF, src=None):
     frame = build_tlm_heartbeat(mode, health, is_armed, gps_fix, sat_count, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[TELEMETRY] SENT | HEARTBEAT -> DST: {dst} | MODE: {mode}, HEALTH: {health}, ARMED: {is_armed}, FIX: {gps_fix}, SATS: {sat_count}")
+    logger.debug(f"[TELEMETRY] SENT | HEARTBEAT -> DST: {dst} | MODE: {mode}, HEALTH: {health}, ARMED: {is_armed}, FIX: {gps_fix}, SATS: {sat_count}")
 ```
 
 ---
@@ -100,7 +100,7 @@ def handle_heartbeat_data(data, src_id, data_type):
         "sat_count": data["sat_count"]
     }
     set_device_data(src_id, data_type, heartbeat_data)
-    logger.info(f"[TELEMETRY] Received HEARTBEAT from SRC: {src_id}")
+    logger.debug(f"[TELEMETRY] Received HEARTBEAT from SRC: {src_id}")
     logger.debug(f"[TELEMETRY] -> MODE: {data['mode']}, HEALTH: {data['health']}, ARMED: {data['is_armed']}, GPS_FIX: {data['gps_fix']}, SATS: {data['sat_count']}")
 ```
 
