@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/kairos/catkin_ws/src/lynk_ros/src/LYNK/install/setup.sh

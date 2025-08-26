@@ -13,7 +13,8 @@ from src.application.telemetry.tools.builder import (
     build_tlm_gps,
     build_tlm_imu,
     build_tlm_battery,
-    build_tlm_heartbeat
+    build_tlm_heartbeat,
+    build_tlm_barometer
 )
 from src.shared.comm.transmitter import send_frame
 from src.shared.log.logger import logger
@@ -43,7 +44,6 @@ def send_tlm_gps(
         f"[TELEMETRY] SENT GPS | DST: {dst} | LAT: {lat:.6f}, LON: {lon:.6f}, ALT: {alt:.2f}"
     )
 
-
 def send_tlm_imu(
     interface,
     roll: float,
@@ -69,7 +69,6 @@ def send_tlm_imu(
         f"[TELEMETRY] SENT IMU | DST: {dst} | ROLL: {roll:.2f}, PITCH: {pitch:.2f}, YAW: {yaw:.2f}"
     )
 
-
 def send_tlm_battery(
     interface,
     voltage: float,
@@ -94,7 +93,6 @@ def send_tlm_battery(
     logger.debug(
         f"[TELEMETRY] SENT BATTERY | DST: {dst} | VOLT: {voltage:.2f} V, CURR: {current:.2f} A, LEVEL: {level:.1f}%"
     )
-
 
 def send_tlm_heartbeat(
     interface,
@@ -124,4 +122,29 @@ def send_tlm_heartbeat(
     logger.debug(
         f"[TELEMETRY] SENT HEARTBEAT | DST: {dst} | MODE: {mode}, HEALTH: {health}, "
         f"ARMED: {is_armed}, GPS_FIX: {gps_fix}, SATS: {sat_count}"
+    )
+
+def send_tlm_barometer(
+    interface,
+    vertical_speed: float,
+    altitude_msl: float,
+    altitude_relative: float,
+    dst: int = 0xFF,
+    src: int | None = None
+) -> None:
+    """
+    Send a Barometer telemetry frame.
+
+    Args:
+        interface: Communication interface instance.
+        vertical_speed (float): Vertical speed in m/s.
+        altitude_msl (float): Altitude above mean sea level in meters.
+        altitude_relative (float): Altitude relative to home in meters.
+        dst (int, optional): Destination device ID.
+        src (int | None, optional): Source device ID.
+    """
+    frame = build_tlm_barometer(vertical_speed, altitude_msl, altitude_relative, dst, src)
+    send_frame(interface, frame)
+    logger.debug(
+        f"[TELEMETRY] SENT BAROMETER | DST: {dst} | V_SPEED: {vertical_speed:.2f}, ALT_MSL: {altitude_msl:.2f}, ALT_REL: {altitude_relative:.2f}"
     )

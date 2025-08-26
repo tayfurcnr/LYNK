@@ -1,0 +1,2 @@
+
+-DCATKIN_DEVEL_PREFIX=/home/kairos/catkin_ws/src/lynk_ros/src/LYNK/devel -DCMAKE_INSTALL_PREFIX=/home/kairos/catkin_ws/src/lynk_ros/src/LYNK/install -G Unix Makefiles

@@ -148,3 +148,25 @@ def build_tlm_heartbeat(
         dst,
         src
     )
+
+def build_tlm_barometer(
+    vertical_speed: float,
+    altitude_msl: float,
+    altitude_relative: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    """
+    Build a barometer telemetry frame.
+
+    Args:
+        vertical_speed (float): Vertical speed in m/s.
+        altitude_msl (float): Altitude above mean sea level in meters.
+        altitude_relative (float): Altitude relative to home in meters.
+        dst (int, optional): Destination device ID.
+        src (int | None, optional): Source device ID.
+
+    Returns:
+        bytes: Mesh frame containing serialized barometer data.
+    """
+    return build_tlm_frame("BAROMETER", [vertical_speed, altitude_msl, altitude_relative], dst, src)

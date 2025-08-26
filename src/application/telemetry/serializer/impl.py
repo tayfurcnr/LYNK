@@ -46,3 +46,10 @@ def deserialize_heartbeat(data: bytes) -> dict:
         "gps_fix": gps_fix,
         "sat_count": sat_count
     }
+
+def serialize_barometer(vertical_speed: float, altitude_msl: float, altitude_relative: float) -> bytes:
+    return struct.pack(">3f", vertical_speed, altitude_msl, altitude_relative)
+
+def deserialize_barometer(data: bytes) -> dict:
+    vertical_speed, altitude_msl, altitude_relative = struct.unpack(">3f", data)
+    return {"vertical_speed": vertical_speed, "altitude_msl": altitude_msl, "altitude_relative": altitude_relative}
