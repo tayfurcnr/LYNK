@@ -57,7 +57,7 @@ def build_cmd_reboot(
 
 
 def build_cmd_set_mode(
-    mode: int,
+    mode: str,
     dst: int,
     src: Optional[int] = None
 ) -> bytes:
@@ -65,14 +65,14 @@ def build_cmd_set_mode(
     Build a SET_MODE command frame.
 
     Args:
-        mode (int): Mode identifier.
+        mode (str): Mode identifier.
         dst (int): Destination device ID.
         src (int | None, optional): Source device ID.
 
     Returns:
         bytes: Mesh frame for set-mode command.
     """
-    params = struct.pack(">B", mode)
+    params = mode.encode('utf-8')
     return build_cmd_frame(0x02, params, dst, src)
 
 

@@ -15,11 +15,15 @@ def reboot(cmd_id, params, src_id, interface):
 
 def set_mode(cmd_id, params, src_id, interface):
     if params:
-        mode = params[0]
-        parsed = {"mode": mode}
-        logger.info(f"[COMMAND] SENT | CMD: SET_MODE | MODE: {mode}")
-        set_last_command(cmd_id, params, parsed)
-        send_ack_ok(interface, f"Mode set to {mode}", dst=src_id)
+        try:
+            mode = params.decode('utf-8')
+            parsed = {"mode": mode}
+            logger.info(f"[COMMAND] SENT | CMD: SET_MODE | MODE: {mode}")
+            set_last_command(cmd_id, params, parsed)
+            send_ack_ok(interface, f"Mode set to {mode}", dst=src_id)
+        except UnicodeDecodeError:
+            logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SET_MODE | Could not decode mode string")
+            send_ack_invalid_cmd(interface, "Invalid UTF-8 string for mode parameter", dst=src_id)
     else:
         logger.warning("[COMMAND] INVALID PARAMS | CMD: SET_MODE")
         send_ack_invalid_cmd(interface, "Missing mode parameter for SET_MODE", dst=src_id)

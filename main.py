@@ -43,7 +43,7 @@ def task_send_telemetry(interface, interval=1.0):
     tlm.send_tlm_imu(interface, roll=1.0, pitch=2.0, yaw=3.0, dst=OTHER_DST_ID, src=MY_SRC_ID)
     tlm.send_tlm_battery(interface, voltage=11.0, current=2.0, level=90.0, dst=OTHER_DST_ID, src=MY_SRC_ID)
     tlm.send_tlm_heartbeat(interface, mode="AUTO", health="OK", is_armed=True, gps_fix=True, sat_count=10, dst=OTHER_DST_ID, src=MY_SRC_ID)
-    tlm.send_tlm_barometer(interface, vertical_speed=1.0, ground_speed=2.0, altitude_relative=100.0, altitude_relative=50.0, dst=OTHER_DST_ID, src=MY_SRC_ID)
+    tlm.send_tlm_barometer(interface, vertical_speed=1.0, ground_speed=2.0, altitude_relative=100.0, dst=OTHER_DST_ID, src=MY_SRC_ID)
     scheduler.enter(interval, 1, task_send_telemetry, (interface, interval,))
 
 def task_receiver_line(interface, interval=0.05):
@@ -99,9 +99,9 @@ def task_command_line(interface, key):
     #elif key == 'U':
     #    print("[CMD] MISSION_UPLOAD")
     #    cmd.cmd_mission_upload(interface, mission_data="mission1.txt", src=MY_SRC_ID, dst=OTHER_DST_ID)
-    #elif key == 'C':
-    #    print("[CMD] MISSION_CANCEL")
-    #    cmd.cmd_mission_cancel(interface, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'C':
+        print("[CMD] SET_MODE")
+        cmd.cmd_set_mode(interface, mode="GUIDED", src=MY_SRC_ID, dst=OTHER_DST_ID)
     elif key == 'A':
         print("[CMD] ACK_COMMAND")
         cmd.cmd_ack_command(interface, src=MY_SRC_ID, dst=OTHER_DST_ID)
@@ -128,6 +128,7 @@ Key assignments:
   P → SET_MISSION_STATUS   [OKAY]
   A → ACK_COMMAND        + [OKAY]
   V → STREAM_VIDEO         [OKAY]
+  C → SET_MODE             [OKAY]
   Q → QUIT
 """)
     while True:

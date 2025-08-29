@@ -64,7 +64,7 @@ def cmd_reboot(
 
 def cmd_set_mode(
     interface: SendableInterface,
-    mode: int,
+    mode: str,
     dst: int,
     src: Optional[int] = None
 ) -> None:
@@ -73,7 +73,7 @@ def cmd_set_mode(
 
     Args:
         interface: Communication interface instance.
-        mode (int): Mode identifier.
+        mode (str): Mode identifier.
         dst (int): Destination device ID.
         src (int | None): Optional source device ID.
     """
