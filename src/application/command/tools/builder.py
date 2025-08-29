@@ -310,6 +310,25 @@ def build_cmd_set_mission_status(
     return build_cmd_frame(0x11, params, dst, src)
 
 
+def build_cmd_arm_disarm(
+    arm: bool,
+    dst: int,
+    src: Optional[int] = None
+) -> bytes:
+    """
+    Build an ARM_DISARM command frame.
+
+    Args:
+        arm (bool): True to arm, False to disarm.
+        dst (int): Destination device ID.
+        src (int | None, optional): Source device ID.
+
+    Returns:
+        bytes: Mesh frame for arm/disarm command.
+    """
+    params = struct.pack("?", arm)
+    return build_cmd_frame(0x16, params, dst, src)
+
 
 def build_cmd_ack_command(
     dst: int = 0xFF,

@@ -25,4 +25,5 @@ command_definitions = {
     
     0x14: CommandDefinition(0x14, "ACK_COMMAND", handler.ack_command),
     0x15: CommandDefinition(0x15, "STREAM_VIDEO", handler.stream_video),
+    0x16: CommandDefinition(0x16, "ARM_DISARM",  handler.arm_disarm),
 }

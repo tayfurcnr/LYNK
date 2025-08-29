@@ -28,6 +28,17 @@ def set_mode(cmd_id, params, src_id, interface):
         logger.warning("[COMMAND] INVALID PARAMS | CMD: SET_MODE")
         send_ack_invalid_cmd(interface, "Missing mode parameter for SET_MODE", dst=src_id)
 
+def arm_disarm(cmd_id, params, src_id, interface):
+    if len(params) == 1:
+        arm, = struct.unpack("?", params)
+        parsed = {"arm": arm}
+        logger.info(f"[COMMAND] SENT | CMD: ARM_DISARM | ARM: {arm}")
+        set_last_command(cmd_id, params, parsed)
+        send_ack_ok(interface, f"Arm/Disarm command executed: {arm}", dst=src_id)
+    else:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: ARM_DISARM | PRM LEN: {len(params)}")
+        send_ack_invalid_cmd(interface, f"Invalid parameters for ARM_DISARM. Expected 1 byte, got {len(params)}", dst=src_id)
+
 def takeoff(cmd_id, params, src_id, interface):
     if len(params) == 4:
         alt = struct.unpack(">f", params)[0]

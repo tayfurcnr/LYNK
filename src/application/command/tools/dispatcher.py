@@ -29,7 +29,8 @@ from src.application.command.tools.builder import (
     build_cmd_swarm_merge,
     build_cmd_set_mission_status,
     build_cmd_ack_command,
-    build_cmd_stream_video
+    build_cmd_stream_video,
+    build_cmd_arm_disarm
 )
 from src.shared.comm.transmitter import send_frame
 from src.shared.log.logger import logger
@@ -80,6 +81,26 @@ def cmd_set_mode(
     frame = build_cmd_set_mode(mode, dst, src)
     send_frame(interface, frame)
     logger.info(f"[COMMAND] SENT | SET_MODE({mode}) -> DST: {dst}")
+
+
+def cmd_arm_disarm(
+    interface: SendableInterface,
+    arm: bool,
+    dst: int,
+    src: Optional[int] = None
+) -> None:
+    """
+    Send an ARM_DISARM command.
+
+    Args:
+        interface: Communication interface instance.
+        arm (bool): True to arm, False to disarm.
+        dst (int): Destination device ID.
+        src (int | None): Optional source device ID.
+    """
+    frame = build_cmd_arm_disarm(arm, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | ARM_DISARM({arm}) -> DST: {dst}")
 
 
 def cmd_takeoff(

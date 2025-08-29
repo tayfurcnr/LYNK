@@ -102,6 +102,10 @@ def task_command_line(interface, key):
     elif key == 'C':
         print("[CMD] SET_MODE")
         cmd.cmd_set_mode(interface, mode="GUIDED", src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'X': # Using 'X' for arm/disarm
+        print("[CMD] ARM_DISARM")
+        # Example: arm the vehicle. User can change to False for disarm.
+        cmd.cmd_arm_disarm(interface, arm=False, src=MY_SRC_ID, dst=OTHER_DST_ID)
     elif key == 'A':
         print("[CMD] ACK_COMMAND")
         cmd.cmd_ack_command(interface, src=MY_SRC_ID, dst=OTHER_DST_ID)
@@ -129,6 +133,7 @@ Key assignments:
   A → ACK_COMMAND        + [OKAY]
   V → STREAM_VIDEO         [OKAY]
   C → SET_MODE             [OKAY]
+  X → ARM_DISARM           [OKAY]
   Q → QUIT
 """)
     while True:
