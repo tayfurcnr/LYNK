@@ -52,9 +52,9 @@ def unknown(data: dict, src_id: int, tlm_id: int):
 def barometer(data: dict, src_id: int):
     barometer = {
         "vertical_speed": data["vertical_speed"],
-        "altitude_msl": data["altitude_msl"],
+        "ground_speed": data["ground_speed"],
         "altitude_relative": data["altitude_relative"],
     }
     set_device_data(src_id, "barometer", barometer)
-    logger.info(f"[TELEMETRY] Barometer received from SRC: {src_id}")
-    logger.debug(f"[TELEMETRY] → Vertical Speed: {barometer['vertical_speed']:.2f}, Altitude MSL: {barometer['altitude_msl']:.2f}, Altitude Relative: {barometer['altitude_relative']:.2f}")
+    logger.debug(f"[TELEMETRY] Barometer received from SRC: {src_id}")
+    logger.debug(f"[TELEMETRY] → Vertical Speed: {barometer['vertical_speed']:.2f}, Ground Speed: {barometer['ground_speed']:.2f}, Altitude Relative: {barometer['altitude_relative']:.2f}")

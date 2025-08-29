@@ -27,7 +27,7 @@ Diyelim ki yeni bir `ACK_TIMEOUT` durumu için bir handler eklemek istiyorsunuz.
 from src.tools.log.logger import logger
 
 def ack_ok(data: dict, src_id: int):
-    logger.info(f"[ACK] ACK_OK received from SRC: {src_id}")
+    logger.debug(f"[ACK] ACK_OK received from SRC: {src_id}")
     logger.debug(f"[ACK] → Data: {data}")
 
 def ack_error(data: dict, src_id: int):

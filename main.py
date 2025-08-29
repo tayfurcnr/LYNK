@@ -43,6 +43,7 @@ def task_send_telemetry(interface, interval=1.0):
     tlm.send_tlm_imu(interface, roll=1.0, pitch=2.0, yaw=3.0, dst=OTHER_DST_ID, src=MY_SRC_ID)
     tlm.send_tlm_battery(interface, voltage=11.0, current=2.0, level=90.0, dst=OTHER_DST_ID, src=MY_SRC_ID)
     tlm.send_tlm_heartbeat(interface, mode="AUTO", health="OK", is_armed=True, gps_fix=True, sat_count=10, dst=OTHER_DST_ID, src=MY_SRC_ID)
+    tlm.send_tlm_barometer(interface, vertical_speed=1.0, ground_speed=2.0, altitude_relative=100.0, altitude_relative=50.0, dst=OTHER_DST_ID, src=MY_SRC_ID)
     scheduler.enter(interval, 1, task_send_telemetry, (interface, interval,))
 
 def task_receiver_line(interface, interval=0.05):

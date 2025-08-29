@@ -127,7 +127,7 @@ def send_tlm_heartbeat(
 def send_tlm_barometer(
     interface,
     vertical_speed: float,
-    altitude_msl: float,
+    ground_speed: float,
     altitude_relative: float,
     dst: int = 0xFF,
     src: int | None = None
@@ -138,13 +138,13 @@ def send_tlm_barometer(
     Args:
         interface: Communication interface instance.
         vertical_speed (float): Vertical speed in m/s.
-        altitude_msl (float): Altitude above mean sea level in meters.
+        ground_speed (float): Ground speed of the vehicle in m/s.
         altitude_relative (float): Altitude relative to home in meters.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
     """
-    frame = build_tlm_barometer(vertical_speed, altitude_msl, altitude_relative, dst, src)
+    frame = build_tlm_barometer(vertical_speed, ground_speed, altitude_relative, dst, src)
     send_frame(interface, frame)
     logger.debug(
-        f"[TELEMETRY] SENT BAROMETER | DST: {dst} | V_SPEED: {vertical_speed:.2f}, ALT_MSL: {altitude_msl:.2f}, ALT_REL: {altitude_relative:.2f}"
+        f"[TELEMETRY] SENT BAROMETER | DST: {dst} | V_SPEED: {vertical_speed:.2f}, GND_SPEED: {ground_speed:.2f}, ALT_REL: {altitude_relative:.2f}"
     )

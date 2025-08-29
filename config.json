@@ -1,6 +1,6 @@
 {
   "vehicle": {
-    "id": 2,
+    "id": 0,
     "type": "COPTER"
   },
   "protocol": {
@@ -10,7 +10,7 @@
   },
   "interface": {
     "_comment": "Options: UART, UDP, MOCK_UART",
-    "comm_type": "MOCK_UART"
+    "comm_type": "UDP"
   },
   "uart": {
     "port": "COM4",
