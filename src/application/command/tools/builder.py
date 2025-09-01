@@ -10,6 +10,7 @@ its parameters before wrapping them in a mesh frame.
 """
 
 import struct
+import json
 from typing import Any, List, Optional
 
 from src.core.frame_codec import build_mesh_frame, load_device_id
@@ -39,30 +40,30 @@ def build_cmd_frame(
     return build_mesh_frame('C', source, dst, payload)
 
 
-def build_cmd_reboot(
+def build_cmd_system_reboot(
     dst: int,
     src: Optional[int] = None
 ) -> bytes:
     """
-    Build a REBOOT command frame (no parameters).
+    Build a SYSTEM_REBOOT command frame (no parameters).
 
     Args:
         dst (int): Destination device ID.
         src (int | None, optional): Source device ID.
 
     Returns:
-        bytes: Mesh frame for reboot command.
+        bytes: Mesh frame for system_reboot command.
     """
     return build_cmd_frame(0x01, dst=dst, src=src)
 
 
-def build_cmd_set_mode(
+def build_cmd_flight_set_mode(
     mode: str,
     dst: int,
     src: Optional[int] = None
 ) -> bytes:
     """
-    Build a SET_MODE command frame.
+    Build a FLIGHT_SET_MODE command frame.
 
     Args:
         mode (str): Mode identifier.
@@ -70,276 +71,268 @@ def build_cmd_set_mode(
         src (int | None, optional): Source device ID.
 
     Returns:
-        bytes: Mesh frame for set-mode command.
+        bytes: Mesh frame for flight_set_mode command.
     """
     params = mode.encode('utf-8')
-    return build_cmd_frame(0x02, params, dst, src)
+    return build_cmd_frame(0x15, params, dst, src)
 
 
-def build_cmd_takeoff(
-    takeoff_alt: float,
-    target_lat: Optional[float] = None,
-    target_lon: Optional[float] = None,
-    target_alt: Optional[float] = None,
+def build_cmd_flight_takeoff(
+    altitude_m: float,
+    min_pitch_deg: Optional[float] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
     """
-    Build a TAKEOFF command frame. Includes optional target coordinates.
+    Build a FLIGHT_TAKEOFF command frame.
 
     Args:
-        takeoff_alt (float): Desired takeoff altitude in meters.
-        target_lat (float | None): Target latitude (optional).
-        target_lon (float | None): Target longitude (optional).
-        target_alt (float | None): Target altitude (optional).
+        altitude_m (float): Desired takeoff altitude in meters.
+        min_pitch_deg (float | None): Optional minimum pitch angle.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
 
     Returns:
         bytes: Mesh frame for takeoff command.
     """
-    if None not in (target_lat, target_lon, target_alt):
-        # pack four floats: takeoff_alt, lat, lon, alt
-        params = struct.pack(">ffff", takeoff_alt, target_lat, target_lon, target_alt)
+    if min_pitch_deg is not None:
+        params = struct.pack(">ff", altitude_m, min_pitch_deg)
     else:
-        # only takeoff altitude
-        params = struct.pack(">f", takeoff_alt)
-    return build_cmd_frame(0x03, params, dst, src)
+        params = struct.pack(">f", altitude_m)
+    return build_cmd_frame(0x17, params, dst, src)
 
 
-def build_cmd_landing(
+def build_cmd_flight_land(
+    mode: int = 0,
     target_lat: Optional[float] = None,
     target_lon: Optional[float] = None,
+    yaw: Optional[float] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
     """
-    Build a LANDING command frame with optional landing coordinates.
-
-    Args:
-        target_lat (float | None): Landing latitude (optional).
-        target_lon (float | None): Landing longitude (optional).
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-
-    Returns:
-        bytes: Mesh frame for landing command.
+    Build a FLIGHT_LAND command frame with optional parameters.
     """
     if target_lat is not None and target_lon is not None:
-        params = struct.pack(">ff", target_lat, target_lon)
+        # If lat/lon are provided, yaw must also be considered (even if None)
+        target_yaw = yaw if yaw is not None else 0.0
+        params = struct.pack(">Bddf", mode, target_lat, target_lon, target_yaw)
     else:
+        # No coordinates, simple land command
         params = b''
-    return build_cmd_frame(0x04, params, dst, src)
+    return build_cmd_frame(0x1E, params, dst, src)
 
-
-def build_cmd_gimbal(
-    yaw: float,
-    pitch: float,
-    roll: float,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> bytes:
-    """
-    Build a GIMBAL command frame to orient camera gimbal.
-
-    Args:
-        yaw (float): Yaw angle in degrees.
-        pitch (float): Pitch angle in degrees.
-        roll (float): Roll angle in degrees.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-
-    Returns:
-        bytes: Mesh frame for gimbal command.
-    """
-    params = struct.pack(">fff", yaw, pitch, roll)
-    return build_cmd_frame(0x05, params, dst, src)
-
-
-def build_cmd_goto(
-    target_lat: float,
-    target_lon: float,
-    target_alt: float,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> bytes:
-    """
-    Build a GOTO command frame with target waypoint.
-
-    Args:
-        target_lat (float): Target latitude.
-        target_lon (float): Target longitude.
-        target_alt (float): Target altitude.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-
-    Returns:
-        bytes: Mesh frame for goto command.
-    """
-    params = struct.pack(">fff", target_lat, target_lon, target_alt)
-    return build_cmd_frame(0x06, params, dst, src)
-
-
-def build_cmd_simple_follow_me(
-    target_id: int,
-    altitude: Optional[float] = None,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> bytes:
-    """
-    Build a SIMPLE_FOLLOW_ME command frame.
-
-    Args:
-        target_id (int): ID of the device to follow.
-        altitude (float | None): Follow altitude (optional).
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-
-    Returns:
-        bytes: Mesh frame for follow-me command.
-    """
-    if altitude is not None:
-        params = struct.pack(">If", target_id, altitude)
-    else:
-        params = struct.pack(">I", target_id)
-    return build_cmd_frame(0x07, params, dst, src)
-
-
-def build_cmd_waypoints(
-    waypoints: List[tuple[float, float, float]],
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> bytes:
-    """
-    Build a WAYPOINTS command frame containing multiple waypoints.
-
-    Args:
-        waypoints (List[tuple[float, float, float]]): Sequence of (lat, lon, alt).
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-
-    Returns:
-        bytes: Mesh frame for waypoints command.
-    """
-    params = b''.join(
-        struct.pack(">fff", lat, lon, alt)
-        for lat, lon, alt in waypoints
-    )
-    return build_cmd_frame(0x09, params, dst, src)
-
-
-def build_cmd_task_relay(
-    task_id: int,
+def build_cmd_flight_goto(
     lat: float,
     lon: float,
     alt: float,
+    alt_ref: Optional[int] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
     """
-    Build a RELAY command frame to relay a message to another device with task details.
+    Build a FLIGHT_GOTO command frame with target waypoint.
 
     Args:
-        task_id (int): Task ID for the relay command.
-        lat (float): Latitude for the relay task.
-        lon (float): Longitude for the relay task.
-        alt (float): Altitude for the relay task.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-
-    Returns:
-        bytes: Mesh frame for relay command.
+        lat (float): Target latitude (float64).
+        lon (float): Target longitude (float64).
+        alt (float): Target altitude (float32).
+        alt_ref (int | None): Altitude reference frame (optional).
     """
-    params = struct.pack(">Ifff", task_id, lat, lon, alt)
-    return build_cmd_frame(0x0A, params, dst, src)
+    if alt_ref is not None:
+        params = struct.pack(">ddfB", lat, lon, alt, alt_ref)
+    else:
+        params = struct.pack(">ddf", lat, lon, alt)
+    return build_cmd_frame(0x18, params, dst, src)
 
-def build_cmd_set_speed(
-    speed: float,
+def build_cmd_flight_set_speed(
+    speed_mps: float,
+    scope: Optional[int] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">f", speed)
-    return build_cmd_frame(0x0B, params, dst, src)
+    if scope is not None:
+        params = struct.pack(">fB", speed_mps, scope)
+    else:
+        params = struct.pack(">f", speed_mps)
+    return build_cmd_frame(0x19, params, dst, src)
 
-def build_cmd_set_direction(
-    direction: float,
+def build_cmd_flight_set_altitude(
+    alt_m: float,
+    alt_ref: Optional[int] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">f", direction)
-    return build_cmd_frame(0x0C, params, dst, src)
+    if alt_ref is not None:
+        params = struct.pack(">fB", alt_m, alt_ref)
+    else:
+        params = struct.pack(">f", alt_m)
+    return build_cmd_frame(0x1A, params, dst, src)
 
-def build_cmd_set_drone_id(
-    drone_id: int,
+def build_cmd_flight_set_heading(
+    mode: int,
+    yaw_deg: float,
+    turn: Optional[int] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">I", drone_id)
-    return build_cmd_frame(0x0D, params, dst, src)
+    if turn is not None:
+        params = struct.pack(">Bfb", mode, yaw_deg, turn)
+    else:
+        params = struct.pack(">Bf", mode, yaw_deg)
+    return build_cmd_frame(0x1B, params, dst, src)
 
-def build_cmd_swarm_formater(
-    formation: str,
+def build_cmd_flight_arming(
+    arm: bool,
+    force: bool = False,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = formation.encode('utf-8')
-    return build_cmd_frame(0x0E, params, dst, src)
+    """
+    Build a FLIGHT_ARMING command frame.
 
-def build_cmd_swarm_leader(
+    Args:
+        arm (bool): True to arm, False to disarm.
+        force (bool): True to force the command.
+        dst (int): Destination device ID.
+        src (int | None, optional): Source device ID.
+    """
+    params = struct.pack(">BB", 1 if arm else 0, 1 if force else 0)
+    return build_cmd_frame(0x16, params, dst, src)
+
+def build_cmd_mission_upload(
+    mission_id: int,
+    waypoints: list,
+    replace_existing: bool = True,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    """
+    Build a MISSION_UPLOAD command frame.
+    """
+    payload = {
+        "mission_id": mission_id,
+        "waypoints": waypoints,
+        "replace_existing": replace_existing
+    }
+    params = json.dumps(payload, separators=(',', ':')).encode('utf-8')
+    return build_cmd_frame(0x29, params, dst, src)
+
+
+def build_cmd_mission_control(
+    action: str,
+    start_index: Optional[int] = None,
+    abort_mode: Optional[str] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    """
+    Build a MISSION_CONTROL command frame.
+    """
+    payload = {"action": action}
+    if start_index is not None:
+        payload["start_index"] = start_index
+    if abort_mode is not None:
+        payload["abort_mode"] = abort_mode
+    
+    params = json.dumps(payload, separators=(',', ':')).encode('utf-8')
+    return build_cmd_frame(0x2A, params, dst, src)
+
+def build_cmd_flight_set_roi(
+    roi_mode: int,
+    lat: Optional[float] = None,
+    lon: Optional[float] = None,
+    alt_m: Optional[float] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">B", roi_mode)
+    if roi_mode == 1: # LOCATION
+        if lat is None or lon is None:
+            raise ValueError("lat and lon are required for ROI LOCATION mode")
+        if alt_m is not None:
+            params += struct.pack(">ddf", lat, lon, alt_m)
+        else:
+            params += struct.pack(">dd", lat, lon)
+    return build_cmd_frame(0x1D, params, dst, src)
+
+def build_cmd_flight_set_home(
+    lat: Optional[float] = None,
+    lon: Optional[float] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    if lat is not None and lon is not None:
+        params = struct.pack(">dd", lat, lon)
+    else:
+        # No params means use current location
+        params = b''
+    return build_cmd_frame(0x1C, params, dst, src)
+
+def build_cmd_system_set_vehicle_id(
+    id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">I", id)
+    return build_cmd_frame(0x02, params, dst, src)
+
+def build_cmd_swarm_formation_execute(
+    leader_id: int,
+    formation_type: str,
+    spacing_offset: Optional[float] = None,
+    altitude_offset: Optional[float] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    payload = {
+        "leader_id": leader_id,
+        "formation_type": formation_type,
+    }
+    if spacing_offset is not None:
+        payload["spacing_offset"] = spacing_offset
+    if altitude_offset is not None:
+        payload["altitude_offset"] = altitude_offset
+    
+    params = json.dumps(payload, separators=(',', ':')).encode('utf-8')
+    return build_cmd_frame(0x3D, params, dst, src)
+
+def build_cmd_swarm_set_leader(
     leader_id: int,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
     params = struct.pack(">I", leader_id)
-    return build_cmd_frame(0x0F, params, dst, src)
+    return build_cmd_frame(0x3E, params, dst, src)
 
-def build_cmd_swarm_merge(
-    target_id: int,
+def build_cmd_swarm_set_formation_type(
+    formation_type: str,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">I", target_id)
-    return build_cmd_frame(0x10, params, dst, src)
+    params = formation_type.encode('utf-8')
+    return build_cmd_frame(0x3F, params, dst, src)
 
-def build_cmd_set_mission_status(
+def build_cmd_swarm_set_spacing(
+    spacing_offset: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">d", spacing_offset)
+    return build_cmd_frame(0x40, params, dst, src)
+
+def build_cmd_swarm_set_altitude_offset(
+    altitude_offset: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">d", altitude_offset)
+    return build_cmd_frame(0x41, params, dst, src)
+
+def build_cmd_swarm_set_status(
     status: str,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
     params = status.encode('utf-8')
-    return build_cmd_frame(0x11, params, dst, src)
-
-
-def build_cmd_arm_disarm(
-    arm: bool,
-    dst: int,
-    src: Optional[int] = None
-) -> bytes:
-    """
-    Build an ARM_DISARM command frame.
-
-    Args:
-        arm (bool): True to arm, False to disarm.
-        dst (int): Destination device ID.
-        src (int | None, optional): Source device ID.
-
-    Returns:
-        bytes: Mesh frame for arm/disarm command.
-    """
-    params = struct.pack("?", arm)
-    return build_cmd_frame(0x16, params, dst, src)
-
-
-def build_cmd_ack_command(
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> bytes:
-    return build_cmd_frame(0x14, dst=dst, src=src)
-
-def build_cmd_stream_video(
-    status: bool,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> bytes:
-    params = struct.pack(">?", status)
-    return build_cmd_frame(0x15, params, dst, src)
+    return build_cmd_frame(0x42, params, dst, src)

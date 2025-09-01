@@ -52,88 +52,192 @@ def task_receiver_line(interface, interval=0.05):
         try:
             frame = codec.parse_mesh_frame(raw)
             router.route_frame(frame, interface)
+            # Yalnızca ilgili çerçeve türleri için önbellek içeriğini yazdır
+            frame_type_char = chr(frame.get("frame_type", 0))
+            if frame_type_char == 'T':
+                print(f"[RECV TELEMETRY] Cache: {tlm_cache.get_all_cached_data()}")
+            elif frame_type_char == 'C':
+                print(f"[RECV COMMAND] Cache: {cmd_cache.get_last_command()}")
         except ValueError as e:
             print(f"[ERROR] Failed to parse frame: {e} raw={raw.hex()}")
-        print(f"[TELEMETRY CACHE] {tlm_cache.get_all_cached_data()}")
-        print(f"[COMMAND CACHE] {cmd_cache.get_last_command()}")
     scheduler.enter(interval, 1, task_receiver_line, (interface, interval,))
 
 def task_command_line(interface, key):
-    if key == 'T':
-        print("[CMD] TAKEOFF")
-        cmd.cmd_takeoff(interface, takeoff_alt=30, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'L':
-        print("[CMD] LANDING")
-        cmd.cmd_landing(interface, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'G':
-        print("[CMD] GOTO")
-        cmd.cmd_goto(interface, target_lat=37.001, target_lon=35.002, target_alt=50.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'W':
-        print("[CMD] WAYPOINTS")
-        waypoints = [(37.001, 35.002, 50.0), (37.002, 35.003, 60.0), (37.003, 35.004, 70.0)]
-        cmd.cmd_waypoints(interface, waypoints=waypoints, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    # Test için örnek görev planı
+    waypoints_example = [
+        {"seq": 0, "command": "TAKEOFF", "lat": 0.0, "lon": 0.0, "alt": 10.0},
+        {"seq": 1, "command": "WAYPOINT", "lat": 37.001, "lon": 35.002, "alt": 20.0, "hold_time": 5.0},
+        {"seq": 2, "command": "LAND", "lat": 37.001, "lon": 35.002, "alt": 0.0}
+    ]
+
+    # ==============================================================================
+    # --- Sistem Komutları ---
+    # ==============================================================================
+    if key == 'I':
+        # Araca kalıcı olarak yeni bir ID atar. Değişikliğin tam olarak uygulanması için yeniden başlatma gerekebilir.
+        print("[CMD] SYSTEM_SET_VEHICLE_ID")
+        cmd.cmd_system_set_vehicle_id(interface, id=10, src=MY_SRC_ID, dst=OTHER_DST_ID)
     elif key == 'R':
-        print("[CMD] RELAY")
-        cmd.cmd_task_relay(interface, task_id=1, lat=37.005, lon=35.006, alt=80.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'S':
-        print("[CMD] SET_SPEED")
-        cmd.cmd_set_speed(interface, speed=15.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'D':
-        print("[CMD] SET_DIRECTION")
-        cmd.cmd_set_direction(interface, direction=90.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'I':
-        print("[CMD] SET_DRONE_ID")
-        cmd.cmd_set_drone_id(interface, drone_id=10, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'F':
-        print("[CMD] SWARM_FORMATER")
-        cmd.cmd_swarm_formater(interface, formation="line", src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'H':
-        print("[CMD] SWARM_LEADER")
-        cmd.cmd_swarm_leader(interface, leader_id=1, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'M':
-        print("[CMD] SWARM_MERGE")
-        cmd.cmd_swarm_merge(interface, target_id=2, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'P':
-        #"Enter mission status (e.g., PAUSE, RESUME, STOP): ")
-        cmd.cmd_set_mission_status(interface, status="PAUSE", src=MY_SRC_ID, dst=OTHER_DST_ID)
-    #elif key == 'U':
-    #    print("[CMD] MISSION_UPLOAD")
-    #    cmd.cmd_mission_upload(interface, mission_data="mission1.txt", src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Hedef sistemi yeniden başlatır.
+        print("[CMD] SYSTEM_REBOOT")
+        cmd.cmd_system_reboot(interface, dst=OTHER_DST_ID, src=MY_SRC_ID)
+
+    # ==============================================================================
+    # --- Uçuş Komutları ---
+    # ==============================================================================
     elif key == 'C':
-        print("[CMD] SET_MODE")
-        cmd.cmd_set_mode(interface, mode="GUIDED", src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'X': # Using 'X' for arm/disarm
-        print("[CMD] ARM_DISARM")
-        # Example: arm the vehicle. User can change to False for disarm.
-        cmd.cmd_arm_disarm(interface, arm=False, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Aracın uçuş modunu değiştirir.
+        print("[CMD] FLIGHT_SET_MODE")
+        cmd.cmd_flight_set_mode(interface, mode="GUIDED", src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Diğer modları test etmek için:
+        # cmd.cmd_flight_set_mode(interface, mode="LOITER", src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # cmd.cmd_flight_set_mode(interface, mode="RTL", src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'X':
+        # Aracı arm durumuna alır.
+        print("[CMD] FLIGHT_ARMING (ARM)")
+        cmd.cmd_flight_arming(interface, arm=True, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Güvenlik kontrollerini atlayarak zorla arm etmek için:
+        # cmd.cmd_flight_arming(interface, arm=True, force=True, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'Y':
+        # Aracı disarm durumuna alır.
+        print("[CMD] FLIGHT_ARMING (DISARM)")
+        cmd.cmd_flight_arming(interface, arm=False, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Güvenlik kontrollerini atlayarak zorla disarm etmek için:
+        # cmd.cmd_flight_arming(interface, arm=False, force=True, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'T':
+        # Aracı belirtilen irtifaya kaldırır.
+        print("[CMD] FLIGHT_TAKEOFF")
+        cmd.cmd_flight_takeoff(interface, altitude_m=30, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Sabit kanatlı bir araç için minimum tırmanış açısı belirterek kalkış:
+        # cmd.cmd_flight_takeoff(interface, altitude_m=30, min_pitch_deg=15.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'L':
+        # Aracı mevcut konumuna indirir.
+        print("[CMD] FLIGHT_LAND")
+        cmd.cmd_flight_land(interface, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Belirli bir konuma ve yöne bakarak hassas iniş yapmak için:
+        # cmd.cmd_flight_land(interface, mode=1, target_lat=37.001, target_lon=35.002, yaw=180.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'G':
+        # Aracı belirtilen GPS koordinatlarına yönlendirir.
+        print("[CMD] FLIGHT_GOTO")
+        cmd.cmd_flight_goto(interface, lat=37.001, lon=35.002, alt=50.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # İrtifa referansını deniz seviyesi (AMSL) olarak belirterek gitmek için:
+        # cmd.cmd_flight_goto(interface, lat=37.001, lon=35.002, alt=150.0, alt_ref=1, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'S':
+        # Aracın yer hızını ayarlar.
+        print("[CMD] FLIGHT_SET_SPEED")
+        cmd.cmd_flight_set_speed(interface, speed_mps=15.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Hız değişikliğini sadece görev (AUTO) modunda geçerli kılmak için:
+        # cmd.cmd_flight_set_speed(interface, speed_mps=10.0, scope=2, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'D':
+        # Aracın yönünü (heading) mutlak olarak ayarlar.
+        print("[CMD] FLIGHT_SET_HEADING (Absolute)")
+        cmd.cmd_flight_set_heading(interface, mode=0, yaw_deg=90.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Mevcut yöne göre 45 derece sağa dönmek için (Relative):
+        # cmd.cmd_flight_set_heading(interface, mode=1, yaw_deg=45.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Mevcut yöne göre 90 derece sola, saat yönünün tersine (CCW) dönmek için:
+        # cmd.cmd_flight_set_heading(interface, mode=1, yaw_deg=-90.0, turn=-1, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'J':
+        # Aracın mevcut konumunu yeni HOME noktası olarak ayarlar.
+        print("[CMD] FLIGHT_SET_HOME (Current Position)")
+        cmd.cmd_flight_set_home(interface, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Belirli bir konumu HOME olarak ayarlamak için:
+        # cmd.cmd_flight_set_home(interface, lat=37.000, lon=35.000, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'O':
+        # Kameranın veya gimbalin bakacağı bir ilgi noktası (ROI) belirler.
+        print("[CMD] FLIGHT_SET_ROI (Location)")
+        cmd.cmd_flight_set_roi(interface, roi_mode=1, lat=37.005, lon=35.005, alt_m=10.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Ayarlanmış ROI'yi temizlemek için:
+        # cmd.cmd_flight_set_roi(interface, roi_mode=0, src=MY_SRC_ID, dst=OTHER_DST_ID)
     elif key == 'A':
-        print("[CMD] ACK_COMMAND")
-        cmd.cmd_ack_command(interface, src=MY_SRC_ID, dst=OTHER_DST_ID)
-    elif key == 'V':
-        print("[CMD] STREAM_VIDEO")
-        cmd.cmd_stream_video(interface, status=True, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Aracın hedef irtifasını değiştirir.
+        print("[CMD] FLIGHT_SET_ALTITUDE")
+        cmd.cmd_flight_set_altitude(interface, alt_m=40.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # İrtifayı deniz seviyesine göre (AMSL) ayarlamak için:
+        # cmd.cmd_flight_set_altitude(interface, alt_m=140.0, alt_ref=1, src=MY_SRC_ID, dst=OTHER_DST_ID)
+
+    # ==============================================================================
+    # --- Görev Komutları ---
+    # ==============================================================================
+    elif key == 'U':
+        # Araca yeni bir görev planı yükler (mevcut görevi siler).
+        print("[CMD] MISSION_UPLOAD")
+        cmd.cmd_mission_upload(interface, mission_id=101, waypoints=waypoints_example, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Mevcut görevin üzerine ekleme yapmak için (replace_existing=False):
+        # waypoints_to_add = [
+        #     {"seq": 3, "command": "WAYPOINT", "lat": 37.005, "lon": 35.006, "alt": 25.0}
+        # ]
+        # cmd.cmd_mission_upload(interface, mission_id=101, waypoints=waypoints_to_add, replace_existing=False, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == 'K':
+        # Yüklenmiş bir görevi başlatır.
+        print("[CMD] MISSION_CONTROL (START)")
+        cmd.cmd_mission_control(interface, action="START", src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Görevi belirli bir adımdan başlatmak için:
+        # cmd.cmd_mission_control(interface, action="START", start_index=2, src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Görevi duraklatmak için:
+        # cmd.cmd_mission_control(interface, action="PAUSE", src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Göreve devam etmek için:
+        # cmd.cmd_mission_control(interface, action="RESUME", src=MY_SRC_ID, dst=OTHER_DST_ID)
+        # Görevi iptal etmek için:
+        # cmd.cmd_mission_control(interface, action="ABORT", abort_mode="RTL", src=MY_SRC_ID, dst=OTHER_DST_ID)
+
+    # ==============================================================================
+    # --- Swarm Komutları ---
+    # ==============================================================================
+    elif key == '1':
+        print("[CMD] SWARM_FORMATION_EXECUTE")
+        cmd.cmd_swarm_formation_execute(interface, leader_id=1, formation_type="line", spacing_offset=10.0, altitude_offset=5.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == '2':
+        print("[CMD] SWARM_SET_LEADER")
+        cmd.cmd_swarm_set_leader(interface, leader_id=2, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == '3':
+        print("[CMD] SWARM_SET_FORMATION_TYPE")
+        cmd.cmd_swarm_set_formation_type(interface, formation_type="v_formation", src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == '4':
+        print("[CMD] SWARM_SET_SPACING")
+        cmd.cmd_swarm_set_spacing(interface, spacing_offset=15.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == '5':
+        print("[CMD] SWARM_SET_ALTITUDE_OFFSET")
+        cmd.cmd_swarm_set_altitude_offset(interface, altitude_offset=10.0, src=MY_SRC_ID, dst=OTHER_DST_ID)
+    elif key == '6':
+        print("[CMD] SWARM_SET_STATUS")
+        cmd.cmd_swarm_set_status(interface, status="HOLD", src=MY_SRC_ID, dst=OTHER_DST_ID)
+
     else:
         print(f"[CMD] Undefined key: {key}")
 
 def keyboard_listener(interface):
     print("""
 Key assignments:
-  T → TAKEOFF              [OKAY]
-  L → LANDING              [OKAY]
-  G → GOTO                 [OKAY]
-  W → WAYPOINTS            [OKAY]
-  R → RELAY                [OKAY]
-  S → SET_SPEED          + [OKAY]
-  D → SET_DIRECTION        [OKAY]
-  I → SET_DRONE_ID         [OKAY] İÇERİSİNDE CONFİG DOSYASINI İŞLEYECEK BİR YAPI KURULACAK. (TAYFUR)
-  F → SWARM_FORMATER     + [OKAY]
-  H → SWARM_LEADER       + [OKAY]
-  M → SWARM_MERGE        + [OKAY]
-  P → SET_MISSION_STATUS   [OKAY]
-  A → ACK_COMMAND        + [OKAY]
-  V → STREAM_VIDEO         [OKAY]
-  C → SET_MODE             [OKAY]
-  X → ARM_DISARM           [OKAY]
+  --- System Commands ---
+  I → SYSTEM_SET_VEHICLE_ID
+  R → SYSTEM_REBOOT
+
+  --- Flight Commands ---
+  C → FLIGHT_SET_MODE
+  X → FLIGHT_ARMING (ARM)
+  Y → FLIGHT_ARMING (DISARM)
+  T → FLIGHT_TAKEOFF
+  L → FLIGHT_LAND
+  G → FLIGHT_GOTO
+  S → FLIGHT_SET_SPEED
+  D → FLIGHT_SET_HEADING
+  J → FLIGHT_SET_HOME
+  O → FLIGHT_SET_ROI
+  A → FLIGHT_SET_ALTITUDE
+
+  --- Mission Commands ---
+  U → MISSION_UPLOAD
+  K → MISSION_CONTROL
+
+  --- Swarm Commands ---
+  1 → SWARM_FORMATION_EXECUTE
+  2 → SWARM_SET_LEADER
+  3 → SWARM_SET_FORMATION_TYPE
+  4 → SWARM_SET_SPACING
+  5 → SWARM_SET_ALTITUDE_OFFSET
+  6 → SWARM_SET_STATUS
+
+  --- General ---
   Q → QUIT
 """)
     while True:

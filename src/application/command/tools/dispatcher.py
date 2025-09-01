@@ -12,25 +12,26 @@ import struct
 from typing import Any, List, Optional, Protocol
 
 from src.application.command.tools.builder import (
-    build_cmd_reboot,
-    build_cmd_set_mode,
-    build_cmd_takeoff,
-    build_cmd_landing,
-    build_cmd_gimbal,
-    build_cmd_goto,
-    build_cmd_simple_follow_me,
-    build_cmd_waypoints,
-    build_cmd_task_relay,
-    build_cmd_set_speed,
-    build_cmd_set_direction,
-    build_cmd_set_drone_id,
-    build_cmd_swarm_formater,
-    build_cmd_swarm_leader,
-    build_cmd_swarm_merge,
-    build_cmd_set_mission_status,
-    build_cmd_ack_command,
-    build_cmd_stream_video,
-    build_cmd_arm_disarm
+    build_cmd_system_reboot,
+    build_cmd_flight_set_mode,
+    build_cmd_flight_takeoff,
+    build_cmd_flight_goto,
+    build_cmd_flight_set_speed,
+    build_cmd_flight_set_altitude,
+    build_cmd_flight_set_heading,
+    build_cmd_flight_set_home,
+    build_cmd_flight_set_roi,
+    build_cmd_flight_land,
+    build_cmd_flight_arming,
+    build_cmd_system_set_vehicle_id,
+    build_cmd_mission_upload, 
+    build_cmd_mission_control,
+    build_cmd_swarm_formation_execute,
+    build_cmd_swarm_set_leader,
+    build_cmd_swarm_set_formation_type,
+    build_cmd_swarm_set_spacing,
+    build_cmd_swarm_set_altitude_offset,
+    build_cmd_swarm_set_status
 )
 from src.shared.comm.transmitter import send_frame
 from src.shared.log.logger import logger
@@ -45,32 +46,32 @@ class SendableInterface(Protocol):
     def send(self, frame: bytes) -> None: ...
 
 
-def cmd_reboot(
+def cmd_system_reboot(
     interface: SendableInterface,
     dst: int,
     src: Optional[int] = None
 ) -> None:
     """
-    Send a REBOOT command to reset the target device.
+    Send a SYSTEM_REBOOT command to reset the target device.
 
     Args:
         interface: Communication interface instance.
         dst (int): Destination device ID.
         src (int | None): Optional source device ID.
     """
-    frame = build_cmd_reboot(dst, src)
+    frame = build_cmd_system_reboot(dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | REBOOT -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | SYSTEM_REBOOT -> DST: {dst}")
 
 
-def cmd_set_mode(
+def cmd_flight_set_mode(
     interface: SendableInterface,
     mode: str,
     dst: int,
     src: Optional[int] = None
 ) -> None:
     """
-    Send a SET_MODE command to change the flight mode.
+    Send a FLIGHT_SET_MODE command to change the flight mode.
 
     Args:
         interface: Communication interface instance.
@@ -78,289 +79,257 @@ def cmd_set_mode(
         dst (int): Destination device ID.
         src (int | None): Optional source device ID.
     """
-    frame = build_cmd_set_mode(mode, dst, src)
+    frame = build_cmd_flight_set_mode(mode, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | SET_MODE({mode}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | FLIGHT_SET_MODE({mode}) -> DST: {dst}")
 
 
-def cmd_arm_disarm(
+def cmd_flight_arming(
     interface: SendableInterface,
     arm: bool,
-    dst: int,
+    force: bool = False,
+    dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
     """
-    Send an ARM_DISARM command.
+    Send a FLIGHT_ARMING command.
 
     Args:
         interface: Communication interface instance.
         arm (bool): True to arm, False to disarm.
+        force (bool): True to force the command.
         dst (int): Destination device ID.
         src (int | None): Optional source device ID.
     """
-    frame = build_cmd_arm_disarm(arm, dst, src)
+    frame = build_cmd_flight_arming(arm, force, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | ARM_DISARM({arm}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | FLIGHT_ARMING(arm={arm}, force={force}) -> DST: {dst}")
 
 
-def cmd_takeoff(
+def cmd_flight_takeoff(
     interface: SendableInterface,
-    takeoff_alt: float,
+    altitude_m: float,
+    min_pitch_deg: Optional[float] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    """
+    Send a FLIGHT_TAKEOFF command.
+
+    Args:
+        interface: Communication interface instance.
+        altitude_m (float): Takeoff altitude in meters.
+        min_pitch_deg (float | None): Optional minimum pitch angle.
+        dst (int, optional): Destination device ID.
+        src (int | None, optional): Source device ID.
+    """
+    frame = build_cmd_flight_takeoff(altitude_m, min_pitch_deg, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | FLIGHT_TAKEOFF(alt={altitude_m}) -> DST: {dst}")
+
+
+def cmd_flight_land(
+    interface: SendableInterface,
+    mode: int = 0,
     target_lat: Optional[float] = None,
     target_lon: Optional[float] = None,
-    target_alt: Optional[float] = None,
+    yaw: Optional[float] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
     """
-    Send a TAKEOFF command, optionally with target coordinates.
+    Send a FLIGHT_LAND command, optionally with landing coordinates and yaw.
 
     Args:
         interface: Communication interface instance.
-        takeoff_alt (float): Takeoff altitude in meters.
-        target_lat (float | None): Optional latitude of target.
-        target_lon (float | None): Optional longitude of target.
-        target_alt (float | None): Optional altitude of target.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
+        ...
     """
-    frame = build_cmd_takeoff(
-        takeoff_alt, target_lat, target_lon, target_alt, dst, src
-    )
+    frame = build_cmd_flight_land(mode, target_lat, target_lon, yaw, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | TAKEOFF({takeoff_alt}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | FLIGHT_LAND -> DST: {dst}")
 
 
-def cmd_landing(
+def cmd_flight_goto(
     interface: SendableInterface,
-    target_lat: Optional[float] = None,
-    target_lon: Optional[float] = None,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> None:
-    """
-    Send a LANDING command, optionally with landing coordinates.
-
-    Args:
-        interface: Communication interface instance.
-        target_lat (float | None): Optional landing latitude.
-        target_lon (float | None): Optional landing longitude.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-    """
-    frame = build_cmd_landing(target_lat, target_lon, dst, src)
-    send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | LANDING -> DST: {dst}")
-
-
-def cmd_gimbal(
-    interface: SendableInterface,
-    yaw: float,
-    pitch: float,
-    roll: float,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> None:
-    """
-    Send a GIMBAL command to orient the camera gimbal.
-
-    Args:
-        interface: Communication interface instance.
-        yaw (float): Yaw angle in degrees.
-        pitch (float): Pitch angle in degrees.
-        roll (float): Roll angle in degrees.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-    """
-    frame = build_cmd_gimbal(yaw, pitch, roll, dst, src)
-    send_frame(interface, frame)
-    logger.info(
-        f"[COMMAND] SENT | GIMBAL(yaw={yaw:.1f}, pitch={pitch:.1f}, roll={roll:.1f}) -> DST: {dst}"
-    )
-
-
-def cmd_goto(
-    interface: SendableInterface,
-    target_lat: float,
-    target_lon: float,
-    target_alt: float,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> None:
-    """
-    Send a GOTO command to navigate to a waypoint.
-
-    Args:
-        interface: Communication interface instance.
-        target_lat (float): Target latitude.
-        target_lon (float): Target longitude.
-        target_alt (float): Target altitude.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-    """
-    frame = build_cmd_goto(target_lat, target_lon, target_alt, dst, src)
-    send_frame(interface, frame)
-    logger.info(
-        f"[COMMAND] SENT | GOTO(lat={target_lat:.5f}, lon={target_lon:.5f}, alt={target_alt}) -> DST: {dst}"
-    )
-
-
-def cmd_simple_follow_me(
-    interface: SendableInterface,
-    target_id: int,
-    altitude: Optional[float] = None,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> None:
-    """
-    Send a SIMPLE_FOLLOW_ME command to follow another device.
-
-    Args:
-        interface: Communication interface instance.
-        target_id (int): ID of the device to follow.
-        altitude (float | None): Optional follow altitude.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-    """
-    frame = build_cmd_simple_follow_me(target_id, altitude, dst, src)
-    send_frame(interface, frame)
-    logger.info(
-        f"[COMMAND] SENT | FOLLOW_ME(target={target_id}, alt={altitude}) -> DST: {dst}"
-    )
-
-
-def cmd_waypoints(
-    interface: SendableInterface,
-    waypoints: List[tuple[float, float, float]],
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> None:
-    """
-    Send a WAYPOINTS command containing multiple waypoints.
-
-    Args:
-        interface: Communication interface instance.
-        waypoints (List[tuple[float, float, float]]): Sequence of (lat, lon, alt).
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-    """
-    frame = build_cmd_waypoints(waypoints, dst, src)
-    send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | WAYPOINTS(count={len(waypoints)}) -> DST: {dst}")
-
-
-def cmd_task_relay(
-    interface: SendableInterface,
-    task_id: int,
     lat: float,
     lon: float,
     alt: float,
+    alt_ref: Optional[int] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
     """
-    Send a RELAY command to relay a message to another device with task details.
+    Send a FLIGHT_GOTO command to navigate to a waypoint.
 
     Args:
         interface: Communication interface instance.
-        task_id (int): Task ID for the relay command.
-        lat (float): Latitude for the relay task.
-        lon (float): Longitude for the relay task.
-        alt (float): Altitude for the relay task.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
+        lat (float): Target latitude.
+        lon (float): Target longitude.
+        alt (float): Target altitude.
+        alt_ref (int | None): Altitude reference frame.
     """
-    frame = build_cmd_task_relay(task_id, lat, lon, alt, dst, src)
+    frame = build_cmd_flight_goto(lat, lon, alt, alt_ref, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | RELAY(task_id={task_id}, lat={lat}, lon={lon}, alt={alt}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | FLIGHT_GOTO(lat={lat:.6f}, lon={lon:.6f}, alt={alt}) -> DST: {dst}")
 
-def cmd_set_speed(
+def cmd_flight_set_speed(
     interface: SendableInterface,
-    speed: float,
+    speed_mps: float,
+    scope: Optional[int] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
-    frame = build_cmd_set_speed(speed, dst, src)
+    frame = build_cmd_flight_set_speed(speed_mps, scope, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | SET_SPEED({speed}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | FLIGHT_SET_SPEED({speed_mps}) -> DST: {dst}")
 
-def cmd_set_direction(
+def cmd_flight_set_altitude(
     interface: SendableInterface,
-    direction: float,
+    alt_m: float,
+    alt_ref: Optional[int] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
-    frame = build_cmd_set_direction(direction, dst, src)
+    frame = build_cmd_flight_set_altitude(alt_m, alt_ref, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | SET_DIRECTION({direction}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | FLIGHT_SET_ALTITUDE({alt_m}) -> DST: {dst}")
 
-def cmd_set_drone_id(
+def cmd_flight_set_heading(
     interface: SendableInterface,
-    drone_id: int,
+    mode: int,
+    yaw_deg: float,
+    turn: Optional[int] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
-    frame = build_cmd_set_drone_id(drone_id, dst, src)
+    frame = build_cmd_flight_set_heading(mode, yaw_deg, turn, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | SET_DRONE_ID({drone_id}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | FLIGHT_SET_HEADING(mode={mode}, yaw={yaw_deg}) -> DST: {dst}")
 
-def cmd_swarm_formater(
+def cmd_flight_set_roi(
     interface: SendableInterface,
-    formation: str,
+    roi_mode: int,
+    lat: Optional[float] = None,
+    lon: Optional[float] = None,
+    alt_m: Optional[float] = None,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
-    frame = build_cmd_swarm_formater(formation, dst, src)
+    frame = build_cmd_flight_set_roi(roi_mode, lat, lon, alt_m, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | SWARM_FORMATER(formation={formation}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | FLIGHT_SET_ROI(mode={roi_mode}) -> DST: {dst}")
 
-def cmd_swarm_leader(
+def cmd_flight_set_home(
+    interface: SendableInterface,
+    lat: Optional[float] = None,
+    lon: Optional[float] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_flight_set_home(lat, lon, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | FLIGHT_SET_HOME(lat={lat}, lon={lon}) -> DST: {dst}")
+
+def cmd_mission_upload(
+    interface: SendableInterface,
+    mission_id: int,
+    waypoints: list,
+    replace_existing: bool = True,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    """
+    Send a MISSION_UPLOAD command.
+    """
+    frame = build_cmd_mission_upload(mission_id, waypoints, replace_existing, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | MISSION_UPLOAD(id={mission_id}, wps={len(waypoints)}) -> DST: {dst}")
+
+
+def cmd_mission_control(
+    interface: SendableInterface,
+    action: str,
+    start_index: Optional[int] = None,
+    abort_mode: Optional[str] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    """
+    Send a MISSION_CONTROL command.
+    """
+    frame = build_cmd_mission_control(action, start_index, abort_mode, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | MISSION_CONTROL(action={action}) -> DST: {dst}")
+
+def cmd_system_set_vehicle_id(
+    interface: SendableInterface,
+    id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_system_set_vehicle_id(id, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SYSTEM_SET_VEHICLE_ID({id}) -> DST: {dst}")
+
+def cmd_swarm_formation_execute(
+    interface: SendableInterface,
+    leader_id: int,
+    formation_type: str,
+    spacing_offset: Optional[float] = None,
+    altitude_offset: Optional[float] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_swarm_formation_execute(leader_id, formation_type, spacing_offset, altitude_offset, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SWARM_FORMATION_EXECUTE -> DST: {dst}")
+
+def cmd_swarm_set_leader(
     interface: SendableInterface,
     leader_id: int,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
-    frame = build_cmd_swarm_leader(leader_id, dst, src)
+    frame = build_cmd_swarm_set_leader(leader_id, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | SWARM_LEADER(leader_id={leader_id}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | SWARM_SET_LEADER({leader_id}) -> DST: {dst}")
 
-def cmd_swarm_merge(
+def cmd_swarm_set_formation_type(
     interface: SendableInterface,
-    target_id: int,
+    formation_type: str,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
-    frame = build_cmd_swarm_merge(target_id, dst, src)
+    frame = build_cmd_swarm_set_formation_type(formation_type, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | SWARM_MERGE(target_id={target_id}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | SWARM_SET_FORMATION_TYPE({formation_type}) -> DST: {dst}")
 
-def cmd_set_mission_status(
+def cmd_swarm_set_spacing(
+    interface: SendableInterface,
+    spacing_offset: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_swarm_set_spacing(spacing_offset, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SWARM_SET_SPACING({spacing_offset}) -> DST: {dst}")
+
+def cmd_swarm_set_altitude_offset(
+    interface: SendableInterface,
+    altitude_offset: float,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_swarm_set_altitude_offset(altitude_offset, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SWARM_SET_ALTITUDE_OFFSET({altitude_offset}) -> DST: {dst}")
+
+def cmd_swarm_set_status(
     interface: SendableInterface,
     status: str,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> None:
-    frame = build_cmd_set_mission_status(status, dst, src)
+    frame = build_cmd_swarm_set_status(status, dst, src)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | SET_MISSION_STATUS(status={status}) -> DST: {dst}")
-
-
-
-def cmd_ack_command(
-    interface: SendableInterface,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> None:
-    frame = build_cmd_ack_command(dst, src)
-    send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | ACK_COMMAND -> DST: {dst}")
-
-def cmd_stream_video(
-    interface: SendableInterface,
-    status: bool,
-    dst: int = 0xFF,
-    src: Optional[int] = None
-) -> None:
-    frame = build_cmd_stream_video(status, dst, src)
-    send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | STREAM_VIDEO({status}) -> DST: {dst}")
+    logger.info(f"[COMMAND] SENT | SWARM_SET_STATUS({status}) -> DST: {dst}")
