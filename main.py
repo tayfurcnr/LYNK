@@ -55,7 +55,8 @@ def task_receiver_line(interface, interval=0.05):
             # Yalnızca ilgili çerçeve türleri için önbellek içeriğini yazdır
             frame_type_char = chr(frame.get("frame_type", 0))
             if frame_type_char == 'T':
-                print(f"[RECV TELEMETRY] Cache: {tlm_cache.get_all_cached_data()}")
+                #print(f"[RECV TELEMETRY] Cache: {tlm_cache.get_all_cached_data()}")
+                print(f"    ")
             elif frame_type_char == 'C':
                 print(f"[RECV COMMAND] Cache: {cmd_cache.get_last_command()}")
         except ValueError as e:

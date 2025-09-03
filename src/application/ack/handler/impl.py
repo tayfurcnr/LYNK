@@ -4,7 +4,7 @@ from __future__ import annotations
 from src.shared.log.logger import logger
 
 def ack_ok(data: dict, src_id: int):
-    logger.debug(f"[ACK] ACK_OK received from SRC: {src_id}")
+    logger.info(f"[ACK] ACK_OK received from SRC: {src_id}")
     logger.debug(f"[ACK] → Data: {data}")
 
 def ack_error(data: dict, src_id: int):
