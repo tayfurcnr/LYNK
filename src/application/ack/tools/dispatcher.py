@@ -9,74 +9,69 @@ Each function builds a specific ACK payload (ACK_OK, ACK_ERROR, ACK_BUSY, ACK_IN
 and transmits it, while logging the action for traceability.
 """
 
-from src.application.ack.tools.builder import (
-    build_ack_ok,
-    build_ack_error,
-    build_ack_busy,
-    build_ack_invalid_cmd
-)
+from src.application.ack.serializer.dispatcher import serialize_ack
 from src.shared.comm.transmitter import send_frame
 from src.shared.log.logger import logger
 
 def send_ack_ok(
     interface,
-    message: str,
+    cmd_id: int,
     dst: int = 0xFF,
     src: int | None = None
 ) -> None:
     """
-    Send an ACK_OK frame.
+    Send an ACK_OK frame with the corresponding command ID.
     """
-    frame = build_ack_ok(message, dst, src)
-    send_frame(interface, frame)
+    payload = serialize_ack("ACK_OK", cmd_id)
+    send_frame(interface, payload, dst, src)
     logger.info(
-        f"[ACK] SENT ACK_OK | DST: {dst} | Message: {message}"
+        f"[ACK] SENT ACK_OK | DST: {dst} | For CMD_ID: {cmd_id}"
     )
 
 
 def send_ack_error(
     interface,
-    message: str,
+    cmd_id: int,
     dst: int = 0xFF,
     src: int | None = None
 ) -> None:
     """
-    Send an ACK_ERROR frame.
+    Send an ACK_ERROR frame with the corresponding command ID.
     """
-    frame = build_ack_error(message, dst, src)
-    send_frame(interface, frame)
+    payload = serialize_ack("ACK_ERROR", cmd_id)
+    send_frame(interface, payload, dst, src)
     logger.error(
-        f"[ACK] SENT ACK_ERROR | DST: {dst} | Message: {message}"
+        f"[ACK] SENT ACK_ERROR | DST: {dst} | For CMD_ID: {cmd_id}"
     )
 
 
 def send_ack_busy(
     interface,
-    message: str,
+    cmd_id: int,
     dst: int = 0xFF,
     src: int | None = None
 ) -> None:
     """
-    Send an ACK_BUSY frame.
+    Send an ACK_BUSY frame with the corresponding command ID.
     """
-    frame = build_ack_busy(message, dst, src)
-    send_frame(interface, frame)
+    payload = serialize_ack("ACK_BUSY", cmd_id)
+    send_frame(interface, payload, dst, src)
     logger.warning(
-        f"[ACK] SENT ACK_BUSY | DST: {dst} | Message: {message}"
+        f"[ACK] SENT ACK_BUSY | DST: {dst} | For CMD_ID: {cmd_id}"
     )
 
 
 def send_ack_invalid_cmd(
     interface,
-    message: str,
+    cmd_id: int,
     dst: int = 0xFF,
     src: int | None = None
 ) -> None:
     """
-    Send an ACK_INVALID_CMD frame.
+    Send an ACK_INVALID_CMD frame with the corresponding command ID.
     """
-    frame = build_ack_invalid_cmd(message, dst, src)
-    send_frame(interface, frame)
+    payload = serialize_ack("ACK_INVALID_CMD", cmd_id)
+    send_frame(interface, payload, dst, src)
     logger.error(
-        f"[ACK] SENT ACK_INVALID_CMD | DST: {dst} | Message: {message}"
+        f"[ACK] SENT ACK_INVALID_CMD | DST: {dst} | For CMD_ID: {cmd_id}"
     )
