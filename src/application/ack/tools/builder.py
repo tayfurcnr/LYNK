@@ -50,44 +50,44 @@ def build_ack_frame(
 
 
 def build_ack_ok(
-    message: str,
+    cmd_id: int,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
     """
     Build an ACK_OK frame.
     """
-    return build_ack_frame("ACK_OK", [message], dst, src)
+    return build_ack_frame("ACK_OK", [cmd_id], dst, src)
 
 
 def build_ack_error(
-    message: str,
+    cmd_id: int,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
     """
     Build an ACK_ERROR frame.
     """
-    return build_ack_frame("ACK_ERROR", [message], dst, src)
+    return build_ack_frame("ACK_ERROR", [cmd_id], dst, src)
 
 
 def build_ack_busy(
-    message: str,
+    cmd_id: int,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
     """
     Build an ACK_BUSY frame.
     """
-    return build_ack_frame("ACK_BUSY", [message], dst, src)
+    return build_ack_frame("ACK_BUSY", [cmd_id], dst, src)
 
 
 def build_ack_invalid_cmd(
-    message: str,
+    cmd_id: int,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
     """
     Build an ACK_INVALID_CMD frame.
     """
-    return build_ack_frame("ACK_INVALID_CMD", [message], dst, src)
+    return build_ack_frame("ACK_INVALID_CMD", [cmd_id], dst, src)
