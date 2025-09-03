@@ -5,32 +5,41 @@ import struct
 
 # -----------------------------------------------
 # ACK SERIALIZATION FUNCTIONS
+# Payload: cmd_id (H, 2B)
 # -----------------------------------------------
 
-def serialize_ack_ok(message: str) -> bytes:
-    return message.encode("utf-8")[:64].ljust(64, b'\x00')
+def serialize_ack_ok(cmd_id: int) -> bytes:
+    """Serializes an ACK_OK with only the command ID it refers to."""
+    return struct.pack(">H", cmd_id)
 
 def deserialize_ack_ok(data: bytes) -> dict:
-    message = data[:64].decode("utf-8").rstrip('\x00')
-    return {"message": message}
+    """Deserializes an ACK_OK and extracts the command ID."""
+    cmd_id, = struct.unpack(">H", data)
+    return {"cmd_id": cmd_id}
 
-def serialize_ack_error(message: str) -> bytes:
-    return message.encode("utf-8")[:64].ljust(64, b'\x00')
+def serialize_ack_error(cmd_id: int) -> bytes:
+    """Serializes an ACK_ERROR with only the command ID it refers to."""
+    return struct.pack(">H", cmd_id)
 
 def deserialize_ack_error(data: bytes) -> dict:
-    message = data[:64].decode("utf-8").rstrip('\x00')
-    return {"message": message}
+    """Deserializes an ACK_ERROR and extracts the command ID."""
+    cmd_id, = struct.unpack(">H", data)
+    return {"cmd_id": cmd_id}
 
-def serialize_ack_busy(message: str) -> bytes:
-    return message.encode("utf-8")[:64].ljust(64, b'\x00')
+def serialize_ack_busy(cmd_id: int) -> bytes:
+    """Serializes an ACK_BUSY with only the command ID it refers to."""
+    return struct.pack(">H", cmd_id)
 
 def deserialize_ack_busy(data: bytes) -> dict:
-    message = data[:64].decode("utf-8").rstrip('\x00')
-    return {"message": message}
+    """Deserializes an ACK_BUSY and extracts the command ID."""
+    cmd_id, = struct.unpack(">H", data)
+    return {"cmd_id": cmd_id}
 
-def serialize_ack_invalid_cmd(message: str) -> bytes:
-    return message.encode("utf-8")[:64].ljust(64, b'\x00')
+def serialize_ack_invalid_cmd(cmd_id: int) -> bytes:
+    """Serializes an ACK_INVALID_CMD with only the command ID it refers to."""
+    return struct.pack(">H", cmd_id)
 
 def deserialize_ack_invalid_cmd(data: bytes) -> dict:
-    message = data[:64].decode("utf-8").rstrip('\x00')
-    return {"message": message}
+    """Deserializes an ACK_INVALID_CMD and extracts the command ID."""
+    cmd_id, = struct.unpack(">H", data)
+    return {"cmd_id": cmd_id}
