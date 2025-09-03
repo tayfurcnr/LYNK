@@ -12,6 +12,7 @@ and transmits it, while logging the action for traceability.
 from src.application.ack.serializer.dispatcher import serialize_ack
 from src.shared.comm.transmitter import send_frame
 from src.shared.log.logger import logger
+from src.core.frame_codec import build_mesh_frame, load_device_id
 
 def send_ack_ok(
     interface,
@@ -22,8 +23,11 @@ def send_ack_ok(
     """
     Send an ACK_OK frame with the corresponding command ID.
     """
+    if src is None:
+        src = load_device_id()
     payload = serialize_ack("ACK_OK", cmd_id)
-    send_frame(interface, payload, dst, src)
+    frame = build_mesh_frame('A', src, dst, payload)
+    send_frame(interface, frame)
     logger.info(
         f"[ACK] SENT ACK_OK | DST: {dst} | For CMD_ID: {cmd_id}"
     )
@@ -38,8 +42,11 @@ def send_ack_error(
     """
     Send an ACK_ERROR frame with the corresponding command ID.
     """
+    if src is None:
+        src = load_device_id()
     payload = serialize_ack("ACK_ERROR", cmd_id)
-    send_frame(interface, payload, dst, src)
+    frame = build_mesh_frame('A', src, dst, payload)
+    send_frame(interface, frame)
     logger.error(
         f"[ACK] SENT ACK_ERROR | DST: {dst} | For CMD_ID: {cmd_id}"
     )
@@ -54,8 +61,11 @@ def send_ack_busy(
     """
     Send an ACK_BUSY frame with the corresponding command ID.
     """
+    if src is None:
+        src = load_device_id()
     payload = serialize_ack("ACK_BUSY", cmd_id)
-    send_frame(interface, payload, dst, src)
+    frame = build_mesh_frame('A', src, dst, payload)
+    send_frame(interface, frame)
     logger.warning(
         f"[ACK] SENT ACK_BUSY | DST: {dst} | For CMD_ID: {cmd_id}"
     )
@@ -70,8 +80,11 @@ def send_ack_invalid_cmd(
     """
     Send an ACK_INVALID_CMD frame with the corresponding command ID.
     """
+    if src is None:
+        src = load_device_id()
     payload = serialize_ack("ACK_INVALID_CMD", cmd_id)
-    send_frame(interface, payload, dst, src)
+    frame = build_mesh_frame('A', src, dst, payload)
+    send_frame(interface, frame)
     logger.error(
         f"[ACK] SENT ACK_INVALID_CMD | DST: {dst} | For CMD_ID: {cmd_id}"
     )
