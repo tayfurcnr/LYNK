@@ -59,11 +59,17 @@ class UARTHandler:
         while self.running:
             try:
                 if self.ser.in_waiting:
-                    data = self.ser.read(self.ser.in_waiting)
-                    self.rx_queue.put(data)
-                time.sleep(0.01)
+                    data = self.ser.read_all()
+                    if data:
+                        self.rx_queue.put(data)
+                # time.sleep(0.01)
             except SerialException as e:
-                logger.error(f"[UARTHandler] Read error: {e}")
+                if "device reports readiness to read but returned no data" in str(e):
+                    # This specific error is ignored as per user request.
+                    # Note: This may hide an underlying issue like multi-access on the port.
+                    pass
+                else:
+                    logger.error(f"[UARTHandler] Read error: {e}")
 
     def send(self, data: bytes) -> bool:
         if not self.ser.is_open:

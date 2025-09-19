@@ -1,6 +1,6 @@
 {
   "vehicle": {
-    "id": 0,
+    "id": 2,
     "type": "COPTER"
   },
   "protocol": {
@@ -10,11 +10,11 @@
   },
   "interface": {
     "_comment": "Options: UART, UDP, MOCK_UART",
-    "comm_type": "UDP"
+    "comm_type": "UART"
   },
   "uart": {
-    "port": "COM4",
-    "baudrate": 115200,
+    "port": "/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AQ034ZA2-if00-port0",
+    "baudrate": 57600,
     "timeout": 1
   },
   "udp": {
