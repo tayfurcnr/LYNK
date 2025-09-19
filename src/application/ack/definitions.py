@@ -10,4 +10,5 @@ ack_definitions = {
     0x02: AckDefinition(0x02, "ACK_ERROR",       handler.ack_error,       codec.serialize_ack_error,       codec.deserialize_ack_error),
     0x03: AckDefinition(0x03, "ACK_BUSY",        handler.ack_busy,        codec.serialize_ack_busy,        codec.deserialize_ack_busy),
     0x04: AckDefinition(0x04, "ACK_INVALID_CMD", handler.ack_invalid_cmd, codec.serialize_ack_invalid_cmd, codec.deserialize_ack_invalid_cmd),
+    0x05: AckDefinition(0x05, "ACK_EXECUTION_ERROR", handler.ack_execution_error, codec.serialize_ack_execution_error, codec.deserialize_ack_execution_error),
 }

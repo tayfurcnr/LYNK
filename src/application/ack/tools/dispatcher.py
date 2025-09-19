@@ -70,6 +70,24 @@ def send_ack_busy(
         f"[ACK] SENT ACK_BUSY | DST: {dst} | For CMD_ID: {cmd_id}"
     )
 
+def send_ack_execution_error(
+    interface, 
+    cmd_id: int,
+    dst: int = 0xFF,
+    src: int | None = None
+) -> None:
+    """
+    Send an ACK_EXECUTION_ERROR frame with the corresponding command ID.
+    """
+    if src is None:
+        src = load_device_id()
+    payload = serialize_ack("ACK_EXECUTION_ERROR", cmd_id)
+    frame = build_mesh_frame('A', src, dst, payload)
+    send_frame(interface, frame)
+    logger.error(
+        f"[ACK] SENT ACK_EXECUTION_ERROR | DST: {dst} | For CMD_ID: {cmd_id}"
+    )
+
 
 def send_ack_invalid_cmd(
     interface,

@@ -81,6 +81,15 @@ def build_ack_busy(
     """
     return build_ack_frame("ACK_BUSY", [cmd_id], dst, src)
 
+def build_ack_execution_error(
+    cmd_id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    """
+    Build an ACK_EXECUTION_ERROR frame.
+    """
+    return build_ack_frame("ACK_EXECUTION_ERROR", [cmd_id], dst, src)
 
 def build_ack_invalid_cmd(
     cmd_id: int,

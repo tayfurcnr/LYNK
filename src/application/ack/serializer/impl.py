@@ -43,3 +43,12 @@ def deserialize_ack_invalid_cmd(data: bytes) -> dict:
     """Deserializes an ACK_INVALID_CMD and extracts the command ID."""
     cmd_id, = struct.unpack(">H", data)
     return {"cmd_id": cmd_id}
+
+def serialize_ack_execution_error(cmd_id: int) -> bytes:
+    """Serializes an ACK_EXECUTION_ERROR with only the command ID it refers to."""
+    return struct.pack(">H", cmd_id)
+
+def deserialize_ack_execution_error(data: bytes) -> dict:
+    """Deserializes an ACK_EXECUTION_ERROR and extracts the command ID."""
+    cmd_id, = struct.unpack(">H", data)
+    return {"cmd_id": cmd_id}
