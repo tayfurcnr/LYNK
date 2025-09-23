@@ -53,3 +53,10 @@ def serialize_barometer(vertical_speed: float, ground_speed: float, altitude_rel
 def deserialize_barometer(data: bytes) -> dict:
     vertical_speed, ground_speed, altitude_relative = struct.unpack(">3f", data)
     return {"vertical_speed": vertical_speed, "ground_speed": ground_speed, "altitude_relative": altitude_relative}
+
+def serialize_ping(sequence: int) -> bytes:
+    return struct.pack(">I", sequence)
+
+def deserialize_ping(data: bytes) -> dict:
+    sequence, = struct.unpack(">I", data)
+    return {"sequence": sequence}

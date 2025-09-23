@@ -170,3 +170,21 @@ def build_tlm_barometer(
         bytes: Mesh frame containing serialized barometer data.
     """
     return build_tlm_frame("BAROMETER", [vertical_speed, ground_speed, altitude_relative], dst, src)
+
+def build_tlm_ping(
+    sequence: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    """
+    Build a ping telemetry frame.
+
+    Args:
+        sequence (int): A sequence number for the ping.
+        dst (int, optional): Destination device ID.
+        src (int | None, optional): Source device ID.
+
+    Returns:
+        bytes: Mesh frame containing serialized ping data.
+    """
+    return build_tlm_frame("PING", [sequence], dst, src)

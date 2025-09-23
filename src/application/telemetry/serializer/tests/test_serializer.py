@@ -12,7 +12,8 @@ from telemetry.serializer.impl import (
     serialize_gps, deserialize_gps,
     serialize_imu, deserialize_imu,
     serialize_battery, deserialize_battery,
-    serialize_heartbeat, deserialize_heartbeat
+    serialize_heartbeat, deserialize_heartbeat,
+    serialize_ping, deserialize_ping
 )
 
 def test_serialize_deserialize_gps():
@@ -61,6 +62,14 @@ def test_serialize_deserialize_heartbeat():
     assert result["gps_fix"] == gps_fix
     assert result["sat_count"] == sat_count
 
+def test_serialize_deserialize_ping():
+    sequence = 12345
+    data = serialize_ping(sequence)
+    assert isinstance(data, bytes)
+    assert len(data) == 4
+    result = deserialize_ping(data)
+    assert result["sequence"] == sequence
+
 def test_heartbeat_string_truncation_and_padding():
     mode = "A" * 40  # longer than 32
     health = "B" * 40
@@ -85,3 +94,7 @@ def test_deserialize_battery_invalid_length():
 def test_deserialize_heartbeat_invalid_length():
     with pytest.raises(struct.error):
         deserialize_heartbeat(b"\x00" * 10)
+
+def test_deserialize_ping_invalid_length():
+    with pytest.raises(struct.error):
+        deserialize_ping(b"\x00" * 2)

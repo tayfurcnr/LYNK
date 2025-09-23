@@ -58,3 +58,8 @@ def barometer(data: dict, src_id: int):
     set_device_data(src_id, "barometer", barometer)
     logger.debug(f"[TELEMETRY] Barometer received from SRC: {src_id}")
     logger.debug(f"[TELEMETRY] → Vertical Speed: {barometer['vertical_speed']:.2f}, Ground Speed: {barometer['ground_speed']:.2f}, Altitude Relative: {barometer['altitude_relative']:.2f}")
+
+def ping(data: dict, src_id: int):
+    sequence = data["sequence"]
+    set_device_data(src_id, "ping", {"sequence": sequence})
+    logger.debug(f"[TELEMETRY] PING received from SRC: {src_id} with sequence {sequence}")

@@ -11,4 +11,5 @@ telemetry_definitions = {
     0x03: TelemetryDefinition(0x03, "BATTERY",   handler.battery,   codec.serialize_battery,   codec.deserialize_battery),
     0x04: TelemetryDefinition(0x04, "HEARTBEAT", handler.heartbeat, codec.serialize_heartbeat, codec.deserialize_heartbeat),
     0x05: TelemetryDefinition(0x05, "BAROMETER", handler.barometer, codec.serialize_barometer, codec.deserialize_barometer),
+    0x06: TelemetryDefinition(0x06, "PING",      handler.ping,      codec.serialize_ping,      codec.deserialize_ping),
 }

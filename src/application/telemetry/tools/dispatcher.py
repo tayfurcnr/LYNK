@@ -14,7 +14,8 @@ from src.application.telemetry.tools.builder import (
     build_tlm_imu,
     build_tlm_battery,
     build_tlm_heartbeat,
-    build_tlm_barometer
+    build_tlm_barometer,
+    build_tlm_ping
 )
 from src.shared.comm.transmitter import send_frame
 from src.shared.log.logger import logger
@@ -147,4 +148,35 @@ def send_tlm_barometer(
     send_frame(interface, frame)
     logger.debug(
         f"[TELEMETRY] SENT BAROMETER | DST: {dst} | V_SPEED: {vertical_speed:.2f}, GND_SPEED: {ground_speed:.2f}, ALT_REL: {altitude_relative:.2f}"
+    )
+
+# --- State for auto-ping ---
+_ping_sequence = 0
+
+def send_tlm_ping(
+    interface,
+    sequence: int | None = None,
+    dst: int = 0xFF,
+    src: int | None = None
+) -> None:
+    """
+    Send a Ping telemetry frame.
+
+    If sequence is not provided, an auto-incrementing sequence number will be used.
+
+    Args:
+        interface: Communication interface instance.
+        sequence (int | None, optional): A sequence number for the ping.
+        dst (int, optional): Destination device ID.
+        src (int | None, optional): Source device ID.
+    """
+    global _ping_sequence
+    if sequence is None:
+        sequence = _ping_sequence
+        _ping_sequence += 1
+
+    frame = build_tlm_ping(sequence, dst, src)
+    send_frame(interface, frame)
+    logger.debug(
+        f"[TELEMETRY] SENT PING | DST: {dst} | SEQUENCE: {sequence}"
     )
