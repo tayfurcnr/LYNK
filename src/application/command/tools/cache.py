@@ -60,3 +60,28 @@ def reset_command_cache() -> None:
     Clear the stored last command from the cache.
     """
     _last_command.clear()
+
+
+def ingest_frame(frame: Dict[str, Any]) -> None:
+    """
+    Ingest a command frame and store it as the last command.
+    
+    Args:
+        frame (Dict[str, Any]): Frame containing command_id, params, etc.
+    """
+    if not isinstance(frame, dict):
+        return
+        
+    command_id = frame.get("command_id")
+    if command_id is None:
+        return
+        
+    params = frame.get("params", b"")
+    if not isinstance(params, (bytes, bytearray)):
+        params = b""
+        
+    parsed_params = frame.get("parsed_params", {})
+    if not isinstance(parsed_params, dict):
+        parsed_params = {}
+        
+    set_last_command(command_id, params, parsed_params)

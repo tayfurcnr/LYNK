@@ -69,6 +69,7 @@ def test_get_all_cached_data_removes_src_id_key():
 
     cached = get_all_cached_data()
     assert src_id in cached
+    assert cached[src_id]["vehicle_id"] == src_id
     assert "heartbeat" in cached[src_id]
     assert "src_id" not in cached[src_id]["heartbeat"]
 
