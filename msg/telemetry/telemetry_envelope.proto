@@ -1,0 +1,21 @@
+syntax = "proto3";
+package lynk.telemetry;
+
+import "msg/telemetry/gps.proto";
+import "msg/telemetry/imu.proto";
+import "msg/telemetry/battery.proto";
+import "msg/telemetry/heartbeat.proto";
+import "msg/telemetry/barometer.proto";
+import "msg/telemetry/ping.proto";
+
+message TelemetryEnvelope {
+  uint32 tlm_id = 1;
+  oneof payload {
+    Gps gps = 2;
+    Imu imu = 3;
+    Battery battery = 4;
+    Heartbeat heartbeat = 5;
+    Barometer barometer = 6;
+    Ping ping = 7;
+  }
+}

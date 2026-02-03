@@ -1,0 +1,6 @@
+syntax = "proto3";
+package lynk.command;
+
+message SystemSetVehicleId {
+  uint32 vehicle_id = 1;
+}

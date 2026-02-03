@@ -1,0 +1,7 @@
+syntax = "proto3";
+package lynk.command;
+
+message FlightTakeoff {
+  float altitude_m = 1;
+  float min_pitch_deg = 2;
+}

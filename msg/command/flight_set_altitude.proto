@@ -1,0 +1,7 @@
+syntax = "proto3";
+package lynk.command;
+
+message FlightSetAltitude {
+  float alt_m = 1;
+  uint32 alt_ref = 2;
+}

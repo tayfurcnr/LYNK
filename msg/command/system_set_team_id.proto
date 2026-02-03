@@ -1,0 +1,6 @@
+syntax = "proto3";
+package lynk.command;
+
+message SystemSetTeamId {
+  uint32 team_id = 1;
+}

@@ -1,0 +1,9 @@
+syntax = "proto3";
+package lynk.command;
+
+message FlightGoto {
+  double lat = 1;
+  double lon = 2;
+  float alt = 3;
+  uint32 alt_ref = 4;
+}

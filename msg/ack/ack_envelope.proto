@@ -1,0 +1,19 @@
+syntax = "proto3";
+package lynk.ack;
+
+import "msg/ack/ack_ok.proto";
+import "msg/ack/ack_error.proto";
+import "msg/ack/ack_busy.proto";
+import "msg/ack/ack_invalid_cmd.proto";
+import "msg/ack/ack_execution_error.proto";
+
+message AckEnvelope {
+  uint32 ack_id = 1;
+  oneof payload {
+    Ok ok = 2;
+    Error error = 3;
+    Busy busy = 4;
+    InvalidCmd invalid_cmd = 5;
+    ExecutionError execution_error = 6;
+  }
+}

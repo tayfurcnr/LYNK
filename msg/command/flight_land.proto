@@ -1,0 +1,9 @@
+syntax = "proto3";
+package lynk.command;
+
+message FlightLand {
+  uint32 mode = 1;
+  double lat = 2;
+  double lon = 3;
+  float yaw = 4;
+}

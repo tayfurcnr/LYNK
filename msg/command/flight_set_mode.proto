@@ -1,0 +1,8 @@
+syntax = "proto3";
+package lynk.command;
+
+import "nanopb.proto";
+
+message FlightSetMode {
+  string mode = 1 [(nanopb).max_length = 32];
+}

@@ -1,0 +1,7 @@
+syntax = "proto3";
+package lynk.command;
+
+message FlightSetSpeed {
+  float speed_mps = 1;
+  uint32 scope = 2;
+}

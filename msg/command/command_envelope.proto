@@ -1,0 +1,33 @@
+syntax = "proto3";
+package lynk.command;
+
+import "msg/command/system_set_vehicle_id.proto";
+import "msg/command/system_set_team_id.proto";
+import "msg/command/flight_set_mode.proto";
+import "msg/command/flight_arming.proto";
+import "msg/command/flight_takeoff.proto";
+import "msg/command/flight_goto.proto";
+import "msg/command/flight_set_speed.proto";
+import "msg/command/flight_set_altitude.proto";
+import "msg/command/flight_set_heading.proto";
+import "msg/command/flight_set_home.proto";
+import "msg/command/flight_set_roi.proto";
+import "msg/command/flight_land.proto";
+
+message CommandEnvelope {
+  uint32 cmd_id = 1;
+  oneof payload {
+    SystemSetVehicleId system_set_vehicle_id = 2;
+    SystemSetTeamId system_set_team_id = 3;
+    FlightSetMode flight_set_mode = 4;
+    FlightArming flight_arming = 5;
+    FlightTakeoff flight_takeoff = 6;
+    FlightGoto flight_goto = 7;
+    FlightSetSpeed flight_set_speed = 8;
+    FlightSetAltitude flight_set_altitude = 9;
+    FlightSetHeading flight_set_heading = 10;
+    FlightSetHome flight_set_home = 11;
+    FlightSetRoi flight_set_roi = 12;
+    FlightLand flight_land = 13;
+  }
+}

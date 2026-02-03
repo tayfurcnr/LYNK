@@ -1,0 +1,7 @@
+syntax = "proto3";
+package lynk.command;
+
+message FlightSetHome {
+  double lat = 1;
+  double lon = 2;
+}

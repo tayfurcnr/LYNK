@@ -1,0 +1,6 @@
+syntax = "proto3";
+package lynk.ack;
+
+message Ok {
+  uint32 cmd_id = 1;
+}

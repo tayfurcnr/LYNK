@@ -1,0 +1,8 @@
+syntax = "proto3";
+package lynk.telemetry;
+
+message Gps {
+  float lat = 1;
+  float lon = 2;
+  float alt = 3;
+}

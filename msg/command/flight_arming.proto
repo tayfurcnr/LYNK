@@ -1,0 +1,7 @@
+syntax = "proto3";
+package lynk.command;
+
+message FlightArming {
+  bool arm = 1;
+  bool force = 2;
+}

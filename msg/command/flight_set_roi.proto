@@ -1,0 +1,9 @@
+syntax = "proto3";
+package lynk.command;
+
+message FlightSetRoi {
+  uint32 roi_mode = 1;
+  double lat = 2;
+  double lon = 3;
+  float alt_m = 4;
+}
