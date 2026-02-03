@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.png" alt="LYNK Logo" width="1200"/>
+  <img src="docs/logo-v2.png" alt="LYNK Logo" width="1200"/>
 </p>
 
 # 🧠 LYNK – Layered Your-Node Kernel
@@ -12,6 +12,7 @@
 
 - 📡 **Communication Types:** UART, UDP, MOCK (for testing)
 - 🧠 **Protocol Logic:** Start/terminal bytes, versioning, and structured device addressing
+- 🛡️ **Fleet Management:** Multi-team support with Team ID filtering and "Solo" mode
 - 📦 **Message Types:** Command, Telemetry, ACK/NACK, and Swarm messages
 - 🧱 **Modular Design:** Handler-Serializer-Tool architecture for easy extensibility
 - 🧪 **Testable:** Fully compatible with `pytest`, supporting mock-based tests
@@ -22,27 +23,22 @@
 
 ```plaintext
 lynk-root/
-├── config.json               # Main protocol and communication settings
+├── configs/                  # Vehicle and team configurations
+│   ├── config.yaml           # Master / Default config
+│   ├── node_1/               # Node 1 specific settings
+│   └── ...
 ├── requirements.txt          # Python dependencies
-├── project_tree.txt          # Auto-generated file tree of the repo
-├── README.md                 # Project documentation (this file)
-├── docs/                     # Technical reports, diagrams, and documents
-├── logs/                     # Log files (e.g., system.log)
+├── README.md                 # Project documentation
+├── docs/                     # Technical reports and diagrams
+├── logs/                     # Log files (system.log)
 │
-├── src/                      # Main source code
-│   ├── core/                 # Core components like frame routing and encoding
-│   ├── application/          # Application-specific modules (ACK, Command, Telemetry)
-│   ├── handlers/             # Message handlers (Mavlink)
-│   └── shared/               # Shared utilities (comm, log, dev)
+├── src/                      # 🧠 LYNK Core Kernel
+│   ├── core/                 # Frame routing and encoding
+│   ├── application/          # ACK, Command, Telemetry modules
+│   └── shared/               # Interfaces (UDP/UART), config, and logging
 │
-└── tests/                    # Pytest-based modular test structure
-    ├── ack/                  # ACK-related tests
-    ├── command/              # Command dispatch and handling
-    ├── comm/                 # Communication layer tests
-    ├── core/                 # Frame routing logic tests
-    ├── telemetry/            # Telemetry flow and caching tests
-    ├── swarm/                # Swarm command and structure tests
-    └── integration/          # Full-system flow and integration tests
+├── main.py                   # 🧪 Node Emulator & CLI Test Tool
+└── tests/                    # 🏁 Automated Pytest Suite (Modular)
 ```
 
 ---
@@ -57,25 +53,50 @@ pip install -r requirements.txt
 
 ---
 
-## ⚡ Usage
+## 🛡️ Fleet Management & Team Logic
 
-Update the `config.json` file to select the interface type:
+LYNK implements a sophisticated filtering and routing system based on **Team IDs** and **Vehicle IDs**.
 
-```json
-"interface": {
-    "comm_type": "MOCK_UART"  // or "UART", "UDP"
-}
+### Team Categorization:
+- 🔵 **Team 1 / 🟢 Team 2**: Standard mission teams. Nodes in these teams ignore all traffic from other teams to reduce network noise.
+- ⚪ **Solo Mode (Team 0)**: Nodes assigned to Team 0 act as independent agents. They ignore multi-team traffic but remain part of the global command chain.
+
+### Communication Rules:
+1. **Intra-Team**: Standard telemetry and commands are routed within the same Team ID.
+2. **Global (Broadcast)**: Frames sent with **Team ID 0** are treated as "Global" and are accepted by **all nodes** regardless of their own Team ID.
+3. **Targeted**: Commands can be sent to specific `dst_id` values. If the Team ID matches or is 0, the node processes the command.
+
+### Dynamic Reconfiguration:
+You can change a node's identity at runtime using keyboard shortcuts in `main.py`:
+- `I`: Toggle **Vehicle ID** (e.g., between 5 and 10).
+- `E`: Toggle **Team ID** (Cycle: Team 1 → Team 2 → SOLO 0).
+
+---
+
+## 🧪 Testing with Node Emulator
+
+Since `main.py` is a test emulator, you can use it to simulate nodes:
+
+Update the `config.yaml` file in the `configs/` directory to select the interface type:
+
+```yaml
+interface:
+  comm_type: "UDP"  # or "UART", "MOCK_UART"
 ```
 
-To run a basic system test:
+To run a simulated node:
 
 ```bash
-python -m tests.integration.test_lynk_integration
+# Using default configs/config.yaml
+python3 main.py
+
+# Using a specific node config
+python3 main.py --config configs/node_1/config.yaml
 ```
 
 ---
 
-## 🧪 Running Tests
+## 🏁 Automated Tests
 
 Run all tests with:
 
@@ -97,6 +118,7 @@ pytest tests/ack/test_ack_multithread.py
   - Create a serializer in `src/application/<frame_type>/serializer/`
   - Implement a handler in `src/application/<frame_type>/handler/`
   - Register the handler in `src/core/frame_router.py`
+- **Dynamic ID Management**: Use `src.shared.config.manager.get_config()` to update `id` or `team_id` at runtime. The `FrameRouter` and Transmitter always pull the latest values from this shared config.
 - Use `src/shared/comm/mock_handler.py` for local testing
 - Use `src/shared/log/logger.py` to log all frame activity to `logs/system.log`
 

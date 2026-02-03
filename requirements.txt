@@ -1,3 +1,4 @@
 pyserial
 pytest
 crcmod
+PyYAML

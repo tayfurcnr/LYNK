@@ -18,7 +18,8 @@ def build_tlm_frame(
     name: str,
     params: list,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Construct a generic telemetry mesh frame.
@@ -46,7 +47,7 @@ def build_tlm_frame(
     payload_body = serializer(*params)
     payload = bytes([tlm_id]) + payload_body
 
-    return build_mesh_frame('T', source_id, dst, payload)
+    return build_mesh_frame('T', source_id, dst, payload, team_id=team_id)
 
 
 def build_tlm_gps(
@@ -54,7 +55,8 @@ def build_tlm_gps(
     lon: float,
     alt: float,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a GPS telemetry frame.
@@ -69,7 +71,7 @@ def build_tlm_gps(
     Returns:
         bytes: Mesh frame containing serialized GPS data.
     """
-    return build_tlm_frame("GPS", [lat, lon, alt], dst, src)
+    return build_tlm_frame("GPS", [lat, lon, alt], dst, src, team_id=team_id)
 
 
 def build_tlm_imu(
@@ -77,7 +79,8 @@ def build_tlm_imu(
     pitch: float,
     yaw: float,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build an IMU telemetry frame.
@@ -92,7 +95,7 @@ def build_tlm_imu(
     Returns:
         bytes: Mesh frame containing serialized IMU data.
     """
-    return build_tlm_frame("IMU", [roll, pitch, yaw], dst, src)
+    return build_tlm_frame("IMU", [roll, pitch, yaw], dst, src, team_id=team_id)
 
 
 def build_tlm_battery(
@@ -100,7 +103,8 @@ def build_tlm_battery(
     current: float,
     level: float,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a battery telemetry frame.
@@ -115,7 +119,7 @@ def build_tlm_battery(
     Returns:
         bytes: Mesh frame containing serialized battery data.
     """
-    return build_tlm_frame("BATTERY", [voltage, current, level], dst, src)
+    return build_tlm_frame("BATTERY", [voltage, current, level], dst, src, team_id=team_id)
 
 
 def build_tlm_heartbeat(
@@ -125,7 +129,8 @@ def build_tlm_heartbeat(
     gps_fix: bool,
     sat_count: int,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a heartbeat telemetry frame conveying system status.
@@ -146,7 +151,8 @@ def build_tlm_heartbeat(
         "HEARTBEAT",
         [mode, health, is_armed, gps_fix, sat_count],
         dst,
-        src
+        src,
+        team_id=team_id
     )
 
 def build_tlm_barometer(
@@ -154,7 +160,8 @@ def build_tlm_barometer(
     ground_speed: float,
     altitude_relative: float,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a barometer telemetry frame.
@@ -169,12 +176,13 @@ def build_tlm_barometer(
     Returns:
         bytes: Mesh frame containing serialized barometer data.
     """
-    return build_tlm_frame("BAROMETER", [vertical_speed, ground_speed, altitude_relative], dst, src)
+    return build_tlm_frame("BAROMETER", [vertical_speed, ground_speed, altitude_relative], dst, src, team_id=team_id)
 
 def build_tlm_ping(
     sequence: int,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a ping telemetry frame.
@@ -187,4 +195,4 @@ def build_tlm_ping(
     Returns:
         bytes: Mesh frame containing serialized ping data.
     """
-    return build_tlm_frame("PING", [sequence], dst, src)
+    return build_tlm_frame("PING", [sequence], dst, src, team_id=team_id)

@@ -8,6 +8,7 @@ CommandDefinition = namedtuple("CommandDefinition", ["id", "name", "handler"])
 command_definitions = {
     0x01: CommandDefinition(0x01, "SYSTEM_REBOOT",      handler.system_reboot),
     0x02: CommandDefinition(0x02, "SYSTEM_SET_VEHICLE_ID", handler.system_set_vehicle_id),
+    0x03: CommandDefinition(0x03, "SYSTEM_SET_TEAM_ID",    handler.system_set_team_id),
 
     0x15: CommandDefinition(0x15, "FLIGHT_SET_MODE", handler.flight_set_mode),
     0x16: CommandDefinition(0x16, "FLIGHT_ARMING",  handler.flight_arming),

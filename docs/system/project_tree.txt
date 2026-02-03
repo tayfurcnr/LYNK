@@ -1,123 +1,95 @@
-LYNK/
-├── .gitignore
-├── config.json
-├── docs
-│   ├── frame_format.md
-│   ├── logo.png
-│   ├── system
-│   │   ├── project_tree.txt
-│   │   ├── system_flowchart.drawio
-│   │   └── system_flowchart.png
-│   └── telemetry
-│       └── extending_telemetry_format.md
-├── example.png
-├── hello.txt
-├── logs
-│   └── system.log
-├── main_one.py
-├── main_telem_ftp.py
-├── main_two.py
-├── README.md
-├── requirements.txt
-├── src
-│   ├── core
-│   │   ├── __init__.py
-│   │   ├── frame_codec.py
-│   │   ├── frame_router.py
-│   │   └── vehicle_factory.py
-│   ├── handlers
-│   │   ├── __init__.py
-│   │   ├── ack
-│   │   │   ├── __init__.py
-│   │   │   └── ack_handler.py
-│   │   ├── command
-│   │   │   ├── __init__.py
-│   │   │   └── command_handler.py
-│   │   ├── ftp
-│   │   │   ├── __init__.py
-│   │   │   └── file_handler.py
-│   │   ├── mavlink
-│   │   │   ├── base_handler.py
-│   │   │   ├── copter_handler.py
-│   │   │   └── plane_handler.py
-│   │   ├── swarm
-│   │   │   ├── __init__.py
-│   │   │   └── swarm_handler.py
-│   │   └── telemetry
-│   │       ├── __init__.py
-│   │       └── telemetry_handler.py
-│   ├── serializers
-│   │   ├── ack_serializer.py
-│   │   ├── command_serializer.py
-│   │   ├── ftp_serializer.py
-│   │   ├── swarm_serializer.py
-│   │   └── telemetry_serializer.py
-│   ├── swarm
-│   │   ├── __init__.py
-│   │   ├── swarm_commander.py
-│   │   └── swarm_manager.py
-│   └── tools
-│       ├── ack
-│       │   ├── ack_builder.py
-│       │   ├── ack_dispatcher.py
-│       │   ├── ack_tracker.py
-│       │   ├── ftp_ack_builder.py
-│       │   └── status_codes.py
-│       ├── comm
-│       │   ├── __init__.py
-│       │   ├── interface_factory.py
-│       │   ├── interfaces.py
-│       │   ├── mock_handler.py
-│       │   ├── transmitter.py
-│       │   ├── uart_handler.py
-│       │   └── udp_handler.py
-│       ├── command
-│       │   ├── __init__.py
-│       │   ├── command_builder.py
-│       │   ├── command_dispatcher.py
-│       │   └── README.md
-│       ├── dev
-│       │   └── generate_tree.py
-│       ├── ftp
-│       │   ├── ftp_builder.py
-│       │   └── storage.py
-│       ├── log
-│       │   ├── __init__.py
-│       │   └── logger.py
-│       └── telemetry
-│           ├── __init__.py
-│           ├── telemetry_builder.py
-│           ├── telemetry_cache.py
-│           └── telemetry_dispatcher.py
-└── tests
-    ├── __init__.py
-    ├── ack
-    │   ├── __init__.py
-    │   └── test_ack_basic.py
-    ├── comm
-    │   ├── __init__.py
-    │   └── test_mock_uart.py
-    ├── command
-    │   ├── __init__.py
-    │   └── test_command_serialization.py
-    ├── core
-    │   ├── __init__.py
-    │   └── test_frame_codec.py
-    ├── ftp
-    │   ├── __init__.py
-    │   ├── hello.txt
-    │   ├── test_ftp_end_to_end_mockuart.py
-    │   └── test_image_transfer.py
-    ├── integration
-    │   ├── __init__.py
-    │   ├── hello.txt
-    │   ├── test_ack_multithread.py
-    │   ├── test_end_to_end.py
-    │   └── test_lynk_integration.py
-    ├── README.md
-    ├── swarm
-    │   ├── __init__.py
-    │   └── test_swarm_commander.py
-    └── telemetry
-        ├── __init__.py
-        └── test_telemetry_cache.py
+.
+./logs
+./logs/system.log
+./__init__.py
+./main.py
+./docs
+./docs/frame_format.md
+./docs/telemetry
+./docs/telemetry/extending_telemetry_format.md
+./docs/system
+./docs/system/system_flowchart.png
+./docs/system/system_flowchart.drawio
+./docs/system/project_tree.txt
+./docs/logo-v2.png
+./requirements.txt
+./src
+./src/shared
+./src/shared/dev
+./src/shared/dev/generate_tree.py
+./src/shared/log
+./src/shared/log/logger.py
+./src/shared/log/__init__.py
+./src/shared/__init__.py
+./src/shared/comm
+./src/shared/comm/udp_handler.py
+./src/shared/comm/interface_factory.py
+./src/shared/comm/mock_handler.py
+./src/shared/comm/__init__.py
+./src/shared/comm/interfaces.py
+./src/shared/comm/uart_handler.py
+./src/shared/comm/transmitter.py
+./src/shared/config
+./src/shared/config/manager.py
+./src/core
+./src/core/frame_codec.py
+./src/core/frame_router.py
+./src/core/__init__.py
+./src/__init__.py
+./src/application
+./src/application/telemetry
+./src/application/telemetry/definitions.py
+./src/application/telemetry/serializer
+./src/application/telemetry/tools
+./src/application/telemetry/handler
+./src/application/telemetry/__init__.py
+./src/application/telemetry/docs
+./src/application/__init__.py
+./src/application/ack
+./src/application/ack/definitions.py
+./src/application/ack/serializer
+./src/application/ack/tools
+./src/application/ack/handler
+./src/application/ack/__init__.py
+./src/application/ack/docs
+./src/application/command
+./src/application/command/definitions.py
+./src/application/command/serializer
+./src/application/command/tools
+./src/application/command/handler
+./src/application/command/__init__.py
+./src/application/command/docs
+./configs
+./configs/config.yaml
+./configs/node_1
+./configs/node_1/config.yaml
+./configs/node_3
+./configs/node_3/config.yaml
+./configs/node_2
+./configs/node_2/config.yaml
+./tests
+./tests/core
+./tests/core/__init__.py
+./tests/core/frame_codec_test.py
+./tests/core/test_team_id.py
+./tests/integration
+./tests/integration/test_ack_multithread.py
+./tests/integration/hello.txt
+./tests/integration/__init__.py
+./tests/integration/test_lynk_integration.py
+./tests/integration/test_end_to_end.py
+./tests/telemetry
+./tests/telemetry/__init__.py
+./tests/telemetry/test_telemetry_cache.py
+./tests/__init__.py
+./tests/ack
+./tests/ack/test_ack_basic.py
+./tests/ack/__init__.py
+./tests/comm
+./tests/comm/test_mock_uart.py
+./tests/comm/__init__.py
+./tests/command
+./tests/command/__init__.py
+./tests/command/test_command_serialization.py
+./tests/README.md
+./README.md

@@ -17,12 +17,29 @@ def system_reboot(cmd_id, params, src_id, interface):
 def system_set_vehicle_id(cmd_id, params, src_id, interface):
     if len(params) == 4:
         vehicle_id, = struct.unpack(">I", params)
+        from src.shared.config.manager import get_config, save_config
+        get_config()["vehicle"]["id"] = vehicle_id
         parsed = {"id": vehicle_id}
-        logger.info(f"[COMMAND] RECV | CMD: SYSTEM_SET_VEHICLE_ID | ID: {vehicle_id}")
+        logger.info(f"[COMMAND] RECV | CMD: SYSTEM_SET_VEHICLE_ID | ID updated to: {vehicle_id}")
+        save_config() # Persistent save
         set_last_command(cmd_id, params, parsed)
         # send_ack_ok(interface, cmd_id, dst=src_id)
     else:
         logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SYSTEM_SET_VEHICLE_ID | PRM LEN: {len(params)}")
+        # send_ack_invalid_cmd(interface, cmd_id, dst=src_id)
+
+def system_set_team_id(cmd_id, params, src_id, interface):
+    if len(params) == 1:
+        team_id, = struct.unpack(">B", params)
+        from src.shared.config.manager import get_config, save_config
+        get_config()["vehicle"]["team_id"] = team_id
+        parsed = {"team_id": team_id}
+        logger.info(f"[COMMAND] RECV | CMD: SYSTEM_SET_TEAM_ID | Team ID updated to: {team_id}")
+        save_config() # Persistent save
+        set_last_command(cmd_id, params, parsed)
+        # send_ack_ok(interface, cmd_id, dst=src_id)
+    else:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SYSTEM_SET_TEAM_ID | PRM LEN: {len(params)}")
         # send_ack_invalid_cmd(interface, cmd_id, dst=src_id)
 
 def flight_set_mode(cmd_id, params, src_id, interface):

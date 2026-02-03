@@ -45,6 +45,34 @@ def get_config_path():
     return _config_path
 
 
+def save_config():
+    """
+    Saves the current in-memory config back to the original file path.
+    Supports both YAML and JSON based on file extension.
+    """
+    global _config, _config_path
+    if _config is None or _config_path is None:
+        return False
+
+    try:
+        _, ext = os.path.splitext(_config_path)
+        ext = ext.lower()
+
+        with open(_config_path, "w") as f:
+            if ext in ['.yaml', '.yml']:
+                if yaml is None:
+                    raise ImportError("YAML support missing")
+                yaml.safe_dump(_config, f, default_flow_style=False, sort_keys=False)
+            elif ext == '.json':
+                json.dump(_config, f, indent=2)
+            else:
+                return False
+        return True
+    except Exception as e:
+        print(f"[CONFIG] Failed to save config: {e}")
+        return False
+
+
 def get(key_path: str, default=None):
     """
     get("udp.local_ip") -> returns nested config value or default

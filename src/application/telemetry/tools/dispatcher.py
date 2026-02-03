@@ -1,5 +1,6 @@
 from __future__ import annotations
 # src/application/telemetry/tools/dispatcher.py
+from typing import Optional
 
 """
 Telemetry Dispatcher Module
@@ -26,7 +27,8 @@ def send_tlm_gps(
     lon: float,
     alt: float,
     dst: int = 0xFF,
-    src: int | None = None
+    src: int | None = None,
+    dst_team_id: Optional[int] = None
 ) -> None:
     """
     Send a GPS telemetry frame containing latitude, longitude, and altitude.
@@ -39,11 +41,10 @@ def send_tlm_gps(
         dst (int, optional): Destination device ID (default: 0xFF for broadcast).
         src (int | None, optional): Source device ID; if None, omitted.
     """
-    frame = build_tlm_gps(lat, lon, alt, dst, src)
+    frame = build_tlm_gps(lat, lon, alt, dst, src, team_id=dst_team_id)
     send_frame(interface, frame)
-    logger.debug(
-        f"[TELEMETRY] SENT GPS | DST: {dst} | LAT: {lat:.6f}, LON: {lon:.6f}, ALT: {alt:.2f}"
-    )
+    target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
+    logger.debug(f"[TELEMETRY] SENT GPS | {target} | LAT: {lat:.6f}, LON: {lon:.6f}, ALT: {alt:.2f}")
 
 def send_tlm_imu(
     interface,
@@ -157,7 +158,8 @@ def send_tlm_ping(
     interface,
     sequence: int | None = None,
     dst: int = 0xFF,
-    src: int | None = None
+    src: int | None = None,
+    dst_team_id: Optional[int] = None
 ) -> None:
     """
     Send a Ping telemetry frame.
@@ -175,8 +177,7 @@ def send_tlm_ping(
         sequence = _ping_sequence
         _ping_sequence += 1
 
-    frame = build_tlm_ping(sequence, dst, src)
+    frame = build_tlm_ping(sequence, dst, src, team_id=dst_team_id)
     send_frame(interface, frame)
-    logger.debug(
-        f"[TELEMETRY] SENT PING | DST: {dst} | SEQUENCE: {sequence}"
-    )
+    target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
+    logger.debug(f"[TELEMETRY] SENT PING | {target} | SEQUENCE: {sequence}")

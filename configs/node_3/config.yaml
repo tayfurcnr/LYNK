@@ -1,0 +1,31 @@
+vehicle:
+  id: 3
+  team_id: 1
+  type: COPTER
+protocol:
+  start_byte: 84
+  start_byte_2: 199
+  version: 1
+interface:
+  comm_type: UDP
+uart:
+  port: /dev/ttyUSB2
+  baudrate: 57600
+  timeout: 1
+udp:
+  local_ip: 0.0.0.0
+  local_port: 5001
+  remote_ip: 239.1.2.3
+  remote_port: 5001
+logging:
+  enabled: true
+  level: INFO
+  clear_on_start: true
+  write_to_file: true
+security:
+  enabled: true
+  key: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+relay:
+  enabled: false
+  max_hops: 2
+  delay_ms: 50

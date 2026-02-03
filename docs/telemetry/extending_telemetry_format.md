@@ -1,138 +1,82 @@
-# 📡 LYNK – Adding a New Telemetry Type (e.g., HEARTBEAT)
+# 📡 LYNK – Adding a New Telemetry Type
 
-This guide explains how to add a new telemetry data type to the LYNK communication system. We use the example of `HEARTBEAT` telemetry, which includes status fields like flight mode, GPS fix, and arming state.
-
----
-
-## 🧱 Step 1: Register Telemetry ID
-
-Define a new telemetry type ID in the telemetry protocol. For example:
-
-```python
-# src/serializers/telemetry/telemetry_type_constants.py
-TELEMETRY_TYPE_IDS = {
-    "GPS": 0x01,
-    "IMU": 0x02,
-    "BATTERY": 0x03,
-    "HEARTBEAT": 0x04  # ✅ Add this
-}
-```
+This guide explains how to add a new telemetry data type to the LYNK communication system using the current modular structure.
 
 ---
 
-## 📦 Step 2: Define Serialization Logic
+## 🧱 Step 1: Define ID and Mapping
 
-Update the codec mapping used for binary packing/unpacking of telemetry frames:
+Register the new telemetry type in the central definitions file. This maps the ID to its name, handler, and serialization functions.
 
 ```python
-# src/serializers/telemetry_serializer.py
+# src/application/telemetry/definitions.py
 
-TELEMETRY_CODECS = {
-    0x04: {  # HEARTBEAT
-        "serialize": lambda *p: (
-            p[0].encode("utf-8")[:32].ljust(32, b'\x00') +
-            p[1].encode("utf-8")[:32].ljust(32, b'\x00') +
-            struct.pack(">??Bf", *p[2:])
-        ),
-        "deserialize": lambda data: {
-            "mode": data[:32].decode("utf-8").rstrip('\x00'),
-            "health": data[32:64].decode("utf-8").rstrip('\x00'),
-            **dict(zip(
-                ["is_armed", "gps_fix", "sat_count", "timestamp"],
-                struct.unpack(">??Bf", data[64:])
-            ))
-        }
-    },
+telemetry_definitions = {
     ...
+    0x07: TelemetryDefinition(0x07, "NEW_TYPE", handler.new_type, codec.serialize_new_type, codec.deserialize_new_type),
 }
 ```
 
 ---
 
-## 🧪 Step 3: Add Telemetry Builder
+## 📦 Step 2: Implement Serialization
 
-Add a `build_tlm_heartbeat()` function to package the data:
+Add the binary pack/unpack logic to the telemetry serializer implementation.
 
 ```python
-# src/tools/telemetry/telemetry_builder.py
+# src/application/telemetry/serializer/impl.py
 
-def build_tlm_heartbeat(mode, health, is_armed, gps_fix, sat_count, dst=0xFF, src=None):
-    return build_tlm_frame(0x04, [mode, health, is_armed, gps_fix, sat_count], dst, src)
+def serialize_new_type(param1: float, param2: int) -> bytes:
+    return struct.pack(">fI", param1, param2)
+
+def deserialize_new_type(data: bytes) -> dict:
+    param1, param2 = struct.unpack(">fI", data)
+    return {"param1": param1, "param2": param2}
 ```
 
 ---
 
-## 📤 Step 4: Add Dispatcher Function
+## 🔁 Step 3: Implement Handling logic
 
-Create a sender function that uses the builder:
-
-```python
-# src/tools/telemetry/telemetry_dispatcher.py
-
-def send_tlm_heartbeat(interface, mode, health, is_armed, gps_fix, sat_count, dst=0xFF, src=None):
-    frame = build_tlm_heartbeat(mode, health, is_armed, gps_fix, sat_count, dst, src)
-    send_frame(interface, frame)
-    logger.debug(f"[TELEMETRY] SENT | HEARTBEAT -> DST: {dst} | MODE: {mode}, HEALTH: {health}, ARMED: {is_armed}, FIX: {gps_fix}, SATS: {sat_count}")
-```
-
----
-
-## 🔁 Step 5: Update Handler Logic
-
-Update `handle_telemetry()` to process and cache the new type:
+Define how the incoming data should be processed and stored in the cache.
 
 ```python
-# src/handlers/telemetry/telemetry_handler.py
+# src/application/telemetry/handler/impl.py
 
-TELEMETRY_TYPE_MAP = {
-    0x01: "gps",
-    0x02: "imu",
-    0x03: "battery",
-    0x04: "heartbeat"  # ✅ Add this
-}
-
-def handle_heartbeat_data(data, src_id, data_type):
-    heartbeat_data = {
-        "mode": data["mode"],
-        "health": data["health"],
-        "is_armed": data["is_armed"],
-        "gps_fix": data["gps_fix"],
-        "sat_count": data["sat_count"]
+def new_type(data: dict, src_id: int):
+    processed_data = {
+        "p1": data["param1"],
+        "p2": data["param2"]
     }
-    set_device_data(src_id, data_type, heartbeat_data)
-    logger.debug(f"[TELEMETRY] Received HEARTBEAT from SRC: {src_id}")
-    logger.debug(f"[TELEMETRY] -> MODE: {data['mode']}, HEALTH: {data['health']}, ARMED: {data['is_armed']}, GPS_FIX: {data['gps_fix']}, SATS: {data['sat_count']}")
-```
-
-Then add dispatch logic:
-
-```python
-if data_type == "heartbeat":
-    handle_heartbeat_data(data, src_id, data_type)
+    set_device_data(src_id, "new_type", processed_data)
+    logger.info(f"[TELEMETRY] NEW_TYPE received from SRC: {src_id}")
 ```
 
 ---
 
-## ✅ Step 6: Test Integration
+## 📤 Step 4: Add Tools (Optional)
 
-Use `send_tlm_heartbeat()` in your test:
+Add high-level tools to easily send or build the new telemetry frame.
 
 ```python
-send_tlm_heartbeat(interface, mode="GUIDED", health="OK", is_armed=True, gps_fix=True, sat_count=10, dst=1, src=1)
+# src/application/telemetry/tools/dispatcher.py
+
+def send_tlm_new_type(interface, p1, p2, dst=0xFF, src=None):
+    # Uses build_tlm_frame internally with ID 0x07
+    ...
 ```
 
-Verify it's stored in the telemetry cache:
+---
+
+## ✅ Step 5: Test Integration
+
+You can now use your new telemetry type in `main.py` or automated tests.
 
 ```python
-heartbeat_data = get_device_data(1, "heartbeat")
-assert heartbeat_data["mode"] == "GUIDED"
+tlm.send_tlm_new_type(interface, p1=1.2, p2=42, dst=0, src=my_id)
 ```
 
 ---
 
 ## 🎉 Done!
-
-Your new telemetry type is now integrated with:
-- Serialization & deserialization
-- Frame building and dispatching
-- Caching and test validation
+The system will automatically route, deserialize, and handle the new telemetry type based on the `telemetry_definitions` registry.

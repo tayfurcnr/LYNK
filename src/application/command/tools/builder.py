@@ -21,7 +21,8 @@ def build_cmd_frame(
     cmd_id: int,
     params: bytes = b'',
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a generic command mesh frame.
@@ -37,12 +38,13 @@ def build_cmd_frame(
     """
     source = src if src is not None else load_device_id()
     payload = serialize_command(cmd_id, params)
-    return build_mesh_frame('C', source, dst, payload)
+    return build_mesh_frame('C', source, dst, payload, team_id=team_id)
 
 
 def build_cmd_system_reboot(
     dst: int,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a SYSTEM_REBOOT command frame (no parameters).
@@ -54,13 +56,14 @@ def build_cmd_system_reboot(
     Returns:
         bytes: Mesh frame for system_reboot command.
     """
-    return build_cmd_frame(0x01, dst=dst, src=src)
+    return build_cmd_frame(0x01, dst=dst, src=src, team_id=team_id)
 
 
 def build_cmd_flight_set_mode(
     mode: str,
     dst: int,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a FLIGHT_SET_MODE command frame.
@@ -74,14 +77,15 @@ def build_cmd_flight_set_mode(
         bytes: Mesh frame for flight_set_mode command.
     """
     params = mode.encode('utf-8')
-    return build_cmd_frame(0x15, params, dst, src)
+    return build_cmd_frame(0x15, params, dst, src, team_id=team_id)
 
 
 def build_cmd_flight_takeoff(
     altitude_m: float,
     min_pitch_deg: Optional[float] = None,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a FLIGHT_TAKEOFF command frame.
@@ -99,7 +103,7 @@ def build_cmd_flight_takeoff(
         params = struct.pack(">ff", altitude_m, min_pitch_deg)
     else:
         params = struct.pack(">f", altitude_m)
-    return build_cmd_frame(0x17, params, dst, src)
+    return build_cmd_frame(0x17, params, dst, src, team_id=team_id)
 
 
 def build_cmd_flight_land(
@@ -108,7 +112,8 @@ def build_cmd_flight_land(
     target_lon: Optional[float] = None,
     yaw: Optional[float] = None,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a FLIGHT_LAND command frame with optional parameters.
@@ -120,7 +125,7 @@ def build_cmd_flight_land(
     else:
         # No coordinates, simple land command
         params = b''
-    return build_cmd_frame(0x1E, params, dst, src)
+    return build_cmd_frame(0x1E, params, dst, src, team_id=team_id)
 
 def build_cmd_flight_goto(
     lat: float,
@@ -128,7 +133,8 @@ def build_cmd_flight_goto(
     alt: float,
     alt_ref: Optional[int] = None,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a FLIGHT_GOTO command frame with target waypoint.
@@ -143,31 +149,33 @@ def build_cmd_flight_goto(
         params = struct.pack(">ddfB", lat, lon, alt, alt_ref)
     else:
         params = struct.pack(">ddf", lat, lon, alt)
-    return build_cmd_frame(0x18, params, dst, src)
+    return build_cmd_frame(0x18, params, dst, src, team_id=team_id)
 
 def build_cmd_flight_set_speed(
     speed_mps: float,
     scope: Optional[int] = None,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     if scope is not None:
         params = struct.pack(">fB", speed_mps, scope)
     else:
         params = struct.pack(">f", speed_mps)
-    return build_cmd_frame(0x19, params, dst, src)
+    return build_cmd_frame(0x19, params, dst, src, team_id=team_id)
 
 def build_cmd_flight_set_altitude(
     alt_m: float,
     alt_ref: Optional[int] = None,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     if alt_ref is not None:
         params = struct.pack(">fB", alt_m, alt_ref)
     else:
         params = struct.pack(">f", alt_m)
-    return build_cmd_frame(0x1A, params, dst, src)
+    return build_cmd_frame(0x1A, params, dst, src, team_id=team_id)
 
 def build_cmd_flight_set_heading(
     mode: int,
@@ -186,7 +194,8 @@ def build_cmd_flight_arming(
     arm: bool,
     force: bool = False,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
 ) -> bytes:
     """
     Build a FLIGHT_ARMING command frame.
@@ -198,7 +207,7 @@ def build_cmd_flight_arming(
         src (int | None, optional): Source device ID.
     """
     params = struct.pack(">BB", 1 if arm else 0, 1 if force else 0)
-    return build_cmd_frame(0x16, params, dst, src)
+    return build_cmd_frame(0x16, params, dst, src, team_id=team_id)
 
 def build_cmd_mission_upload(
     mission_id: int,
@@ -276,6 +285,14 @@ def build_cmd_system_set_vehicle_id(
 ) -> bytes:
     params = struct.pack(">I", id)
     return build_cmd_frame(0x02, params, dst, src)
+
+def build_cmd_system_set_team_id(
+    team_id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> bytes:
+    params = struct.pack(">B", team_id)
+    return build_cmd_frame(0x03, params, dst, src)
 
 def build_cmd_swarm_formation_execute(
     leader_id: int,

@@ -24,6 +24,7 @@ from src.application.command.tools.builder import (
     build_cmd_flight_land,
     build_cmd_flight_arming,
     build_cmd_system_set_vehicle_id,
+    build_cmd_system_set_team_id,
     build_cmd_mission_upload, 
     build_cmd_mission_control,
     build_cmd_swarm_formation_execute,
@@ -49,7 +50,8 @@ class SendableInterface(Protocol):
 def cmd_system_reboot(
     interface: SendableInterface,
     dst: int,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    dst_team_id: Optional[int] = None
 ) -> None:
     """
     Send a SYSTEM_REBOOT command to reset the target device.
@@ -59,16 +61,18 @@ def cmd_system_reboot(
         dst (int): Destination device ID.
         src (int | None): Optional source device ID.
     """
-    frame = build_cmd_system_reboot(dst, src)
+    frame = build_cmd_system_reboot(dst, src, team_id=dst_team_id)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | SYSTEM_REBOOT -> DST: {dst}")
+    target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
+    logger.info(f"[COMMAND] SENT | SYSTEM_REBOOT -> {target}")
 
 
 def cmd_flight_set_mode(
     interface: SendableInterface,
     mode: str,
     dst: int,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    dst_team_id: Optional[int] = None
 ) -> None:
     """
     Send a FLIGHT_SET_MODE command to change the flight mode.
@@ -79,9 +83,10 @@ def cmd_flight_set_mode(
         dst (int): Destination device ID.
         src (int | None): Optional source device ID.
     """
-    frame = build_cmd_flight_set_mode(mode, dst, src)
+    frame = build_cmd_flight_set_mode(mode, dst, src, team_id=dst_team_id)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | FLIGHT_SET_MODE({mode}) -> DST: {dst}")
+    target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
+    logger.info(f"[COMMAND] SENT | FLIGHT_SET_MODE({mode}) -> {target}")
 
 
 def cmd_flight_arming(
@@ -89,7 +94,8 @@ def cmd_flight_arming(
     arm: bool,
     force: bool = False,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    dst_team_id: Optional[int] = None
 ) -> None:
     """
     Send a FLIGHT_ARMING command.
@@ -101,9 +107,10 @@ def cmd_flight_arming(
         dst (int): Destination device ID.
         src (int | None): Optional source device ID.
     """
-    frame = build_cmd_flight_arming(arm, force, dst, src)
+    frame = build_cmd_flight_arming(arm, force, dst, src, team_id=dst_team_id)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | FLIGHT_ARMING(arm={arm}, force={force}) -> DST: {dst}")
+    target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
+    logger.info(f"[COMMAND] SENT | FLIGHT_ARMING(arm={arm}, force={force}) -> {target}")
 
 
 def cmd_flight_takeoff(
@@ -111,7 +118,8 @@ def cmd_flight_takeoff(
     altitude_m: float,
     min_pitch_deg: Optional[float] = None,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    dst_team_id: Optional[int] = None
 ) -> None:
     """
     Send a FLIGHT_TAKEOFF command.
@@ -123,9 +131,10 @@ def cmd_flight_takeoff(
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
     """
-    frame = build_cmd_flight_takeoff(altitude_m, min_pitch_deg, dst, src)
+    frame = build_cmd_flight_takeoff(altitude_m, min_pitch_deg, dst, src, team_id=dst_team_id)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | FLIGHT_TAKEOFF(alt={altitude_m}) -> DST: {dst}")
+    target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
+    logger.info(f"[COMMAND] SENT | FLIGHT_TAKEOFF(alt={altitude_m}) -> {target}")
 
 
 def cmd_flight_land(
@@ -135,7 +144,8 @@ def cmd_flight_land(
     target_lon: Optional[float] = None,
     yaw: Optional[float] = None,
     dst: int = 0xFF,
-    src: Optional[int] = None
+    src: Optional[int] = None,
+    dst_team_id: Optional[int] = None
 ) -> None:
     """
     Send a FLIGHT_LAND command, optionally with landing coordinates and yaw.
@@ -144,9 +154,10 @@ def cmd_flight_land(
         interface: Communication interface instance.
         ...
     """
-    frame = build_cmd_flight_land(mode, target_lat, target_lon, yaw, dst, src)
+    frame = build_cmd_flight_land(mode, target_lat, target_lon, yaw, dst, src, team_id=dst_team_id)
     send_frame(interface, frame)
-    logger.info(f"[COMMAND] SENT | FLIGHT_LAND -> DST: {dst}")
+    target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
+    logger.info(f"[COMMAND] SENT | FLIGHT_LAND -> {target}")
 
 
 def cmd_flight_goto(
@@ -270,6 +281,16 @@ def cmd_system_set_vehicle_id(
     frame = build_cmd_system_set_vehicle_id(id, dst, src)
     send_frame(interface, frame)
     logger.info(f"[COMMAND] SENT | SYSTEM_SET_VEHICLE_ID({id}) -> DST: {dst}")
+
+def cmd_system_set_team_id(
+    interface: SendableInterface,
+    team_id: int,
+    dst: int = 0xFF,
+    src: Optional[int] = None
+) -> None:
+    frame = build_cmd_system_set_team_id(team_id, dst, src)
+    send_frame(interface, frame)
+    logger.info(f"[COMMAND] SENT | SYSTEM_SET_TEAM_ID({team_id}) -> DST: {dst}")
 
 def cmd_swarm_formation_execute(
     interface: SendableInterface,

@@ -9,15 +9,16 @@ This document explains the custom message frame used in LYNK’s mesh communicat
 
 | Section | Field         | Size    | Type      | Description |
 |--------|---------------|---------|-----------|-------------|
-| Header | `start_byte`   | 1 byte  | `uint8_t` | Start of frame (fixed: `0x54`, ASCII 'T') |
-|        | `version`      | 1 byte  | `uint8_t` | Protocol version (e.g., `0x01`) |
-|        | `frame_type`   | 1 byte  | `uint8_t` | Message type (e.g., `0x4D` = MAVLink) |
+| Header | `start_byte`   | 1 byte  | `uint8_t` | Start byte 1 (default: `0x54`, ASCII 'T') |
+|        | `start_byte_2` | 1 byte  | `uint8_t` | Start byte 2 (default: `0xC7`) |
+|        | `version`      | 1 byte  | `uint8_t` | Protocol version (default: `0x01`) |
+|        | `frame_type`   | 1 byte  | `uint8_t` | Message type (e.g., `0x50` = Ping) |
+|        | `team_id`      | 1 byte  | `uint8_t` | Team isolation ID (Frames from other teams are dropped) |
 |        | `src_id`       | 1 byte  | `uint8_t` | Source device ID |
-|        | `dst_id`       | 1 byte  | `uint8_t` | Destination device ID (`0xFF` = broadcast) |
-| Data   | `payload_len`  | 2 bytes | `uint16_t`| Length of payload (big-endian) |
-|        | `payload`      | N bytes | `uint8_t[]` | Actual message content |
+|        | `dst_id`       | 1 byte  | `uint8_t` | Destination device ID (`0xFF` = broadcast, `0x00` = team broadcast) |
+|        | `payload_len`  | 2 bytes | `uint16_t`| Length of payload (big-endian) |
+| Data   | `payload`      | N bytes | `uint8_t[]` | Actual message content |
 | CRC    | `crc`          | 2 bytes | `uint16_t`| CRC-16-CCITT-FALSE checksum |
-| End    | `terminal_byte`| 1 byte  | `uint8_t` | End of frame (fixed: `0x43`, ASCII 'C') |
 
 ---
 
@@ -25,9 +26,10 @@ This document explains the custom message frame used in LYNK’s mesh communicat
 
 | Constant       | Hex   | ASCII | Description |
 |----------------|-------|-------|-------------|
-| `START_BYTE`   | 0x54  | 'T'   | Start of frame |
-| `TERMINAL_BYTE`| 0x43  | 'C'   | End of frame |
-| `BROADCAST_ID` | 0xFF  | -     | Broadcast message to all nodes |
+| `START_BYTE`   | 0x54  | 'T'   | Start of frame 1 |
+| `START_BYTE_2` | 0xC7  | -     | Start of frame 2 |
+| `BROADCAST_ID` | 0xFF  | -     | Broadcast to all team nodes |
+| `TEAM_BCAST_ID`| 0x00  | -     | Alternative team broadcast ID |
 
 ---
 

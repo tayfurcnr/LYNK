@@ -30,6 +30,8 @@ class UDPHandler:
         # UDP soketi
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        if hasattr(socket, 'SO_REUSEPORT'):
+            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 
         # Kernel RX tamponunu büyüt (OS tavanına kadar). Config'ten gelebilir.
         if self.rcvbuf_bytes and self.rcvbuf_bytes > 0:
