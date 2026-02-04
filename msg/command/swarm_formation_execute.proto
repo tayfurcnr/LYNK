@@ -1,0 +1,11 @@
+syntax = "proto3";
+package lynk.command;
+
+import "nanopb.proto";
+
+message SwarmFormationExecute {
+  uint32 leader_id = 1;
+  string formation_type = 2 [(nanopb).max_length = 32];
+  double spacing_offset = 3;
+  double altitude_offset = 4;
+}

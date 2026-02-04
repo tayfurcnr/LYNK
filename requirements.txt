@@ -1,4 +1,7 @@
 pyserial
-pytest
 crcmod
 PyYAML
+protobuf
+lz4
+fastapi
+uvicorn

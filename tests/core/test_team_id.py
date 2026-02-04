@@ -18,8 +18,8 @@ def test_codec_team_id(mock_config):
     payload = b"HELLO"
     frame_bytes = build_mesh_frame(frame_type='C', src_id=10, dst_id=20, payload=payload)
     
-    # Expected length: 2(start) + 1(ver) + 1(type) + 1(team) + 1(src) + 1(dst) + 2(len) + 5(payload) + 2(crc) = 16
-    assert len(frame_bytes) == 16, f"Frame length should be 16, got {len(frame_bytes)}"
+    # Expected length v2: 11(header) + 4(seq) + 5(payload) + 2(crc) = 22
+    assert len(frame_bytes) == 22, f"Frame length should be 22, got {len(frame_bytes)}"
     
     # Test Parsing Frame
     parsed = parse_mesh_frame(frame_bytes)

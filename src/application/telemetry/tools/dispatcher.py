@@ -21,6 +21,61 @@ from src.application.telemetry.tools.builder import (
 from src.shared.comm.transmitter import send_frame
 from src.shared.log.logger import logger
 
+def send_telemetry(
+    interface,
+    name: str,
+    dst: int = 0xFF,
+    src: Optional[int] = None,
+    dst_team_id: Optional[int] = None,
+    **params
+) -> None:
+    """
+    Generic telemetry sender using Protobuf introspection.
+    
+    Automatically handles any telemetry type defined in the Protobuf schema.
+    
+    Args:
+        interface: Communication interface instance.
+        name (str): Telemetry name (e.g., "GPS", "IMU", "COMPASS").
+        dst (int): Destination device ID (default: 0xFF for broadcast).
+        src (int | None): Source device ID; if None, loaded from config.
+        dst_team_id (int | None): Destination team ID for team filtering.
+        **params: Telemetry parameters as keyword arguments.
+    
+    Example:
+        send_telemetry(interface, "GPS", lat=37.0, lon=35.0, alt=100.0)
+        send_telemetry(interface, "COMPASS", heading=45.2, declination=1.3, dst=1)
+    """
+    from src.application.telemetry.serializer.dispatcher import _get_tlm_fields
+    from src.application.telemetry.tools.builder import build_tlm_frame
+    
+    # Get telemetry schema from Protobuf introspection
+    tlm_fields = _get_tlm_fields()
+    name_upper = name.upper()
+    
+    if name_upper not in tlm_fields:
+        raise ValueError(f"Unknown telemetry type: {name}. Available: {list(tlm_fields.keys())}")
+    
+    field_name, param_list, tlm_id = tlm_fields[name_upper]
+    
+    # Validate parameters
+    missing = [p for p in param_list if p not in params]
+    if missing:
+        raise ValueError(f"{name} missing required parameters: {missing}")
+    
+    # Order parameters according to Protobuf schema
+    ordered_params = [params[p] for p in param_list]
+    
+    # Build and send frame
+    frame = build_tlm_frame(name_upper, ordered_params, dst, src, team_id=dst_team_id)
+    send_frame(interface, frame)
+    
+    # Log with parameter summary
+    param_str = ", ".join(f"{k}={v}" for k, v in params.items())
+    target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
+    logger.debug(f"[TELEMETRY] SENT {name_upper} | {target} | {param_str}")
+
+
 def send_tlm_gps(
     interface,
     lat: float,

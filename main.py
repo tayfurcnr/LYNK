@@ -4,6 +4,9 @@ import time
 import sys
 sys.dont_write_bytecode = True
 import os
+
+# Ensure src/shared/proto is in sys.path so generated protobufs can import each other (e.g. from msg.command import ...)
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src/shared/proto')))
 import sched
 import argparse
 import select

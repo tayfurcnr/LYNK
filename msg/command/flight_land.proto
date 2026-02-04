@@ -2,8 +2,9 @@ syntax = "proto3";
 package lynk.command;
 
 message FlightLand {
-  uint32 mode = 1;
-  double lat = 2;
-  double lon = 3;
-  float yaw = 4;
+  bool has_target = 1;
+  uint32 mode = 2;
+  double lat = 3;
+  double lon = 4;
+  float yaw = 5;
 }

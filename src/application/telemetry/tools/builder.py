@@ -12,7 +12,7 @@ function corresponds to a specific telemetry ID.
 from typing import Any, List, Optional
 
 from src.core.frame_codec import build_mesh_frame, load_device_id
-from src.application.telemetry.definitions import telemetry_definitions
+from src.application.telemetry.serializer.dispatcher import serialize_telemetry
 
 def build_tlm_frame(
     name: str,
@@ -35,17 +35,7 @@ def build_tlm_frame(
     """
     source_id = src if src is not None else load_device_id()
 
-    for defn in telemetry_definitions.values():
-        if defn.name == name:
-            tlm_id = defn.id
-            serializer = defn.serialize
-            break
-    else:
-        raise ValueError(f"Telemetry name not found: {name}")
-
-    # 🧩 ID'yi en başa ekle
-    payload_body = serializer(*params)
-    payload = bytes([tlm_id]) + payload_body
+    payload = serialize_telemetry(name, *params)
 
     return build_mesh_frame('T', source_id, dst, payload, team_id=team_id)
 

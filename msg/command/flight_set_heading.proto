@@ -2,5 +2,7 @@ syntax = "proto3";
 package lynk.command;
 
 message FlightSetHeading {
-  float heading_deg = 1;
+  uint32 mode = 1;
+  float yaw_deg = 2;
+  int32 turn = 3;
 }

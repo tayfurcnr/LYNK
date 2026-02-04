@@ -89,7 +89,8 @@ def relay_frame(frame_dict: dict, interface):
         dst_id=frame_dict["dst_id"],
         payload=frame_dict["payload"],
         team_id=frame_dict["team_id"],
-        hop_count=new_hop_count
+        hop_count=new_hop_count,
+        seq_num=frame_dict.get("seq_num")
     )
     
     interface.send(relayed_frame)

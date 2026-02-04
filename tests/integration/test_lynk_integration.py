@@ -1,24 +1,24 @@
 from __future__ import annotations
 import time
-import src.tools.comm.interface_factory as factory
-from src.serializers.telemetry_serializer import serialize_telemetry
-from src.serializers.command_serializer import serialize_command
+import src.shared.comm.interface_factory as factory
+from src.application.telemetry.serializer.dispatcher import serialize_telemetry
+from src.application.command.serializer.dispatcher import serialize_command
 from src.core.frame_router import route_frame
 import src.core.frame_codec as codec
-from src.tools.telemetry.telemetry_dispatcher import (
+from src.application.telemetry.tools.dispatcher import (
     send_tlm_gps,
     send_tlm_imu,
     send_tlm_battery,
     send_tlm_heartbeat
 )
-from src.tools.telemetry.telemetry_cache import (
+from src.application.telemetry.tools.cache import (
     get_active_device_ids,
     get_device_data,
     get_all_cached_data,
     get_all_data_for_device,
     reset_cache
 )
-from src.tools.command.command_dispatcher import cmd_takeoff
+from src.application.command.tools.dispatcher import cmd_flight_takeoff
 
 
 def process_all_frames(interface):
@@ -61,7 +61,7 @@ def test_lynk_full_flow():
     reset_cache()
 
     send_all_test_telemetries(interface)
-    cmd_takeoff(interface, takeoff_alt=30, src=1, dst=1)
+    cmd_flight_takeoff(interface, altitude_m=30.0, src=1, dst=1)
     process_all_frames(interface)
 
     # ✅ Verify telemetry data and heartbeat for devices 1, 2

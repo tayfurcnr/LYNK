@@ -1,0 +1,6 @@
+syntax = "proto3";
+package lynk.command;
+
+message SwarmSetLeader {
+  uint32 leader_id = 1;
+}

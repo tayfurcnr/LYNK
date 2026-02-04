@@ -4,6 +4,25 @@ from __future__ import annotations
 from src.application.telemetry.tools.cache import set_device_data
 from src.shared.log.logger import logger
 
+def default_handler(data: dict, src_id: int, tlm_name: str):
+    """
+    Default telemetry handler for types without custom implementation.
+    
+    Automatically logs and caches telemetry data.
+    
+    Args:
+        data (dict): Telemetry data dictionary.
+        src_id (int): Source device ID.
+        tlm_name (str): Telemetry type name (e.g., "COMPASS").
+    """
+    set_device_data(src_id, tlm_name.lower(), data)
+    
+    # Format data for logging
+    param_str = ", ".join(f"{k}={v}" for k, v in data.items())
+    logger.debug(f"[TELEMETRY] {tlm_name} received from SRC: {src_id}")
+    logger.debug(f"[TELEMETRY] → {param_str}")
+
+
 def gps(data: dict, src_id: int):
     gps = {
         "lat": data["lat"],

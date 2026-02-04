@@ -11,11 +11,12 @@
 ## 🚀 Key Features
 
 - 📡 **Communication Types:** UART, UDP, MOCK (for testing)
-- 🧠 **Protocol Logic:** Start/terminal bytes, versioning, and structured device addressing
+- 🧠 **Protocol Logic:** V2 Frame with 11-byte header, LZ4 compression, and CRC16-CCITT
 - 🛡️ **Fleet Management:** Multi-team support with Team ID filtering and "Solo" mode
-- 📦 **Message Types:** Command, Telemetry, ACK/NACK, and Swarm messages
+- ⚡ **Mission Resilience:** Noise recovery, sequence wrap-around, and auto-mesh routing
+- 🔐 **Hardened Security:** Anti-tamper, anti-replay, and encrypted payload support
 - 🧱 **Modular Design:** Handler-Serializer-Tool architecture for easy extensibility
-- 🧪 **Testable:** Fully compatible with `pytest`, supporting mock-based tests
+- 🧪 **Testable:** Fully automated "Test Lab" with visual validation roadmap
 
 ---
 
@@ -45,82 +46,69 @@ lynk-root/
 
 ## ⚙️ Installation
 
+### Core (User)
 ```bash
-git clone https://github.com/tayfurcnr/LYNK.git
-cd lynk-root
 pip install -r requirements.txt
+```
+
+### Full (Developer & UI)
+```bash
+pip install -r requirements-dev.txt
 ```
 
 ---
 
-## 🛡️ Fleet Management & Team Logic
+## �️ Fleet Management & Team Logic
 
 LYNK implements a sophisticated filtering and routing system based on **Team IDs** and **Vehicle IDs**.
 
 ### Team Categorization:
-- 🔵 **Team 1 / 🟢 Team 2**: Standard mission teams. Nodes in these teams ignore all traffic from other teams to reduce network noise.
-- ⚪ **Solo Mode (Team 0)**: Nodes assigned to Team 0 act as independent agents. They ignore multi-team traffic but remain part of the global command chain.
-
-### Communication Rules:
-1. **Intra-Team**: Standard telemetry and commands are routed within the same Team ID.
-2. **Global (Broadcast)**: Frames sent with **Team ID 0** are treated as "Global" and are accepted by **all nodes** regardless of their own Team ID.
-3. **Targeted**: Commands can be sent to specific `dst_id` values. If the Team ID matches or is 0, the node processes the command.
+- 🔵 **Team 1 / 🟢 Team 2**: Standard mission teams.
+- ⚪ **Solo Mode (Team 0)**: Independent agents.
 
 ### Dynamic Reconfiguration:
-You can change a node's identity at runtime using keyboard shortcuts in `main.py`:
-- `I`: Toggle **Vehicle ID** (e.g., between 5 and 10).
-- `E`: Toggle **Team ID** (Cycle: Team 1 → Team 2 → SOLO 0).
+Change identity at runtime in `main.py`:
+- `I`: Toggle **Vehicle ID**
+- `E`: Toggle **Team ID**
 
 ---
 
 ## 🧪 Testing with Node Emulator
-
-Since `main.py` is a test emulator, you can use it to simulate nodes:
-
-Update the `config.yaml` file in the `configs/` directory to select the interface type:
-
-```yaml
-interface:
-  comm_type: "UDP"  # or "UART", "MOCK_UART"
-```
-
-To run a simulated node:
-
 ```bash
-# Using default configs/config.yaml
+# Default config
 python3 main.py
 
-# Using a specific node config
+# Specific config
 python3 main.py --config configs/node_1/config.yaml
 ```
 
 ---
 
+## 🎮 LYNK Test Lab
+To launch the professional automated test platform and execute sequential system verification:
+```bash
+python3 test_lab.py
+# OR if installed via setup.py
+lynk-lab
+```
+Access at: `http://localhost:8000`
+
+---
+
 ## 🏁 Automated Tests
-
 Run all tests with:
-
 ```bash
 pytest tests/
-```
-
-Each test submodule is fully independent and can be run standalone. For example:
-
-```bash
-pytest tests/ack/test_ack_multithread.py
 ```
 
 ---
 
 ## 🧠 Developer Guide
 
-- To **add a new frame type**:
-  - Create a serializer in `src/application/<frame_type>/serializer/`
-  - Implement a handler in `src/application/<frame_type>/handler/`
-  - Register the handler in `src/core/frame_router.py`
-- **Dynamic ID Management**: Use `src.shared.config.manager.get_config()` to update `id` or `team_id` at runtime. The `FrameRouter` and Transmitter always pull the latest values from this shared config.
-- Use `src/shared/comm/mock_handler.py` for local testing
-- Use `src/shared/log/logger.py` to log all frame activity to `logs/system.log`
+- **Protobuf Generation**: If you change `.proto` files, run:
+  ```bash
+  python3 setup.py protos
+  ```
 
 ---
 

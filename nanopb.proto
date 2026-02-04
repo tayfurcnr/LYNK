@@ -1,0 +1,12 @@
+syntax = "proto2";
+// package nanopb;
+
+import "google/protobuf/descriptor.proto";
+
+message NanoPBOptions {
+  optional int32 max_length = 1;
+}
+
+extend google.protobuf.FieldOptions {
+  optional NanoPBOptions nanopb = 1010;
+}

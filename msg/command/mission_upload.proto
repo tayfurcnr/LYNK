@@ -1,0 +1,6 @@
+syntax = "proto3";
+package lynk.command;
+
+message MissionUpload {
+  string json = 1;
+}

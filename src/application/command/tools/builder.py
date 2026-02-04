@@ -9,9 +9,8 @@ Each builder function corresponds to a specific command ID and serializes
 its parameters before wrapping them in a mesh frame.
 """
 
-import struct
 import json
-from typing import Any, List, Optional
+from typing import Any, Dict, Optional
 
 from src.core.frame_codec import build_mesh_frame, load_device_id
 from src.application.command.serializer.dispatcher import serialize_command
@@ -19,7 +18,7 @@ from src.application.command.serializer.dispatcher import serialize_command
 
 def build_cmd_frame(
     cmd_id: int,
-    params: bytes = b'',
+    params: Optional[Dict[str, Any]] = None,
     dst: int = 0xFF,
     src: Optional[int] = None,
     team_id: Optional[int] = None
@@ -76,8 +75,7 @@ def build_cmd_flight_set_mode(
     Returns:
         bytes: Mesh frame for flight_set_mode command.
     """
-    params = mode.encode('utf-8')
-    return build_cmd_frame(0x15, params, dst, src, team_id=team_id)
+    return build_cmd_frame(0x15, {"mode": mode}, dst, src, team_id=team_id)
 
 
 def build_cmd_flight_takeoff(
@@ -99,10 +97,10 @@ def build_cmd_flight_takeoff(
     Returns:
         bytes: Mesh frame for takeoff command.
     """
-    if min_pitch_deg is not None:
-        params = struct.pack(">ff", altitude_m, min_pitch_deg)
-    else:
-        params = struct.pack(">f", altitude_m)
+    params = {
+        "altitude_m": altitude_m,
+        "min_pitch_deg": min_pitch_deg if min_pitch_deg is not None else 0.0,
+    }
     return build_cmd_frame(0x17, params, dst, src, team_id=team_id)
 
 
@@ -118,13 +116,14 @@ def build_cmd_flight_land(
     """
     Build a FLIGHT_LAND command frame with optional parameters.
     """
-    if target_lat is not None and target_lon is not None:
-        # If lat/lon are provided, yaw must also be considered (even if None)
-        target_yaw = yaw if yaw is not None else 0.0
-        params = struct.pack(">Bddf", mode, target_lat, target_lon, target_yaw)
-    else:
-        # No coordinates, simple land command
-        params = b''
+    has_target = target_lat is not None and target_lon is not None
+    params = {
+        "has_target": has_target,
+        "mode": mode,
+        "lat": target_lat if has_target else 0.0,
+        "lon": target_lon if has_target else 0.0,
+        "yaw": yaw if yaw is not None else 0.0,
+    }
     return build_cmd_frame(0x1E, params, dst, src, team_id=team_id)
 
 def build_cmd_flight_goto(
@@ -145,10 +144,7 @@ def build_cmd_flight_goto(
         alt (float): Target altitude (float32).
         alt_ref (int | None): Altitude reference frame (optional).
     """
-    if alt_ref is not None:
-        params = struct.pack(">ddfB", lat, lon, alt, alt_ref)
-    else:
-        params = struct.pack(">ddf", lat, lon, alt)
+    params = {"lat": lat, "lon": lon, "alt": alt, "alt_ref": alt_ref if alt_ref is not None else 0}
     return build_cmd_frame(0x18, params, dst, src, team_id=team_id)
 
 def build_cmd_flight_set_speed(
@@ -158,10 +154,7 @@ def build_cmd_flight_set_speed(
     src: Optional[int] = None,
     team_id: Optional[int] = None
 ) -> bytes:
-    if scope is not None:
-        params = struct.pack(">fB", speed_mps, scope)
-    else:
-        params = struct.pack(">f", speed_mps)
+    params = {"speed_mps": speed_mps, "scope": scope if scope is not None else 0}
     return build_cmd_frame(0x19, params, dst, src, team_id=team_id)
 
 def build_cmd_flight_set_altitude(
@@ -171,10 +164,7 @@ def build_cmd_flight_set_altitude(
     src: Optional[int] = None,
     team_id: Optional[int] = None
 ) -> bytes:
-    if alt_ref is not None:
-        params = struct.pack(">fB", alt_m, alt_ref)
-    else:
-        params = struct.pack(">f", alt_m)
+    params = {"alt_m": alt_m, "alt_ref": alt_ref if alt_ref is not None else 0}
     return build_cmd_frame(0x1A, params, dst, src, team_id=team_id)
 
 def build_cmd_flight_set_heading(
@@ -184,10 +174,7 @@ def build_cmd_flight_set_heading(
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    if turn is not None:
-        params = struct.pack(">Bfb", mode, yaw_deg, turn)
-    else:
-        params = struct.pack(">Bf", mode, yaw_deg)
+    params = {"mode": mode, "yaw_deg": yaw_deg, "turn": turn if turn is not None else 0}
     return build_cmd_frame(0x1B, params, dst, src)
 
 def build_cmd_flight_arming(
@@ -206,7 +193,7 @@ def build_cmd_flight_arming(
         dst (int): Destination device ID.
         src (int | None, optional): Source device ID.
     """
-    params = struct.pack(">BB", 1 if arm else 0, 1 if force else 0)
+    params = {"arm": bool(arm), "force": bool(force)}
     return build_cmd_frame(0x16, params, dst, src, team_id=team_id)
 
 def build_cmd_mission_upload(
@@ -224,7 +211,7 @@ def build_cmd_mission_upload(
         "waypoints": waypoints,
         "replace_existing": replace_existing
     }
-    params = json.dumps(payload, separators=(',', ':')).encode('utf-8')
+    params = {"json": json.dumps(payload, separators=(',', ':'))}
     return build_cmd_frame(0x29, params, dst, src)
 
 
@@ -244,7 +231,7 @@ def build_cmd_mission_control(
     if abort_mode is not None:
         payload["abort_mode"] = abort_mode
     
-    params = json.dumps(payload, separators=(',', ':')).encode('utf-8')
+    params = {"json": json.dumps(payload, separators=(',', ':'))}
     return build_cmd_frame(0x2A, params, dst, src)
 
 def build_cmd_flight_set_roi(
@@ -255,14 +242,14 @@ def build_cmd_flight_set_roi(
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">B", roi_mode)
-    if roi_mode == 1: # LOCATION
-        if lat is None or lon is None:
-            raise ValueError("lat and lon are required for ROI LOCATION mode")
-        if alt_m is not None:
-            params += struct.pack(">ddf", lat, lon, alt_m)
-        else:
-            params += struct.pack(">dd", lat, lon)
+    if roi_mode == 1 and (lat is None or lon is None):
+        raise ValueError("lat and lon are required for ROI LOCATION mode")
+    params = {
+        "roi_mode": roi_mode,
+        "lat": lat if lat is not None else 0.0,
+        "lon": lon if lon is not None else 0.0,
+        "alt_m": alt_m if alt_m is not None else 0.0,
+    }
     return build_cmd_frame(0x1D, params, dst, src)
 
 def build_cmd_flight_set_home(
@@ -271,11 +258,11 @@ def build_cmd_flight_set_home(
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    if lat is not None and lon is not None:
-        params = struct.pack(">dd", lat, lon)
-    else:
-        # No params means use current location
-        params = b''
+    params = {
+        "use_current": lat is None or lon is None,
+        "lat": lat if lat is not None else 0.0,
+        "lon": lon if lon is not None else 0.0,
+    }
     return build_cmd_frame(0x1C, params, dst, src)
 
 def build_cmd_system_set_vehicle_id(
@@ -283,16 +270,14 @@ def build_cmd_system_set_vehicle_id(
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">I", id)
-    return build_cmd_frame(0x02, params, dst, src)
+    return build_cmd_frame(0x02, {"vehicle_id": id}, dst, src)
 
 def build_cmd_system_set_team_id(
     team_id: int,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">B", team_id)
-    return build_cmd_frame(0x03, params, dst, src)
+    return build_cmd_frame(0x03, {"team_id": team_id}, dst, src)
 
 def build_cmd_swarm_formation_execute(
     leader_id: int,
@@ -311,7 +296,11 @@ def build_cmd_swarm_formation_execute(
     if altitude_offset is not None:
         payload["altitude_offset"] = altitude_offset
     
-    params = json.dumps(payload, separators=(',', ':')).encode('utf-8')
+    params = {"leader_id": leader_id, "formation_type": formation_type}
+    if spacing_offset is not None:
+        params["spacing_offset"] = spacing_offset
+    if altitude_offset is not None:
+        params["altitude_offset"] = altitude_offset
     return build_cmd_frame(0x3D, params, dst, src)
 
 def build_cmd_swarm_set_leader(
@@ -319,37 +308,32 @@ def build_cmd_swarm_set_leader(
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">I", leader_id)
-    return build_cmd_frame(0x3E, params, dst, src)
+    return build_cmd_frame(0x3E, {"leader_id": leader_id}, dst, src)
 
 def build_cmd_swarm_set_formation_type(
     formation_type: str,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = formation_type.encode('utf-8')
-    return build_cmd_frame(0x3F, params, dst, src)
+    return build_cmd_frame(0x3F, {"formation_type": formation_type}, dst, src)
 
 def build_cmd_swarm_set_spacing(
     spacing_offset: float,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">d", spacing_offset)
-    return build_cmd_frame(0x40, params, dst, src)
+    return build_cmd_frame(0x40, {"spacing_offset": spacing_offset}, dst, src)
 
 def build_cmd_swarm_set_altitude_offset(
     altitude_offset: float,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = struct.pack(">d", altitude_offset)
-    return build_cmd_frame(0x41, params, dst, src)
+    return build_cmd_frame(0x41, {"altitude_offset": altitude_offset}, dst, src)
 
 def build_cmd_swarm_set_status(
     status: str,
     dst: int = 0xFF,
     src: Optional[int] = None
 ) -> bytes:
-    params = status.encode('utf-8')
-    return build_cmd_frame(0x42, params, dst, src)
+    return build_cmd_frame(0x42, {"status": status}, dst, src)

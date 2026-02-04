@@ -100,8 +100,8 @@ class UARTHandler:
 
     def _extract_frame(self, buf: bytearray):
         SYNC = bytes([self.start_byte, self.start_byte_2])
-        # start1(1) + start2(1) + ver(1) + type(1) + team(1) + src(1) + dst(1) + hop(1) + len(2)
-        HEADER_LEN = 2 + 1 + 1 + 1 + 1 + 1 + 1 + 2
+        # start1(1) + start2(1) + ver(1) + type(1) + team(1) + src(1) + dst(1) + hop(1) + flags(1) + len(2)
+        HEADER_LEN = 11
 
         idx = buf.find(SYNC)
         if idx < 0:
@@ -115,7 +115,7 @@ class UARTHandler:
             buf.pop(idx)
             return self._extract_frame(buf)
 
-        payload_len = struct.unpack_from(">H", buf, idx + 8)[0]
+        payload_len = struct.unpack_from(">H", buf, idx + 9)[0]
         total_len = HEADER_LEN + payload_len + 2  # CRC
 
         if len(buf) < idx + total_len:

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LYNK | Test Lab</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-text">LYNK</span>
+                <span class="logo-sub">MISSION CONTROL</span>
+            </div>
+
+            <div class="sidebar-header">
+                <h3>MODULES</h3>
+                <button id="refresh-btn" class="btn-icon">RELOAD</button>
+            </div>
+
+            <nav class="test-list-container">
+                <div class="test-suites" id="test-suites">
+                    <!-- Suites and tests will be rendered here -->
+                    <div class="loading-spinner">Initializing Test Lab...</div>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="run-all-btn" class="btn btn-primary">SEQUENTIAL EXECUTION</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span id="progress-percent">0%</span>
+                    <span id="progress-count">STANDBY</span>
+                </div>
+                <div class="progress-base">
+                    <div class="progress-bar" id="global-progress"></div>
+                </div>
+            </div>
+            <div class="validation-roadmap" id="validation-roadmap">
+                <!-- Checkpoints like Core, Security, etc. will be here -->
+            </div>
+
+            <header class="main-header">
+                <div class="current-info">
+                    <h2 id="current-test-name">Ready to initiate</h2>
+                    <p id="current-test-path">Select a test or run all sequentially</p>
+                </div>
+                <div class="overall-status">
+                    <div id="status-badge" class="badge">STANDBY</div>
+                </div>
+            </header>
+
+            <section class="console-section">
+                <div class="console-header">
+                    <span>LIVE LOG CONSOLE</span>
+                    <button id="clear-console" class="btn btn-icon">CLEAR</button>
+                </div>
+                <div id="console-output" class="console">
+                    <div class="console-line system">Waiting for execution...</div>
+                </div>
+            </section>
+
+            <section class="summary-section">
+                <div class="summary-card">
+                    <span class="label">SUCCESS RATE</span>
+                    <span id="stat-rate" class="value">0%</span>
+                </div>
+                <div class="summary-card">
+                    <span class="label">PASSED</span>
+                    <span id="stat-passed" class="value text-success">0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="label">FAILED</span>
+                    <span id="stat-failed" class="value text-error">0</span>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

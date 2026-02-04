@@ -1,0 +1,6 @@
+syntax = "proto3";
+package lynk.command;
+
+message SwarmSetAltitudeOffset {
+  double altitude_offset = 1;
+}

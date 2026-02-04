@@ -9,13 +9,15 @@ import "msg/telemetry/barometer.proto";
 import "msg/telemetry/ping.proto";
 
 message TelemetryEnvelope {
-  uint32 tlm_id = 1;
+  // Telemetry ID'yi payload tag ile esliyoruz.
+  uint32 tlm_id = 255;
+  
   oneof payload {
-    Gps gps = 2;
-    Imu imu = 3;
-    Battery battery = 4;
-    Heartbeat heartbeat = 5;
-    Barometer barometer = 6;
-    Ping ping = 7;
+    Gps gps = 1;
+    Imu imu = 2;
+    Battery battery = 3;
+    Heartbeat heartbeat = 4;
+    Barometer barometer = 5;
+    Ping ping = 6;
   }
 }

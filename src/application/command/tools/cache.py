@@ -28,7 +28,7 @@ def _current_timestamp() -> float:
     return time.time()
 
 
-def set_last_command(command_id: int, params: bytes, parsed_params: Dict[str, Any]) -> None:
+def set_last_command(command_id: int, params: Any, parsed_params: Dict[str, Any]) -> None:
     """
     Store the details of the last received command.
     """
@@ -72,8 +72,6 @@ def ingest_frame(frame: Dict[str, Any]) -> None:
         return
         
     params = frame.get("params", b"")
-    if not isinstance(params, (bytes, bytearray)):
-        params = b""
         
     parsed_params = frame.get("parsed_params", {})
     if not isinstance(parsed_params, dict):

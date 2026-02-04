@@ -1,0 +1,8 @@
+syntax = "proto3";
+package lynk.command;
+
+import "nanopb.proto";
+
+message SwarmSetFormationType {
+  string formation_type = 1 [(nanopb).max_length = 32];
+}

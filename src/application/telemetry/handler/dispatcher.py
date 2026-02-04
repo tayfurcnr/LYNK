@@ -23,7 +23,24 @@ def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
             logger.debug(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_def.name}) FROM SRC: {src_id}")
             tlm_def.handler(data, src_id)
         else:
-            unknown(data, src_id, tlm_id)
+            # Check if we have a raw payload (meaning it's not even in Protobuf schema)
+            if "raw_payload" in data:
+                logger.warning(f"[TELEMETRY] Unknown Telemetry Format | ID: {tlm_id} from SRC: {src_id}")
+                unknown(data, src_id, tlm_id)
+                return
+
+            # If it IS in schema but has no handler, use default_handler
+            from src.application.telemetry.handler.impl import default_handler
+            from src.application.telemetry.serializer.dispatcher import _get_tlm_fields
+            
+            tlm_fields = _get_tlm_fields()
+            tlm_name = next((name for name, info in tlm_fields.items() if info[2] == tlm_id), None)
+            
+            if tlm_name:
+                logger.debug(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_name}) FROM SRC: {src_id} (using default handler)")
+                default_handler(data, src_id, tlm_name)
+            else:
+                unknown(data, src_id, tlm_id)
 
     except ValueError as ve:
         logger.error(f"[TELEMETRY] Invalid telemetry format: {ve}")

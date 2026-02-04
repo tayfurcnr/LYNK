@@ -1,6 +1,7 @@
 syntax = "proto3";
 package lynk.command;
 
+import "msg/command/system_reboot.proto";
 import "msg/command/system_set_vehicle_id.proto";
 import "msg/command/system_set_team_id.proto";
 import "msg/command/flight_set_mode.proto";
@@ -13,21 +14,44 @@ import "msg/command/flight_set_heading.proto";
 import "msg/command/flight_set_home.proto";
 import "msg/command/flight_set_roi.proto";
 import "msg/command/flight_land.proto";
+import "msg/command/mission_upload.proto";
+import "msg/command/mission_control.proto";
+import "msg/command/swarm_formation_execute.proto";
+import "msg/command/swarm_set_leader.proto";
+import "msg/command/swarm_set_formation_type.proto";
+import "msg/command/swarm_set_spacing.proto";
+import "msg/command/swarm_set_altitude_offset.proto";
+import "msg/command/swarm_set_status.proto";
 
 message CommandEnvelope {
-  uint32 cmd_id = 1;
+  // Command ID'yi payload ID ile uyumlu olmasi icin 1-1 esliyoruz.
+  // Bu meta-data alanini cakismamasi icin sona aliyoruz.
+  uint32 cmd_id = 255;
+  
   oneof payload {
+    SystemReboot system_reboot = 1;
     SystemSetVehicleId system_set_vehicle_id = 2;
     SystemSetTeamId system_set_team_id = 3;
-    FlightSetMode flight_set_mode = 4;
-    FlightArming flight_arming = 5;
-    FlightTakeoff flight_takeoff = 6;
-    FlightGoto flight_goto = 7;
-    FlightSetSpeed flight_set_speed = 8;
-    FlightSetAltitude flight_set_altitude = 9;
-    FlightSetHeading flight_set_heading = 10;
-    FlightSetHome flight_set_home = 11;
-    FlightSetRoi flight_set_roi = 12;
-    FlightLand flight_land = 13;
+    
+    FlightSetMode flight_set_mode = 21; // 0x15
+    FlightArming flight_arming = 22; // 0x16
+    FlightTakeoff flight_takeoff = 23; // 0x17
+    FlightGoto flight_goto = 24; // 0x18
+    FlightSetSpeed flight_set_speed = 25; // 0x19
+    FlightSetAltitude flight_set_altitude = 26; // 0x1A
+    FlightSetHeading flight_set_heading = 27; // 0x1B
+    FlightSetHome flight_set_home = 28; // 0x1C
+    FlightSetRoi flight_set_roi = 29; // 0x1D
+    FlightLand flight_land = 30; // 0x1E
+    
+    MissionUpload mission_upload = 41; // 0x29
+    MissionControl mission_control = 42; // 0x2A
+    
+    SwarmFormationExecute swarm_formation_execute = 61; // 0x3D
+    SwarmSetLeader swarm_set_leader = 62; // 0x3E
+    SwarmSetFormationType swarm_set_formation_type = 63; // 0x3F
+    SwarmSetSpacing swarm_set_spacing = 64; // 0x40
+    SwarmSetAltitudeOffset swarm_set_altitude_offset = 65; // 0x41
+    SwarmSetStatus swarm_set_status = 66; // 0x42
   }
 }

@@ -4,7 +4,10 @@ from src.application.command.definitions import command_definitions
 from src.shared.log.logger import logger
 
 def unknown(cmd_id: int, params: bytes, src_id: int, interface=None):
-    logger.warning(f"[COMMAND] Unknown command ID {cmd_id} from SRC: {src_id} | PARAMS: {params.hex()}")
+    logger.warning(f"[COMMAND] Unknown command ID {cmd_id} from SRC: {src_id} | Protobuf mapping missing.")
+    if interface:
+        from src.application.ack.tools.dispatcher import send_ack_invalid_cmd
+        send_ack_invalid_cmd(interface, cmd_id, dst=src_id)
 
 def handle_command(payload: bytes, frame_meta: dict, interface=None):
     """
@@ -25,13 +28,19 @@ def handle_command(payload: bytes, frame_meta: dict, interface=None):
         if not isinstance(cmd_id, int):
             raise ValueError(f"Invalid command ID type: {type(cmd_id)}")
 
-        if not isinstance(params, bytes):
-            raise ValueError(f"Invalid parameters format: expected bytes, got {type(params)}")
+        if not isinstance(params, (bytes, dict)):
+            raise ValueError(f"Invalid parameters format: expected bytes or dict, got {type(params)}")
 
         cmd_def = command_definitions.get(cmd_id)
         if cmd_def:
-            logger.info(f"[COMMAND] RECEIVED | CMD: {cmd_id} ({cmd_def.name}) FROM SRC: {src_id} | PRM: {params.hex()}")
-            cmd_def.handler(cmd_id, params, src_id, interface)
+            param_str = params.hex() if isinstance(params, bytes) else str(params)
+            logger.debug(f"[COMMAND] RECEIVED | CMD: {cmd_id} ({cmd_def.name}) FROM SRC: {src_id} | PRM: {param_str}")
+            try:
+                cmd_def.handler(cmd_id, params, src_id, interface)
+                logger.debug(f"[COMMAND] HANDLED | CMD: {cmd_id} ({cmd_def.name})") # Confirm return
+            except Exception as e:
+                logger.error(f"[COMMAND] HANDLER EXCEPTION | CMD: {cmd_id}: {e}")
+                raise e
         else:
             unknown(cmd_id, params, src_id, interface)
 

@@ -5,7 +5,9 @@ vehicle:
 protocol:
   start_byte: 84
   start_byte_2: 199
-  version: 1
+  version: 2
+  compression_enabled: true
+  compression_threshold: 128
 interface:
   comm_type: UDP
 uart:

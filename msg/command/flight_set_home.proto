@@ -2,6 +2,7 @@ syntax = "proto3";
 package lynk.command;
 
 message FlightSetHome {
-  double lat = 1;
-  double lon = 2;
+  bool use_current = 1;
+  double lat = 2;
+  double lon = 3;
 }

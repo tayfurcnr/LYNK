@@ -39,6 +39,60 @@ from src.shared.log.logger import logger
 from src.application.ack.tools.dispatcher import send_ack_ok, send_ack_invalid_cmd
 from src.application.command.tools.cache import set_last_command
 
+def send_command(
+    interface,
+    command: str | int,
+    dst: int = 0xFF,
+    src: Optional[int] = None,
+    dst_team_id: Optional[int] = None,
+    **params
+) -> None:
+    """
+    Generic command sender using Protobuf introspection.
+    
+    Automatically handles any command type defined in the Protobuf schema.
+    
+    Args:
+        interface: Communication interface instance.
+        command (str | int): Command name (e.g., "FLIGHT_TAKEOFF") or ID (e.g., 23).
+        dst (int): Destination device ID (default: 0xFF for broadcast).
+        src (int | None): Source device ID; if None, loaded from config.
+        dst_team_id (int | None): Destination team ID for team filtering.
+        **params: Command parameters as keyword arguments.
+    
+    Example:
+        send_command(interface, "FLIGHT_TAKEOFF", altitude=10.0)
+        send_command(interface, 30, mode=0, dst=1) # FLIGHT_LAND
+    """
+    from src.application.command.serializer.dispatcher import _get_cmd_map
+    from src.application.command.tools.builder import build_cmd_frame
+    
+    cmd_map = _get_cmd_map()
+    command_id = None
+    
+    if isinstance(command, int):
+        command_id = command
+    else:
+        # Search for name in map (case-insensitive)
+        cmd_name_upper = command.upper()
+        for cid, (field_name, _) in cmd_map.items():
+            if field_name.upper() == cmd_name_upper:
+                command_id = cid
+                break
+    
+    if command_id is None or command_id not in cmd_map:
+        raise ValueError(f"Unknown command: {command}")
+    
+    # Build and send frame
+    frame = build_cmd_frame(command_id, params, dst, src, team_id=dst_team_id)
+    send_frame(interface, frame)
+    
+    # Log
+    field_name, _ = cmd_map[command_id]
+    target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
+    logger.debug(f"[COMMAND] SENT {field_name.upper()} | {target} | {params}")
+
+
 
 class SendableInterface(Protocol):
     """

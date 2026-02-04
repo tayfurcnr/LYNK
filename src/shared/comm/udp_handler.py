@@ -10,6 +10,7 @@ from queue import Queue, Full
 from typing import Optional, List, Tuple
 
 from src.shared.config.manager import get_config
+from src.shared.log.logger import logger
 
 
 class UDPHandler:
@@ -41,17 +42,28 @@ class UDPHandler:
                 pass  # OS sınırına takılırsa sessiz geç
 
         self.sock.bind(("", self.local_port))
-        self.sock.setsockopt(
-            socket.IPPROTO_IP,
-            socket.IP_MULTICAST_IF,
-            socket.inet_aton(self.local_ip)
-        )
 
-        mreq = struct.pack("4s4s",
-                           socket.inet_aton(self.remote_ip),
-                           socket.inet_aton(self.local_ip))
-        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+        # --- MULTICAST SETUP (Only if remote_ip is multicast) ---
+        first_octet = int(self.remote_ip.split('.')[0])
+        is_multicast = 224 <= first_octet <= 239
+
+        if is_multicast:
+            try:
+                self.sock.setsockopt(
+                    socket.IPPROTO_IP,
+                    socket.IP_MULTICAST_IF,
+                    socket.inet_aton(self.local_ip)
+                )
+
+                mreq = struct.pack("4s4s",
+                                   socket.inet_aton(self.remote_ip),
+                                   socket.inet_aton(self.local_ip))
+                self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+                self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+            except Exception as e:
+                # Multicast might fail on some interfaces, log but continue
+                logger.warning(f"[UDPHandler] Multicast setup failed: {e}")
+
         self.sock.setblocking(False)
 
     def _load_config(self):

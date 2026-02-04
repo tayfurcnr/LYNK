@@ -1,15 +1,57 @@
 from __future__ import annotations
 from collections import namedtuple
 import src.application.telemetry.handler.impl as handler
-import src.application.telemetry.serializer.impl as codec
+
 
 TelemetryDefinition = namedtuple("TelemetryDefinition", ["id", "name", "handler", "serialize", "deserialize"])
 
-telemetry_definitions = {
-    0x01: TelemetryDefinition(0x01, "GPS",       handler.gps,       codec.serialize_gps,       codec.deserialize_gps),
-    0x02: TelemetryDefinition(0x02, "IMU",       handler.imu,       codec.serialize_imu,       codec.deserialize_imu),
-    0x03: TelemetryDefinition(0x03, "BATTERY",   handler.battery,   codec.serialize_battery,   codec.deserialize_battery),
-    0x04: TelemetryDefinition(0x04, "HEARTBEAT", handler.heartbeat, codec.serialize_heartbeat, codec.deserialize_heartbeat),
-    0x05: TelemetryDefinition(0x05, "BAROMETER", handler.barometer, codec.serialize_barometer, codec.deserialize_barometer),
-    0x06: TelemetryDefinition(0x06, "PING",      handler.ping,      codec.serialize_ping,      codec.deserialize_ping),
-}
+# Helper to lazy load definitions
+class TelemetryDefinitionsDict(dict):
+    def __init__(self):
+         self._loaded = False
+    
+    def _load(self):
+        if self._loaded:
+            return
+        
+        from src.application.telemetry.serializer.dispatcher import _get_tlm_fields, serialize_telemetry, deserialize_telemetry
+        import src.application.telemetry.handler.impl as handler
+        
+        tlm_fields = _get_tlm_fields()
+        
+        for name, (field_name, _, tlm_id) in tlm_fields.items():
+            handler_func = getattr(handler, field_name, None)
+            
+            # Create a bound serializer for this specific telemetry type
+            # We use a default argument to capture the loop variable 'name'
+            def create_serializer(n=name):
+                return lambda *args: serialize_telemetry(n, *args)
+            
+            # Deserializer is generic in dispatcher, returning dict with fields
+            self[tlm_id] = TelemetryDefinition(
+                tlm_id, 
+                name, 
+                handler_func, 
+                create_serializer(), 
+                deserialize_telemetry
+            )
+            
+        self._loaded = True
+
+    def __getitem__(self, key):
+        self._load()
+        return super().__getitem__(key)
+
+    def get(self, key, default=None):
+        self._load()
+        return super().get(key, default)
+    
+    def items(self):
+        self._load()
+        return super().items()
+    
+    def values(self):
+        self._load()
+        return super().values()
+
+telemetry_definitions = TelemetryDefinitionsDict()
