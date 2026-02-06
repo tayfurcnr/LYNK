@@ -62,7 +62,7 @@ class UARTHandler:
                     data = self.ser.read_all()
                     if data:
                         self.rx_queue.put(data)
-                time.sleep(0.01)
+                time.sleep(0.001)
             except SerialException as e:
                 if "device reports readiness to read but returned no data" in str(e):
                     # This specific error is ignored as per user request.

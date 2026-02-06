@@ -1,6 +1,7 @@
 from __future__ import annotations
 from collections import namedtuple
 import src.application.command.handler.impl as handler
+from src.shared.log.logger import logger
 
 CommandDefinition = namedtuple("CommandDefinition", ["id", "name", "handler"])
 

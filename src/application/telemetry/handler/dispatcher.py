@@ -12,6 +12,8 @@ def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
     """
     try:
         src_id = frame_meta.get("src_id")
+        team_id = frame_meta.get("team_id")
+        hop_count = frame_meta.get("hop_count", 0)
         data = deserialize_telemetry(payload)
         tlm_id = data.get("tlm_id")
 
@@ -20,8 +22,8 @@ def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
 
         tlm_def = telemetry_definitions.get(tlm_id, None)
         if tlm_def:
-            logger.debug(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_def.name}) FROM SRC: {src_id}")
-            tlm_def.handler(data, src_id)
+            logger.debug(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_def.name}) FROM SRC: {src_id} | HOPS: {hop_count}")
+            tlm_def.handler(data, src_id, team_id=team_id, hop_count=hop_count)
         else:
             # Check if we have a raw payload (meaning it's not even in Protobuf schema)
             if "raw_payload" in data:
@@ -37,8 +39,8 @@ def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
             tlm_name = next((name for name, info in tlm_fields.items() if info[2] == tlm_id), None)
             
             if tlm_name:
-                logger.debug(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_name}) FROM SRC: {src_id} (using default handler)")
-                default_handler(data, src_id, tlm_name)
+                logger.debug(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_name}) FROM SRC: {src_id} | HOPS: {hop_count} (using default handler)")
+                default_handler(data, src_id, tlm_name, team_id=team_id, hop_count=hop_count)
             else:
                 unknown(data, src_id, tlm_id)
 

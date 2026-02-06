@@ -19,7 +19,30 @@ from src.application.telemetry.tools.cache import (
     reset_cache
 )
 from src.application.command.tools.dispatcher import cmd_flight_takeoff
+import pytest
+import src.application.ack.tools.tracker as tracker
 
+@pytest.fixture(autouse=True)
+def setup_lynk():
+    from src.shared.config import manager
+    manager._config = {
+        "vehicle": {"id": 1, "team_id": 0},
+        "protocol": {"start_byte": 0x24, "start_byte_2": 0x24, "version": 1},
+        "interface": {"comm_type": "MOCK_UART"},
+        "uart": {"port": "/dev/ttyUSB0", "baudrate": 57600, "timeout": 0.1},
+        "relay": {"enabled": True}
+    }
+    # Reset factory singleton to ensure fresh interface with new config
+    import src.shared.comm.interface_factory as factory
+    factory._interface_instance = None
+    
+    from src.core.sequence_manager import get_sequence_manager
+    get_sequence_manager()._in_seq_map.clear()
+    get_sequence_manager()._out_seq = 0
+    
+    reset_cache()
+    tracker.get_ack_tracker().reset()
+    yield
 
 def process_all_frames(interface):
     """
@@ -115,5 +138,5 @@ def test_lynk_full_flow():
     all_telemetry = get_all_cached_data()
     print(all_telemetry)
 
-    single_gps_data = all_telemetry[1]['gps']['lat']
+    single_gps_data = all_telemetry[1]['telemetry']['gps']['lat']
     print(single_gps_data)

@@ -12,7 +12,7 @@ import argparse
 import select
 import json
 import logging
-from typing import Callable, Dict
+from typing import Callable, Dict, Optional
 from collections import OrderedDict  # <-- eklendi
 
 # Compatible with Windows and Unix
@@ -125,6 +125,17 @@ def print_compact_cache(cached: dict):
                 compact = json.dumps(payload, ensure_ascii=False, separators=(", ", ": "))
             print(f"  {key}: {compact}")
 
+class Colors:
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 # ---------------------------
 # Receiver
 # ---------------------------
@@ -143,7 +154,7 @@ def task_receiver_line(interface, interval=0.05, filter_self: Optional[int] = No
         try:
             frame = codec.parse_mesh_frame(raw)
         except ValueError as e:
-            log.warning("[PARSE] Failed: %s raw=%s", e, raw.hex())
+            log.debug("[PARSE] Failed: %s raw=%s", e, raw.hex())
             processed += 1
             continue
 
@@ -153,7 +164,10 @@ def task_receiver_line(interface, interval=0.05, filter_self: Optional[int] = No
             log.exception("[ROUTER] Error routing frame: %s | frame=%s", e, frame)
             accepted = False
 
-        ftype = chr(frame.get("frame_type", 0))
+        # Handle frame_type: could be int (67) or str ('C')
+        ft_raw = frame.get("frame_type", 0)
+        ftype = ft_raw if isinstance(ft_raw, str) else chr(ft_raw) if ft_raw else '?'
+        
         if ftype == 'T' and accepted:
             # clarify source
             remote_id = frame.get("src_id", "?")
@@ -162,24 +176,25 @@ def task_receiver_line(interface, interval=0.05, filter_self: Optional[int] = No
             if filter_self is not None and remote_id == filter_self:
                 continue
             
-            # Hide loopback noise if desired (optional)
-            # if remote_id == my_src_id: return
-            
             tlm_type = frame.get("tlm_type") or frame.get("subtype") or frame.get("type")
             log.debug("[TLM] subtype=%s keys=%s", tlm_type, list(frame.keys()))
             cached = tlm_cache.get_all_cached_data()
             
-            print(f"\n[RECV TELEMETRY] From SRC {remote_id} (Router: {router.__name__ if hasattr(router, '__name__') else 'Core'})")
-            print_compact_cache(cached)
+            # print(f"\n{Colors.CYAN}[RECV TELEMETRY]{Colors.ENDC} From SRC {Colors.BOLD}{remote_id}{Colors.ENDC} (Router: {router.__name__ if hasattr(router, '__name__') else 'Core'})")
+            # print_compact_cache(cached)
 
         elif ftype == 'C' and accepted:
             src_id = frame.get("src_id", "?")
             last_cmd = cmd_cache.get_last_command()
             if last_cmd:
                 formatted = pretty(last_cmd, compact=True)
-                print(f"[RECV COMMAND] From SRC {src_id} | Cache: {formatted}")
+                log.debug("[RECV COMMAND] From SRC %s | Cache: %s", src_id, formatted)
             else:
-                print(f"[RECV COMMAND] From SRC {src_id} | Cache is EMPTY")
+                log.debug("[RECV COMMAND] From SRC %s | Cache is EMPTY", src_id)
+        
+        elif ftype == 'A' and accepted:
+             pass
+
         else:
             log.debug("[FRAME] Unknown frame_type=%r keys=%s", ftype, list(frame.keys()))
 
@@ -200,7 +215,7 @@ def send_gps(interface, my_id, dst_id):
     lon = 35.0 + (random.random() * 0.01)
     alt = 100.0 + random.randint(-5, 5)
     tlm.send_tlm_gps(interface, lat=lat, lon=lon, alt=alt, dst=dst_id, src=codec.load_device_id())
-    print(f"[SEND] GPS -> Current: ({lat:.4f}, {lon:.4f}) -> DST: {dst_id}")
+    # print(f"{Colors.BLUE}[SEND] GPS{Colors.ENDC} -> Current: ({lat:.4f}, {lon:.4f}) -> DST: {dst_id}")
 
 def send_imu(interface, my_id, dst_id):
     if not telemetry_status.get("imu", True): return
@@ -208,24 +223,24 @@ def send_imu(interface, my_id, dst_id):
     p = random.uniform(-5, 5)
     y = random.uniform(0, 360)
     tlm.send_tlm_imu(interface, roll=r, pitch=p, yaw=y, dst=dst_id, src=codec.load_device_id())
-    print(f"[SEND] IMU -> R:{r:.1f} P:{p:.1f} Y:{y:.1f} -> DST: {dst_id}")
+    # print(f"{Colors.BLUE}[SEND] IMU{Colors.ENDC} -> R:{r:.1f} P:{p:.1f} Y:{y:.1f} -> DST: {dst_id}")
 
 def send_battery(interface, my_id, dst_id):
     if not telemetry_status.get("battery", True): return
     level = random.uniform(85, 95)
     tlm.send_tlm_battery(interface, voltage=11.4, current=1.5, level=level, dst=dst_id, src=codec.load_device_id())
-    print(f"[SEND] BATTERY -> {level:.1f}% -> DST: {dst_id}")
+    # print(f"{Colors.BLUE}[SEND] BATTERY{Colors.ENDC} -> {level:.1f}% -> DST: {dst_id}")
 
 def send_heartbeat(interface, my_id, dst_id):
     if not telemetry_status.get("heartbeat", True): return
     tlm.send_tlm_heartbeat(interface, mode="STABILIZE", health="OK", is_armed=True, gps_fix=True, sat_count=12, dst=dst_id, src=codec.load_device_id())
-    print(f"[SEND] HEARTBEAT -> DST: {dst_id}")
+    # print(f"{Colors.BLUE}[SEND] HEARTBEAT{Colors.ENDC} -> DST: {dst_id}")
 
 def send_barometer(interface, my_id, dst_id):
     if not telemetry_status.get("barometer", True): return
     alt = 100.0 + random.uniform(-2, 2)
     tlm.send_tlm_barometer(interface, vertical_speed=0.1, ground_speed=4.5, altitude_relative=alt, dst=dst_id, src=codec.load_device_id())
-    print(f"[SEND] BAROMETER -> AltRel:{alt:.2f} -> DST: {dst_id}")
+    # print(f"{Colors.BLUE}[SEND] BAROMETER{Colors.ENDC} -> AltRel:{alt:.2f} -> DST: {dst_id}")
 
 def send_ping(interface, my_id, dst_id):
     if not telemetry_status.get("ping", True): return
@@ -245,59 +260,36 @@ def mission_example():
 def build_keymap(my_id: int, dst_id: int) -> Dict[str, Callable[[any], None]]:
     return {
         # Broadcast / Team
-        "B": lambda interface: (log.info("[CMD] TEAM_BROADCAST (Ping to dst=0)"),
-                                tlm.send_tlm_ping(interface, dst=0, src=codec.load_device_id())),
+        "B": lambda interface: (tlm.send_tlm_ping(interface, dst=0, src=codec.load_device_id())),
         # System
-        "I": lambda interface: (log.info(f"[CMD] SYSTEM_SET_VEHICLE_ID to {10 if codec.load_device_id() != 10 else 5}"),
-                                cmd.cmd_system_set_vehicle_id(interface, id=10 if codec.load_device_id() != 10 else 5, src=codec.load_device_id(), dst=dst_id)),
-        "E": lambda interface: (log.info(f"[CMD] SYSTEM_SET_TEAM_ID Toggle ({codec.load_team_id()} -> {2 if codec.load_team_id()==1 else (0 if codec.load_team_id()==2 else 1)})"),
-                                cmd.cmd_system_set_team_id(interface, team_id=2 if codec.load_team_id()==1 else (0 if codec.load_team_id()==2 else 1), src=codec.load_device_id(), dst=dst_id)),
-        "R": lambda interface: (log.info("[CMD] SYSTEM_REBOOT"),
-                                cmd.cmd_system_reboot(interface, dst=dst_id, src=codec.load_device_id())),
+        "I": lambda interface: (cmd.cmd_system_set_vehicle_id(interface, id=10 if codec.load_device_id() != 10 else 5, src=codec.load_device_id(), dst=dst_id)),
+        "E": lambda interface: (cmd.cmd_system_set_team_id(interface, team_id=2 if codec.load_team_id()==1 else (0 if codec.load_team_id()==2 else 1), src=codec.load_device_id(), dst=dst_id)),
+        "R": lambda interface: (cmd.cmd_system_reboot(interface, dst=dst_id, src=codec.load_device_id())),
 
         # Flight
-        "C": lambda interface: (log.info("[CMD] FLIGHT_SET_MODE GUIDED"),
-                                cmd.cmd_flight_set_mode(interface, mode="GUIDED", src=codec.load_device_id(), dst=dst_id)),
-        "X": lambda interface: (log.info("[CMD] FLIGHT_ARMING ARM"),
-                                cmd.cmd_flight_arming(interface, arm=True, src=codec.load_device_id(), dst=dst_id)),
-        "Y": lambda interface: (log.info("[CMD] FLIGHT_ARMING DISARM"),
-                                cmd.cmd_flight_arming(interface, arm=False, src=codec.load_device_id(), dst=dst_id)),
-        "T": lambda interface: (log.info("[CMD] FLIGHT_TAKEOFF 30m"),
-                                cmd.cmd_flight_takeoff(interface, altitude_m=30, src=codec.load_device_id(), dst=dst_id)),
-        "L": lambda interface: (log.info("[CMD] FLIGHT_LAND"),
-                                cmd.cmd_flight_land(interface, src=codec.load_device_id(), dst=dst_id)),
-        "G": lambda interface: (log.info("[CMD] FLIGHT_GOTO (37.001,35.002,50)"),
-                                cmd.cmd_flight_goto(interface, lat=37.001, lon=35.002, alt=50.0, src=codec.load_device_id(), dst=dst_id)),
-        "S": lambda interface: (log.info("[CMD] FLIGHT_SET_SPEED 15"),
-                                cmd.cmd_flight_set_speed(interface, speed_mps=15.0, src=codec.load_device_id(), dst=dst_id)),
-        "D": lambda interface: (log.info("[CMD] FLIGHT_SET_HEADING abs 90deg"),
-                                cmd.cmd_flight_set_heading(interface, mode=0, yaw_deg=90.0, src=codec.load_device_id(), dst=dst_id)),
-        "J": lambda interface: (log.info("[CMD] FLIGHT_SET_HOME current"),
-                                cmd.cmd_flight_set_home(interface, src=codec.load_device_id(), dst=dst_id)),
-        "O": lambda interface: (log.info("[CMD] FLIGHT_SET_ROI (37.005,35.005,10)"),
-                                cmd.cmd_flight_set_roi(interface, roi_mode=1, lat=37.005, lon=35.005, alt_m=10.0, src=codec.load_device_id(), dst=dst_id)),
-        "A": lambda interface: (log.info("[CMD] FLIGHT_SET_ALTITUDE 40"),
-                                cmd.cmd_flight_set_altitude(interface, alt_m=40.0, src=codec.load_device_id(), dst=dst_id)),
+        "C": lambda interface: (cmd.cmd_flight_set_mode(interface, mode="GUIDED", src=codec.load_device_id(), dst=dst_id)),
+        "X": lambda interface: (cmd.send_command(interface, "FLIGHT_ARMING", arm=True, force=False, src=codec.load_device_id(), dst=dst_id, wait_for_ack=True, max_retries=3)),
+        "Y": lambda interface: (cmd.send_command(interface, "FLIGHT_ARMING", arm=False, force=False, src=codec.load_device_id(), dst=dst_id, wait_for_ack=True, max_retries=3)),
+        "T": lambda interface: (cmd.send_command(interface, "FLIGHT_TAKEOFF", altitude_m=30.0, min_pitch_deg=0.0, src=codec.load_device_id(), dst=dst_id, wait_for_ack=True, max_retries=3)),
+        "L": lambda interface: (cmd.send_command(interface, "FLIGHT_LAND", mode=0, has_target=False, src=codec.load_device_id(), dst=dst_id, wait_for_ack=True, max_retries=3)),
+        "G": lambda interface: (cmd.cmd_flight_goto(interface, lat=37.001, lon=35.002, alt=50.0, src=codec.load_device_id(), dst=dst_id, wait_for_ack=True, max_retries=3)),
+        "S": lambda interface: (cmd.cmd_flight_set_speed(interface, speed_mps=15.0, src=codec.load_device_id(), dst=dst_id)),
+        "D": lambda interface: (cmd.cmd_flight_set_heading(interface, mode=0, yaw_deg=90.0, src=codec.load_device_id(), dst=dst_id)),
+        "J": lambda interface: (cmd.cmd_flight_set_home(interface, src=codec.load_device_id(), dst=dst_id)),
+        "O": lambda interface: (cmd.cmd_flight_set_roi(interface, roi_mode=1, lat=37.005, lon=35.005, alt_m=10.0, src=codec.load_device_id(), dst=dst_id)),
+        "A": lambda interface: (cmd.cmd_flight_set_altitude(interface, alt_m=40.0, src=codec.load_device_id(), dst=dst_id)),
 
         # Mission
-        "U": lambda interface: (log.info("[CMD] MISSION_UPLOAD id=101"),
-                                cmd.cmd_mission_upload(interface, mission_id=101, waypoints=mission_example(), src=codec.load_device_id(), dst=dst_id)),
-        "K": lambda interface: (log.info("[CMD] MISSION_CONTROL START"),
-                                cmd.cmd_mission_control(interface, action="START", src=codec.load_device_id(), dst=dst_id)),
+        "U": lambda interface: (cmd.cmd_mission_upload(interface, mission_id=101, waypoints=mission_example(), src=codec.load_device_id(), dst=dst_id)),
+        "K": lambda interface: (cmd.cmd_mission_control(interface, action="START", src=codec.load_device_id(), dst=dst_id)),
 
         # Swarm
-        "1": lambda interface: (log.info("[CMD] SWARM_FORMATION_EXECUTE line"),
-                                cmd.cmd_swarm_formation_execute(interface, leader_id=1, formation_type="line", spacing_offset=10.0, altitude_offset=5.0, src=codec.load_device_id(), dst=dst_id)),
-        "2": lambda interface: (log.info("[CMD] SWARM_SET_LEADER 2"),
-                                cmd.cmd_swarm_set_leader(interface, leader_id=2, src=codec.load_device_id(), dst=dst_id)),
-        "3": lambda interface: (log.info("[CMD] SWARM_SET_FORMATION_TYPE v_formation"),
-                                cmd.cmd_swarm_set_formation_type(interface, formation_type="v_formation", src=codec.load_device_id(), dst=dst_id)),
-        "4": lambda interface: (log.info("[CMD] SWARM_SET_SPACING 15"),
-                                cmd.cmd_swarm_set_spacing(interface, spacing_offset=15.0, src=codec.load_device_id(), dst=dst_id)),
-        "5": lambda interface: (log.info("[CMD] SWARM_SET_ALTITUDE_OFFSET 10"),
-                                cmd.cmd_swarm_set_altitude_offset(interface, altitude_offset=10.0, src=codec.load_device_id(), dst=dst_id)),
-        "6": lambda interface: (log.info("[CMD] SWARM_SET_STATUS HOLD"),
-                                cmd.cmd_swarm_set_status(interface, status="HOLD", src=codec.load_device_id(), dst=dst_id)),
+        "1": lambda interface: (cmd.cmd_swarm_formation_execute(interface, leader_id=1, formation_type="line", spacing_offset=10.0, altitude_offset=5.0, src=codec.load_device_id(), dst=dst_id)),
+        "2": lambda interface: (cmd.cmd_swarm_set_leader(interface, leader_id=2, src=codec.load_device_id(), dst=dst_id)),
+        "3": lambda interface: (cmd.cmd_swarm_set_formation_type(interface, formation_type="v_formation", src=codec.load_device_id(), dst=dst_id)),
+        "4": lambda interface: (cmd.cmd_swarm_set_spacing(interface, spacing_offset=15.0, src=codec.load_device_id(), dst=dst_id)),
+        "5": lambda interface: (cmd.cmd_swarm_set_altitude_offset(interface, altitude_offset=10.0, src=codec.load_device_id(), dst=dst_id)),
+        "6": lambda interface: (cmd.cmd_swarm_set_status(interface, status="HOLD", src=codec.load_device_id(), dst=dst_id)),
 
         # Telemetry Toggles
         "7": lambda interface: toggle_telemetry("gps"),
@@ -308,10 +300,8 @@ def build_keymap(my_id: int, dst_id: int) -> Dict[str, Callable[[any], None]]:
         "=": lambda interface: toggle_telemetry("ping"),
 
         # Cross-Team / Global Tests
-        "V": lambda interface: (log.info("[CMD] GLOBAL_TEAM_BROADCAST (Team=0, Dst=0)"),
-                                tlm.send_tlm_ping(interface, dst=0, src=codec.load_device_id(), dst_team_id=0)),
-        "Z": lambda interface: (log.info("[CMD] TARGETED_TEAM_ARM (Team=2, Dst=2)"),
-                                cmd.cmd_flight_arming(interface, arm=True, src=codec.load_device_id(), dst=2, dst_team_id=2)),
+        "V": lambda interface: (tlm.send_tlm_ping(interface, dst=0, src=codec.load_device_id(), dst_team_id=0)),
+        "Z": lambda interface: (cmd.cmd_flight_arming(interface, arm=True, src=codec.load_device_id(), dst=2, dst_team_id=2)),
     }
 
 def toggle_telemetry(name: str):

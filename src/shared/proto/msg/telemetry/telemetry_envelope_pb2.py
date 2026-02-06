@@ -12,12 +12,12 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from . import gps_pb2 as msg_dot_telemetry_dot_gps__pb2
-from . import imu_pb2 as msg_dot_telemetry_dot_imu__pb2
-from . import battery_pb2 as msg_dot_telemetry_dot_battery__pb2
-from . import heartbeat_pb2 as msg_dot_telemetry_dot_heartbeat__pb2
-from . import barometer_pb2 as msg_dot_telemetry_dot_barometer__pb2
-from . import ping_pb2 as msg_dot_telemetry_dot_ping__pb2
+from msg.telemetry import gps_pb2 as msg_dot_telemetry_dot_gps__pb2
+from msg.telemetry import imu_pb2 as msg_dot_telemetry_dot_imu__pb2
+from msg.telemetry import battery_pb2 as msg_dot_telemetry_dot_battery__pb2
+from msg.telemetry import heartbeat_pb2 as msg_dot_telemetry_dot_heartbeat__pb2
+from msg.telemetry import barometer_pb2 as msg_dot_telemetry_dot_barometer__pb2
+from msg.telemetry import ping_pb2 as msg_dot_telemetry_dot_ping__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(

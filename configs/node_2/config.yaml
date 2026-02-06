@@ -1,6 +1,6 @@
 vehicle:
   id: 2
-  team_id: 2
+  team_id: 1
   type: COPTER
 protocol:
   start_byte: 84
@@ -19,6 +19,10 @@ udp:
   local_port: 5001
   remote_ip: 239.1.2.3
   remote_port: 5001
+  enable_loopback: false
+  idle_sleep_sec: 0.0002
+  rcvbuf_bytes: 16777216
+  rx_queue_size: 30
 logging:
   enabled: true
   level: INFO

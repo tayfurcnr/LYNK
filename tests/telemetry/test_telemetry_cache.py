@@ -63,15 +63,17 @@ def test_get_all_data_for_device():
     assert all_data["gps"]["lat"] == 10
 
 
-def test_get_all_cached_data_removes_src_id_key():
+def test_get_all_cached_data_structure():
     src_id = 123
     set_device_data(src_id, "heartbeat", {"mode": "AUTO", "src_id": 999})
 
     cached = get_all_cached_data()
     assert src_id in cached
-    # Note: cache.py does not add 'vehicle_id' to the payload, it just uses src_id as the top-level key.
-    assert "heartbeat" in cached[src_id]
-    assert "src_id" not in cached[src_id]["heartbeat"]
+    assert "team_id" in cached[src_id]
+    assert "telemetry" in cached[src_id]
+    assert "heartbeat" in cached[src_id]["telemetry"]
+    # We no longer filter out src_id from the payload in get_all_cached_data for performance/simplicity
+    assert cached[src_id]["telemetry"]["heartbeat"]["src_id"] == 999
 
 
 def test_active_device_ids_detects_recent_data():
@@ -99,3 +101,24 @@ def test_type_errors():
 
     with pytest.raises(TypeError):
         set_device_data(1, "gps", "not_dict")
+
+def test_active_device_ids_with_team():
+    # Device on Team 10
+    set_device_data(1, "gps", {"lat": 1}, team_id=10)
+    # Device on Team 20
+    set_device_data(2, "gps", {"lat": 2}, team_id=20)
+    
+    # Filter for Team 10
+    active_10 = get_active_device_ids(team_id=10)
+    assert 1 in active_10
+    assert 2 not in active_10
+    
+    # Filter for Team 20
+    active_20 = get_active_device_ids(team_id=20)
+    assert 2 in active_20
+    assert 1 not in active_20
+    
+    # Filter for everyone (None)
+    active_all = get_active_device_ids(team_id=None)
+    assert 1 in active_all
+    assert 2 in active_all

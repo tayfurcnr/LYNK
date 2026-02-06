@@ -1,4 +1,4 @@
-from __future__ import annotations
+import random
 import time
 import threading
 
@@ -17,10 +17,11 @@ class RelayCache:
         """Check if packet was already seen recently."""
         with self._lock:
             key = (src_id, seq_num)
-            now = time.time()
+            now = time.monotonic()
             
-            # Clean old entries
-            self._cache = {k: v for k, v in self._cache.items() if now - v < self._ttl}
+            # Efficient Cleanup: Only run cleanup 5% of the time or if cache is huge
+            if len(self._cache) > 0 and (random.random() < 0.05 or len(self._cache) > 500):
+                self._cache = {k: v for k, v in self._cache.items() if now - v < self._ttl}
             
             if key in self._cache:
                 return True  # Duplicate

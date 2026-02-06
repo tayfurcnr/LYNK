@@ -21,6 +21,8 @@ class TelemetryDefinitionsDict(dict):
         
         for name, (field_name, _, tlm_id) in tlm_fields.items():
             handler_func = getattr(handler, field_name, None)
+            if handler_func is None:
+                handler_func = handler.default_handler
             
             # Create a bound serializer for this specific telemetry type
             # We use a default argument to capture the loop variable 'name'

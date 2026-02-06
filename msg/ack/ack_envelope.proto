@@ -9,6 +9,7 @@ import "msg/ack/ack_execution_error.proto";
 
 message AckEnvelope {
   uint32 ack_id = 1;
+  string transaction_id = 100;
   oneof payload {
     Ok ok = 2;
     Error error = 3;

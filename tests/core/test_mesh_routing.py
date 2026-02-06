@@ -1,5 +1,15 @@
 import pytest
 from src.core.frame_codec import build_mesh_frame, parse_mesh_frame
+from src.shared.config import manager
+from src.core.sequence_manager import get_sequence_manager
+
+def setup_module():
+    manager._config = {
+        "protocol": {"start_byte": 0x24, "start_byte_2": 0x24, "version": 1},
+        "vehicle": {"id": 1, "team_id": 0}
+    }
+    get_sequence_manager()._in_seq_map.clear()
+    get_sequence_manager()._out_seq = 0
 
 def test_hop_count_decrement_and_drop():
     """Verify that hop_count is decremented and packets with 0 hops are Dropped."""

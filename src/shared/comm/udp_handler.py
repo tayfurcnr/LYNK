@@ -17,8 +17,8 @@ class UDPHandler:
     def __init__(self):
         self._load_config()
 
-        # Tek öğelik kuyruk: her zaman en güncel paket
-        self.rx_queue = Queue(maxsize=1)
+        # RX queue size can be tuned in config to reduce drops
+        self.rx_queue = Queue(maxsize=self.rx_queue_size)
         self.running = False
         self.thread = None
 
@@ -31,13 +31,15 @@ class UDPHandler:
         # UDP soketi
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        if hasattr(socket, 'SO_REUSEPORT'):
-            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 
-        # Kernel RX tamponunu büyüt (OS tavanına kadar). Config'ten gelebilir.
+        # Kernel RX/TX tamponlarını büyüt (OS tavanına kadar). Config'ten gelebilir.
         if self.rcvbuf_bytes and self.rcvbuf_bytes > 0:
             try:
                 self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, int(self.rcvbuf_bytes))
+            except Exception:
+                pass  # OS sınırına takılırsa sessiz geç
+            try:
+                self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, int(self.rcvbuf_bytes))
             except Exception:
                 pass  # OS sınırına takılırsa sessiz geç
 
@@ -84,6 +86,8 @@ class UDPHandler:
 
         # Idle bekleme (ms cinsinden): 1 ms önerilir
         self.idle_sleep_sec  = float(udp_cfg.get("idle_sleep_sec", 0.001))
+        # RX queue size (optional)
+        self.rx_queue_size   = int(udp_cfg.get("rx_queue_size", 100))
 
     def start(self):
         if self.running:
@@ -125,7 +129,7 @@ class UDPHandler:
             self._win_bytes -= len(d)
 
     def _win_add(self, data: bytes) -> None:
-        now = time.time()
+        now = time.monotonic()
         with self._win_lock:
             self._win.append((now, data))
             self._win_bytes += len(data)
@@ -139,7 +143,7 @@ class UDPHandler:
         """
         if seconds is None:
             seconds = self.window_sec
-        cutoff = time.time() - float(seconds)
+        cutoff = time.monotonic() - float(seconds)
         out: List[bytes] = []
         with self._win_lock:
             self._win_prune_time(cutoff)
@@ -152,7 +156,7 @@ class UDPHandler:
         """
         if seconds is None:
             seconds = self.window_sec
-        cutoff = time.time() - float(seconds)
+        cutoff = time.monotonic() - float(seconds)
         out: List[bytes] = []
         with self._win_lock:
             self._win_prune_time(cutoff)
@@ -187,16 +191,13 @@ class UDPHandler:
 
     def read(self) -> bytes | None:
         """
-        Kuyruğu tüketir ve en SON paketi döndürür (her zaman en güncel).
+        Kuyruktan bir paket döndürür (FIFO). Kuyruk boşsa None.
         """
-        last = None
-        while not self.rx_queue.empty():
-            try:
-                last = self.rx_queue.get_nowait()
-            except Exception:
-                break
-        return last
+        try:
+            return self.rx_queue.get_nowait()
+        except Exception:
+            return None
 
     def send(self, data: bytes):
         self.sock.sendto(data, (self.remote_ip, self.remote_port))
-        # print(f"[UDP SEND] {len(data)} bytes to {self.remote_ip}:{self.remote_port}")
+        logger.debug(f"[UDP SEND] {len(data)} bytes to {self.remote_ip}:{self.remote_port}")

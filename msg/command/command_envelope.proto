@@ -27,6 +27,7 @@ message CommandEnvelope {
   // Command ID'yi payload ID ile uyumlu olmasi icin 1-1 esliyoruz.
   // Bu meta-data alanini cakismamasi icin sona aliyoruz.
   uint32 cmd_id = 255;
+  string transaction_id = 100;
   
   oneof payload {
     SystemReboot system_reboot = 1;

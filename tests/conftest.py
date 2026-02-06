@@ -20,3 +20,15 @@ def setup_config():
     cfg_manager._config["interface"]["comm_type"] = "MOCK_UART"
     
     return cfg_manager._config
+
+@pytest.fixture(autouse=True)
+def reset_singletons():
+    from src.core.sequence_manager import get_sequence_manager
+    from src.application.telemetry.tools.cache import reset_cache
+    from src.application.ack.tools.tracker import get_ack_tracker
+    
+    get_sequence_manager()._in_seq_map.clear()
+    get_sequence_manager()._out_seq = 0
+    reset_cache()
+    get_ack_tracker().reset()
+    yield

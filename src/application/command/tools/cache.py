@@ -23,9 +23,9 @@ _last_command: Dict[str, Any] = {}
 
 def _current_timestamp() -> float:
     """
-    Return the current time as a UNIX timestamp (seconds since epoch).
+    Return a monotonic time reference.
     """
-    return time.time()
+    return time.monotonic()
 
 
 def set_last_command(command_id: int, params: Any, parsed_params: Dict[str, Any]) -> None:

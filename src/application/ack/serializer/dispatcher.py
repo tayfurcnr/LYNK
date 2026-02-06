@@ -41,7 +41,7 @@ def _get_ack_map():
     }
     return _ACK_MAP
 
-def serialize_ack(name: str, *params) -> bytes:
+def serialize_ack(name: str, transaction_id: str, *params) -> bytes:
     """
     Serialize ACK data by ACK name using protobuf payloads.
     """
@@ -64,12 +64,13 @@ def serialize_ack(name: str, *params) -> bytes:
 
     envelope = ack_pb.AckEnvelope()
     envelope.ack_id = ack_id
+    envelope.transaction_id = transaction_id
     payload_msg = getattr(envelope, field_name)
     for key, value in zip(field_list, params):
         setattr(payload_msg, key, value)
 
     data = envelope.SerializeToString()
-    logger.debug(f"[ACK] SERIALIZED | NAME: {name} | ID={ack_id} | SIZE={len(data)}B")
+    logger.debug(f"[ACK] SERIALIZED | NAME: {name} | ID={ack_id} | TX_ID={transaction_id} | SIZE={len(data)}B")
     return data
 
 def deserialize_ack(payload: bytes) -> dict:
@@ -77,7 +78,7 @@ def deserialize_ack(payload: bytes) -> dict:
     Deserialize an ACK payload using protobuf.
 
     Returns:
-        dict: {"ack_id": int, "name": str, ...fields }
+        dict: {"ack_id": int, "transaction_id": str, "name": str, ...fields }
     """
     if not payload:
         raise ValueError("Payload too short")
@@ -88,6 +89,7 @@ def deserialize_ack(payload: bytes) -> dict:
     envelope.ParseFromString(payload)
 
     aid = envelope.ack_id
+    tid = envelope.transaction_id
     defn = ack_definitions.get(aid)
     if not defn:
         raise ValueError(f"Unknown ACK ID: {aid}")
@@ -101,7 +103,7 @@ def deserialize_ack(payload: bytes) -> dict:
     msg = getattr(envelope, which)
     fields = {key: getattr(msg, key) for key in field_list}
     logger.debug(
-        f"[ACK] DESERIALIZED | NAME: {defn.name} | ID=0x{aid:02X} | FIELDS={list(fields.keys())}"
+        f"[ACK] DESERIALIZED | NAME: {defn.name} | ID=0x{aid:02X} | TX_ID={tid} | FIELDS={list(fields.keys())}"
     )
 
-    return {"ack_id": aid, **fields}
+    return {"ack_id": aid, "transaction_id": tid, **fields}

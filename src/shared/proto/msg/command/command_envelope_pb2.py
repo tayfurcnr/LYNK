@@ -12,27 +12,27 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from . import system_reboot_pb2 as msg_dot_command_dot_system__reboot__pb2
-from . import system_set_vehicle_id_pb2 as msg_dot_command_dot_system__set__vehicle__id__pb2
-from . import system_set_team_id_pb2 as msg_dot_command_dot_system__set__team__id__pb2
-from . import flight_set_mode_pb2 as msg_dot_command_dot_flight__set__mode__pb2
-from . import flight_arming_pb2 as msg_dot_command_dot_flight__arming__pb2
-from . import flight_takeoff_pb2 as msg_dot_command_dot_flight__takeoff__pb2
-from . import flight_goto_pb2 as msg_dot_command_dot_flight__goto__pb2
-from . import flight_set_speed_pb2 as msg_dot_command_dot_flight__set__speed__pb2
-from . import flight_set_altitude_pb2 as msg_dot_command_dot_flight__set__altitude__pb2
-from . import flight_set_heading_pb2 as msg_dot_command_dot_flight__set__heading__pb2
-from . import flight_set_home_pb2 as msg_dot_command_dot_flight__set__home__pb2
-from . import flight_set_roi_pb2 as msg_dot_command_dot_flight__set__roi__pb2
-from . import flight_land_pb2 as msg_dot_command_dot_flight__land__pb2
-from . import mission_upload_pb2 as msg_dot_command_dot_mission__upload__pb2
-from . import mission_control_pb2 as msg_dot_command_dot_mission__control__pb2
-from . import swarm_formation_execute_pb2 as msg_dot_command_dot_swarm__formation__execute__pb2
-from . import swarm_set_leader_pb2 as msg_dot_command_dot_swarm__set__leader__pb2
-from . import swarm_set_formation_type_pb2 as msg_dot_command_dot_swarm__set__formation__type__pb2
-from . import swarm_set_spacing_pb2 as msg_dot_command_dot_swarm__set__spacing__pb2
-from . import swarm_set_altitude_offset_pb2 as msg_dot_command_dot_swarm__set__altitude__offset__pb2
-from . import swarm_set_status_pb2 as msg_dot_command_dot_swarm__set__status__pb2
+from msg.command import system_reboot_pb2 as msg_dot_command_dot_system__reboot__pb2
+from msg.command import system_set_vehicle_id_pb2 as msg_dot_command_dot_system__set__vehicle__id__pb2
+from msg.command import system_set_team_id_pb2 as msg_dot_command_dot_system__set__team__id__pb2
+from msg.command import flight_set_mode_pb2 as msg_dot_command_dot_flight__set__mode__pb2
+from msg.command import flight_arming_pb2 as msg_dot_command_dot_flight__arming__pb2
+from msg.command import flight_takeoff_pb2 as msg_dot_command_dot_flight__takeoff__pb2
+from msg.command import flight_goto_pb2 as msg_dot_command_dot_flight__goto__pb2
+from msg.command import flight_set_speed_pb2 as msg_dot_command_dot_flight__set__speed__pb2
+from msg.command import flight_set_altitude_pb2 as msg_dot_command_dot_flight__set__altitude__pb2
+from msg.command import flight_set_heading_pb2 as msg_dot_command_dot_flight__set__heading__pb2
+from msg.command import flight_set_home_pb2 as msg_dot_command_dot_flight__set__home__pb2
+from msg.command import flight_set_roi_pb2 as msg_dot_command_dot_flight__set__roi__pb2
+from msg.command import flight_land_pb2 as msg_dot_command_dot_flight__land__pb2
+from msg.command import mission_upload_pb2 as msg_dot_command_dot_mission__upload__pb2
+from msg.command import mission_control_pb2 as msg_dot_command_dot_mission__control__pb2
+from msg.command import swarm_formation_execute_pb2 as msg_dot_command_dot_swarm__formation__execute__pb2
+from msg.command import swarm_set_leader_pb2 as msg_dot_command_dot_swarm__set__leader__pb2
+from msg.command import swarm_set_formation_type_pb2 as msg_dot_command_dot_swarm__set__formation__type__pb2
+from msg.command import swarm_set_spacing_pb2 as msg_dot_command_dot_swarm__set__spacing__pb2
+from msg.command import swarm_set_altitude_offset_pb2 as msg_dot_command_dot_swarm__set__altitude__offset__pb2
+from msg.command import swarm_set_status_pb2 as msg_dot_command_dot_swarm__set__status__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -40,7 +40,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lynk.command',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\"msg/command/command_envelope.proto\x12\x0clynk.command\x1a\x1fmsg/command/system_reboot.proto\x1a\'msg/command/system_set_vehicle_id.proto\x1a$msg/command/system_set_team_id.proto\x1a!msg/command/flight_set_mode.proto\x1a\x1fmsg/command/flight_arming.proto\x1a msg/command/flight_takeoff.proto\x1a\x1dmsg/command/flight_goto.proto\x1a\"msg/command/flight_set_speed.proto\x1a%msg/command/flight_set_altitude.proto\x1a$msg/command/flight_set_heading.proto\x1a!msg/command/flight_set_home.proto\x1a msg/command/flight_set_roi.proto\x1a\x1dmsg/command/flight_land.proto\x1a msg/command/mission_upload.proto\x1a!msg/command/mission_control.proto\x1a)msg/command/swarm_formation_execute.proto\x1a\"msg/command/swarm_set_leader.proto\x1a*msg/command/swarm_set_formation_type.proto\x1a#msg/command/swarm_set_spacing.proto\x1a+msg/command/swarm_set_altitude_offset.proto\x1a\"msg/command/swarm_set_status.proto\"\x8a\n\n\x0f\x43ommandEnvelope\x12\x0f\n\x06\x63md_id\x18\xff\x01 \x01(\r\x12\x33\n\rsystem_reboot\x18\x01 \x01(\x0b\x32\x1a.lynk.command.SystemRebootH\x00\x12\x41\n\x15system_set_vehicle_id\x18\x02 \x01(\x0b\x32 .lynk.command.SystemSetVehicleIdH\x00\x12;\n\x12system_set_team_id\x18\x03 \x01(\x0b\x32\x1d.lynk.command.SystemSetTeamIdH\x00\x12\x36\n\x0f\x66light_set_mode\x18\x15 \x01(\x0b\x32\x1b.lynk.command.FlightSetModeH\x00\x12\x33\n\rflight_arming\x18\x16 \x01(\x0b\x32\x1a.lynk.command.FlightArmingH\x00\x12\x35\n\x0e\x66light_takeoff\x18\x17 \x01(\x0b\x32\x1b.lynk.command.FlightTakeoffH\x00\x12/\n\x0b\x66light_goto\x18\x18 \x01(\x0b\x32\x18.lynk.command.FlightGotoH\x00\x12\x38\n\x10\x66light_set_speed\x18\x19 \x01(\x0b\x32\x1c.lynk.command.FlightSetSpeedH\x00\x12>\n\x13\x66light_set_altitude\x18\x1a \x01(\x0b\x32\x1f.lynk.command.FlightSetAltitudeH\x00\x12<\n\x12\x66light_set_heading\x18\x1b \x01(\x0b\x32\x1e.lynk.command.FlightSetHeadingH\x00\x12\x36\n\x0f\x66light_set_home\x18\x1c \x01(\x0b\x32\x1b.lynk.command.FlightSetHomeH\x00\x12\x34\n\x0e\x66light_set_roi\x18\x1d \x01(\x0b\x32\x1a.lynk.command.FlightSetRoiH\x00\x12/\n\x0b\x66light_land\x18\x1e \x01(\x0b\x32\x18.lynk.command.FlightLandH\x00\x12\x35\n\x0emission_upload\x18) \x01(\x0b\x32\x1b.lynk.command.MissionUploadH\x00\x12\x37\n\x0fmission_control\x18* \x01(\x0b\x32\x1c.lynk.command.MissionControlH\x00\x12\x46\n\x17swarm_formation_execute\x18= \x01(\x0b\x32#.lynk.command.SwarmFormationExecuteH\x00\x12\x38\n\x10swarm_set_leader\x18> \x01(\x0b\x32\x1c.lynk.command.SwarmSetLeaderH\x00\x12G\n\x18swarm_set_formation_type\x18? \x01(\x0b\x32#.lynk.command.SwarmSetFormationTypeH\x00\x12:\n\x11swarm_set_spacing\x18@ \x01(\x0b\x32\x1d.lynk.command.SwarmSetSpacingH\x00\x12I\n\x19swarm_set_altitude_offset\x18\x41 \x01(\x0b\x32$.lynk.command.SwarmSetAltitudeOffsetH\x00\x12\x38\n\x10swarm_set_status\x18\x42 \x01(\x0b\x32\x1c.lynk.command.SwarmSetStatusH\x00\x42\t\n\x07payloadb\x06proto3')
+  serialized_pb=_b('\n\"msg/command/command_envelope.proto\x12\x0clynk.command\x1a\x1fmsg/command/system_reboot.proto\x1a\'msg/command/system_set_vehicle_id.proto\x1a$msg/command/system_set_team_id.proto\x1a!msg/command/flight_set_mode.proto\x1a\x1fmsg/command/flight_arming.proto\x1a msg/command/flight_takeoff.proto\x1a\x1dmsg/command/flight_goto.proto\x1a\"msg/command/flight_set_speed.proto\x1a%msg/command/flight_set_altitude.proto\x1a$msg/command/flight_set_heading.proto\x1a!msg/command/flight_set_home.proto\x1a msg/command/flight_set_roi.proto\x1a\x1dmsg/command/flight_land.proto\x1a msg/command/mission_upload.proto\x1a!msg/command/mission_control.proto\x1a)msg/command/swarm_formation_execute.proto\x1a\"msg/command/swarm_set_leader.proto\x1a*msg/command/swarm_set_formation_type.proto\x1a#msg/command/swarm_set_spacing.proto\x1a+msg/command/swarm_set_altitude_offset.proto\x1a\"msg/command/swarm_set_status.proto\"\xa2\n\n\x0f\x43ommandEnvelope\x12\x0f\n\x06\x63md_id\x18\xff\x01 \x01(\r\x12\x16\n\x0etransaction_id\x18\x64 \x01(\t\x12\x33\n\rsystem_reboot\x18\x01 \x01(\x0b\x32\x1a.lynk.command.SystemRebootH\x00\x12\x41\n\x15system_set_vehicle_id\x18\x02 \x01(\x0b\x32 .lynk.command.SystemSetVehicleIdH\x00\x12;\n\x12system_set_team_id\x18\x03 \x01(\x0b\x32\x1d.lynk.command.SystemSetTeamIdH\x00\x12\x36\n\x0f\x66light_set_mode\x18\x15 \x01(\x0b\x32\x1b.lynk.command.FlightSetModeH\x00\x12\x33\n\rflight_arming\x18\x16 \x01(\x0b\x32\x1a.lynk.command.FlightArmingH\x00\x12\x35\n\x0e\x66light_takeoff\x18\x17 \x01(\x0b\x32\x1b.lynk.command.FlightTakeoffH\x00\x12/\n\x0b\x66light_goto\x18\x18 \x01(\x0b\x32\x18.lynk.command.FlightGotoH\x00\x12\x38\n\x10\x66light_set_speed\x18\x19 \x01(\x0b\x32\x1c.lynk.command.FlightSetSpeedH\x00\x12>\n\x13\x66light_set_altitude\x18\x1a \x01(\x0b\x32\x1f.lynk.command.FlightSetAltitudeH\x00\x12<\n\x12\x66light_set_heading\x18\x1b \x01(\x0b\x32\x1e.lynk.command.FlightSetHeadingH\x00\x12\x36\n\x0f\x66light_set_home\x18\x1c \x01(\x0b\x32\x1b.lynk.command.FlightSetHomeH\x00\x12\x34\n\x0e\x66light_set_roi\x18\x1d \x01(\x0b\x32\x1a.lynk.command.FlightSetRoiH\x00\x12/\n\x0b\x66light_land\x18\x1e \x01(\x0b\x32\x18.lynk.command.FlightLandH\x00\x12\x35\n\x0emission_upload\x18) \x01(\x0b\x32\x1b.lynk.command.MissionUploadH\x00\x12\x37\n\x0fmission_control\x18* \x01(\x0b\x32\x1c.lynk.command.MissionControlH\x00\x12\x46\n\x17swarm_formation_execute\x18= \x01(\x0b\x32#.lynk.command.SwarmFormationExecuteH\x00\x12\x38\n\x10swarm_set_leader\x18> \x01(\x0b\x32\x1c.lynk.command.SwarmSetLeaderH\x00\x12G\n\x18swarm_set_formation_type\x18? \x01(\x0b\x32#.lynk.command.SwarmSetFormationTypeH\x00\x12:\n\x11swarm_set_spacing\x18@ \x01(\x0b\x32\x1d.lynk.command.SwarmSetSpacingH\x00\x12I\n\x19swarm_set_altitude_offset\x18\x41 \x01(\x0b\x32$.lynk.command.SwarmSetAltitudeOffsetH\x00\x12\x38\n\x10swarm_set_status\x18\x42 \x01(\x0b\x32\x1c.lynk.command.SwarmSetStatusH\x00\x42\t\n\x07payloadb\x06proto3')
   ,
   dependencies=[msg_dot_command_dot_system__reboot__pb2.DESCRIPTOR,msg_dot_command_dot_system__set__vehicle__id__pb2.DESCRIPTOR,msg_dot_command_dot_system__set__team__id__pb2.DESCRIPTOR,msg_dot_command_dot_flight__set__mode__pb2.DESCRIPTOR,msg_dot_command_dot_flight__arming__pb2.DESCRIPTOR,msg_dot_command_dot_flight__takeoff__pb2.DESCRIPTOR,msg_dot_command_dot_flight__goto__pb2.DESCRIPTOR,msg_dot_command_dot_flight__set__speed__pb2.DESCRIPTOR,msg_dot_command_dot_flight__set__altitude__pb2.DESCRIPTOR,msg_dot_command_dot_flight__set__heading__pb2.DESCRIPTOR,msg_dot_command_dot_flight__set__home__pb2.DESCRIPTOR,msg_dot_command_dot_flight__set__roi__pb2.DESCRIPTOR,msg_dot_command_dot_flight__land__pb2.DESCRIPTOR,msg_dot_command_dot_mission__upload__pb2.DESCRIPTOR,msg_dot_command_dot_mission__control__pb2.DESCRIPTOR,msg_dot_command_dot_swarm__formation__execute__pb2.DESCRIPTOR,msg_dot_command_dot_swarm__set__leader__pb2.DESCRIPTOR,msg_dot_command_dot_swarm__set__formation__type__pb2.DESCRIPTOR,msg_dot_command_dot_swarm__set__spacing__pb2.DESCRIPTOR,msg_dot_command_dot_swarm__set__altitude__offset__pb2.DESCRIPTOR,msg_dot_command_dot_swarm__set__status__pb2.DESCRIPTOR,])
 
@@ -62,147 +62,154 @@ _COMMANDENVELOPE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='system_reboot', full_name='lynk.command.CommandEnvelope.system_reboot', index=1,
+      name='transaction_id', full_name='lynk.command.CommandEnvelope.transaction_id', index=1,
+      number=100, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='system_reboot', full_name='lynk.command.CommandEnvelope.system_reboot', index=2,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='system_set_vehicle_id', full_name='lynk.command.CommandEnvelope.system_set_vehicle_id', index=2,
+      name='system_set_vehicle_id', full_name='lynk.command.CommandEnvelope.system_set_vehicle_id', index=3,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='system_set_team_id', full_name='lynk.command.CommandEnvelope.system_set_team_id', index=3,
+      name='system_set_team_id', full_name='lynk.command.CommandEnvelope.system_set_team_id', index=4,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_set_mode', full_name='lynk.command.CommandEnvelope.flight_set_mode', index=4,
+      name='flight_set_mode', full_name='lynk.command.CommandEnvelope.flight_set_mode', index=5,
       number=21, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_arming', full_name='lynk.command.CommandEnvelope.flight_arming', index=5,
+      name='flight_arming', full_name='lynk.command.CommandEnvelope.flight_arming', index=6,
       number=22, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_takeoff', full_name='lynk.command.CommandEnvelope.flight_takeoff', index=6,
+      name='flight_takeoff', full_name='lynk.command.CommandEnvelope.flight_takeoff', index=7,
       number=23, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_goto', full_name='lynk.command.CommandEnvelope.flight_goto', index=7,
+      name='flight_goto', full_name='lynk.command.CommandEnvelope.flight_goto', index=8,
       number=24, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_set_speed', full_name='lynk.command.CommandEnvelope.flight_set_speed', index=8,
+      name='flight_set_speed', full_name='lynk.command.CommandEnvelope.flight_set_speed', index=9,
       number=25, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_set_altitude', full_name='lynk.command.CommandEnvelope.flight_set_altitude', index=9,
+      name='flight_set_altitude', full_name='lynk.command.CommandEnvelope.flight_set_altitude', index=10,
       number=26, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_set_heading', full_name='lynk.command.CommandEnvelope.flight_set_heading', index=10,
+      name='flight_set_heading', full_name='lynk.command.CommandEnvelope.flight_set_heading', index=11,
       number=27, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_set_home', full_name='lynk.command.CommandEnvelope.flight_set_home', index=11,
+      name='flight_set_home', full_name='lynk.command.CommandEnvelope.flight_set_home', index=12,
       number=28, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_set_roi', full_name='lynk.command.CommandEnvelope.flight_set_roi', index=12,
+      name='flight_set_roi', full_name='lynk.command.CommandEnvelope.flight_set_roi', index=13,
       number=29, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='flight_land', full_name='lynk.command.CommandEnvelope.flight_land', index=13,
+      name='flight_land', full_name='lynk.command.CommandEnvelope.flight_land', index=14,
       number=30, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='mission_upload', full_name='lynk.command.CommandEnvelope.mission_upload', index=14,
+      name='mission_upload', full_name='lynk.command.CommandEnvelope.mission_upload', index=15,
       number=41, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='mission_control', full_name='lynk.command.CommandEnvelope.mission_control', index=15,
+      name='mission_control', full_name='lynk.command.CommandEnvelope.mission_control', index=16,
       number=42, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='swarm_formation_execute', full_name='lynk.command.CommandEnvelope.swarm_formation_execute', index=16,
+      name='swarm_formation_execute', full_name='lynk.command.CommandEnvelope.swarm_formation_execute', index=17,
       number=61, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='swarm_set_leader', full_name='lynk.command.CommandEnvelope.swarm_set_leader', index=17,
+      name='swarm_set_leader', full_name='lynk.command.CommandEnvelope.swarm_set_leader', index=18,
       number=62, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='swarm_set_formation_type', full_name='lynk.command.CommandEnvelope.swarm_set_formation_type', index=18,
+      name='swarm_set_formation_type', full_name='lynk.command.CommandEnvelope.swarm_set_formation_type', index=19,
       number=63, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='swarm_set_spacing', full_name='lynk.command.CommandEnvelope.swarm_set_spacing', index=19,
+      name='swarm_set_spacing', full_name='lynk.command.CommandEnvelope.swarm_set_spacing', index=20,
       number=64, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='swarm_set_altitude_offset', full_name='lynk.command.CommandEnvelope.swarm_set_altitude_offset', index=20,
+      name='swarm_set_altitude_offset', full_name='lynk.command.CommandEnvelope.swarm_set_altitude_offset', index=21,
       number=65, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='swarm_set_status', full_name='lynk.command.CommandEnvelope.swarm_set_status', index=21,
+      name='swarm_set_status', full_name='lynk.command.CommandEnvelope.swarm_set_status', index=22,
       number=66, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -224,7 +231,7 @@ _COMMANDENVELOPE = _descriptor.Descriptor(
       index=0, containing_type=None, fields=[]),
   ],
   serialized_start=821,
-  serialized_end=2111,
+  serialized_end=2135,
 )
 
 _COMMANDENVELOPE.fields_by_name['system_reboot'].message_type = msg_dot_command_dot_system__reboot__pb2._SYSTEMREBOOT

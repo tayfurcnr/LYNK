@@ -182,10 +182,15 @@ def parse_mesh_frame(data: bytes) -> dict:
             raise ValueError(f"Unsupported compression algorithm ID: {algo_id}")
 
     # 4. Anti-Replay Verification
-    seq_manager = get_seq_manager()
-    if not seq_manager.verify_in_seq(src_id, seq_num):
-        last_seq = seq_manager._in_seq_map.get(src_id, 0)
-        raise ValueError(f"Replay detected or old sequence: {seq_num} (SRC: {src_id}, LAST: {last_seq})")
+    # EXCEPTION: ACK frames are exempt from replay detection
+    # Rationale: ACKs are idempotent confirmations - receiving duplicates is harmless
+    # This allows proper ACK delivery in multicast environments where loopback occurs
+    frame_type_char = chr(frame_type_byte)
+    if frame_type_char != 'A':
+        seq_manager = get_seq_manager()
+        if not seq_manager.verify_in_seq(src_id, seq_num):
+            last_seq = seq_manager._in_seq_map.get(src_id, 0)
+            raise ValueError(f"Replay detected or old sequence: {seq_num} (SRC: {src_id}, LAST: {last_seq})")
 
     return {
         "version": version,

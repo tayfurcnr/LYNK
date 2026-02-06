@@ -12,11 +12,11 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from . import ack_ok_pb2 as msg_dot_ack_dot_ack__ok__pb2
-from . import ack_error_pb2 as msg_dot_ack_dot_ack__error__pb2
-from . import ack_busy_pb2 as msg_dot_ack_dot_ack__busy__pb2
-from . import ack_invalid_cmd_pb2 as msg_dot_ack_dot_ack__invalid__cmd__pb2
-from . import ack_execution_error_pb2 as msg_dot_ack_dot_ack__execution__error__pb2
+from msg.ack import ack_ok_pb2 as msg_dot_ack_dot_ack__ok__pb2
+from msg.ack import ack_error_pb2 as msg_dot_ack_dot_ack__error__pb2
+from msg.ack import ack_busy_pb2 as msg_dot_ack_dot_ack__busy__pb2
+from msg.ack import ack_invalid_cmd_pb2 as msg_dot_ack_dot_ack__invalid__cmd__pb2
+from msg.ack import ack_execution_error_pb2 as msg_dot_ack_dot_ack__execution__error__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lynk.ack',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x1amsg/ack/ack_envelope.proto\x12\x08lynk.ack\x1a\x14msg/ack/ack_ok.proto\x1a\x17msg/ack/ack_error.proto\x1a\x16msg/ack/ack_busy.proto\x1a\x1dmsg/ack/ack_invalid_cmd.proto\x1a!msg/ack/ack_execution_error.proto\"\xe8\x01\n\x0b\x41\x63kEnvelope\x12\x0e\n\x06\x61\x63k_id\x18\x01 \x01(\r\x12\x1a\n\x02ok\x18\x02 \x01(\x0b\x32\x0c.lynk.ack.OkH\x00\x12 \n\x05\x65rror\x18\x03 \x01(\x0b\x32\x0f.lynk.ack.ErrorH\x00\x12\x1e\n\x04\x62usy\x18\x04 \x01(\x0b\x32\x0e.lynk.ack.BusyH\x00\x12+\n\x0binvalid_cmd\x18\x05 \x01(\x0b\x32\x14.lynk.ack.InvalidCmdH\x00\x12\x33\n\x0f\x65xecution_error\x18\x06 \x01(\x0b\x32\x18.lynk.ack.ExecutionErrorH\x00\x42\t\n\x07payloadb\x06proto3')
+  serialized_pb=_b('\n\x1amsg/ack/ack_envelope.proto\x12\x08lynk.ack\x1a\x14msg/ack/ack_ok.proto\x1a\x17msg/ack/ack_error.proto\x1a\x16msg/ack/ack_busy.proto\x1a\x1dmsg/ack/ack_invalid_cmd.proto\x1a!msg/ack/ack_execution_error.proto\"\x80\x02\n\x0b\x41\x63kEnvelope\x12\x0e\n\x06\x61\x63k_id\x18\x01 \x01(\r\x12\x16\n\x0etransaction_id\x18\x64 \x01(\t\x12\x1a\n\x02ok\x18\x02 \x01(\x0b\x32\x0c.lynk.ack.OkH\x00\x12 \n\x05\x65rror\x18\x03 \x01(\x0b\x32\x0f.lynk.ack.ErrorH\x00\x12\x1e\n\x04\x62usy\x18\x04 \x01(\x0b\x32\x0e.lynk.ack.BusyH\x00\x12+\n\x0binvalid_cmd\x18\x05 \x01(\x0b\x32\x14.lynk.ack.InvalidCmdH\x00\x12\x33\n\x0f\x65xecution_error\x18\x06 \x01(\x0b\x32\x18.lynk.ack.ExecutionErrorH\x00\x42\t\n\x07payloadb\x06proto3')
   ,
   dependencies=[msg_dot_ack_dot_ack__ok__pb2.DESCRIPTOR,msg_dot_ack_dot_ack__error__pb2.DESCRIPTOR,msg_dot_ack_dot_ack__busy__pb2.DESCRIPTOR,msg_dot_ack_dot_ack__invalid__cmd__pb2.DESCRIPTOR,msg_dot_ack_dot_ack__execution__error__pb2.DESCRIPTOR,])
 
@@ -46,35 +46,42 @@ _ACKENVELOPE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='ok', full_name='lynk.ack.AckEnvelope.ok', index=1,
+      name='transaction_id', full_name='lynk.ack.AckEnvelope.transaction_id', index=1,
+      number=100, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='ok', full_name='lynk.ack.AckEnvelope.ok', index=2,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='error', full_name='lynk.ack.AckEnvelope.error', index=2,
+      name='error', full_name='lynk.ack.AckEnvelope.error', index=3,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='busy', full_name='lynk.ack.AckEnvelope.busy', index=3,
+      name='busy', full_name='lynk.ack.AckEnvelope.busy', index=4,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='invalid_cmd', full_name='lynk.ack.AckEnvelope.invalid_cmd', index=4,
+      name='invalid_cmd', full_name='lynk.ack.AckEnvelope.invalid_cmd', index=5,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='execution_error', full_name='lynk.ack.AckEnvelope.execution_error', index=5,
+      name='execution_error', full_name='lynk.ack.AckEnvelope.execution_error', index=6,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -96,7 +103,7 @@ _ACKENVELOPE = _descriptor.Descriptor(
       index=0, containing_type=None, fields=[]),
   ],
   serialized_start=178,
-  serialized_end=410,
+  serialized_end=434,
 )
 
 _ACKENVELOPE.fields_by_name['ok'].message_type = msg_dot_ack_dot_ack__ok__pb2._OK

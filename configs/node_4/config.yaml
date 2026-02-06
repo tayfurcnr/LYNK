@@ -19,6 +19,9 @@ udp:
   local_port: 5001
   remote_ip: 239.1.2.3
   remote_port: 5001
+  idle_sleep_sec: 0.0002
+  rcvbuf_bytes: 16777216
+  rx_queue_size: 30
 logging:
   enabled: true
   level: INFO

@@ -60,16 +60,17 @@ def _get_cmd_map():
     logger.debug(f"[DISPATCHER] Loaded {_CMD_MAP} commands from Protobuf introspection")
     return _CMD_MAP
 
-def serialize_command(command_id: int, params: Optional[Dict[str, Any]] = None) -> bytes:
+def serialize_command(command_id: int, params: Optional[Dict[str, Any]] = None, transaction_id: str = "") -> bytes:
     """
     Serializes a command into a protobuf payload.
 
     Parameters:
         command_id (int): The command identifier (0–255)
         params (dict): Command parameters mapped to protobuf fields.
+        transaction_id (str): Unique identifier (UUID).
 
     Returns:
-        bytes: Serialized command [command_id] + [params]
+        bytes: Serialized command
     """
     if params is None:
         params = {}
@@ -81,15 +82,16 @@ def serialize_command(command_id: int, params: Optional[Dict[str, Any]] = None) 
     field_name, field_list = cmd_map[command_id]
     cmd_pb = _get_pb()
     envelope = cmd_pb.CommandEnvelope()
-    envelope.cmd_id = command_id # Should now map to field 255 in protobuf definition
+    envelope.cmd_id = command_id
+    envelope.transaction_id = transaction_id
     payload_msg = getattr(envelope, field_name)
     payload_msg.SetInParent()
     for key in field_list:
-        if key in params:
+        if key in params and params[key] is not None:
             setattr(payload_msg, key, params[key])
 
     data = envelope.SerializeToString()
-    logger.debug(f"[COMMAND] SERIALIZED | CMD_ID: {command_id} | SIZE={len(data)}B")
+    logger.debug(f"[COMMAND] SERIALIZED | CMD_ID: {command_id} | TX_ID: {transaction_id} | SIZE={len(data)}B")
     return data
 
 def deserialize_command(payload: bytes) -> dict:
@@ -102,7 +104,8 @@ def deserialize_command(payload: bytes) -> dict:
     Returns:
         dict: {
             "command_id": int,
-            "params": bytes
+            "transaction_id": str,
+            "params": dict
         }
     """
     if len(payload) == 0:
@@ -115,17 +118,18 @@ def deserialize_command(payload: bytes) -> dict:
     envelope.ParseFromString(payload)
 
     command_id = envelope.cmd_id
+    transaction_id = envelope.transaction_id
     which = envelope.WhichOneof("payload")
 
     # If the ID is unknown or the payload part is missing/unmapped
     if command_id not in cmd_map or not which:
         logger.warning(f"[COMMAND] Unknown or unmapped command ID: {command_id}")
-        return {"command_id": command_id, "params": payload} # Return raw payload as params
+        return {"command_id": command_id, "transaction_id": transaction_id, "params": payload} 
 
     field_list = cmd_map[command_id][1]
     msg = getattr(envelope, which)
     params = {key: getattr(msg, key) for key in field_list}
 
-    logger.debug(f"[COMMAND] DESERIALIZED | CMD_ID: {command_id} | PARAMS: {list(params.keys())}")
+    logger.debug(f"[COMMAND] DESERIALIZED | CMD_ID: {command_id} | TX_ID: {transaction_id} | PARAMS: {list(params.keys())}")
 
-    return {"command_id": command_id, "params": params}
+    return {"command_id": command_id, "transaction_id": transaction_id, "params": params}

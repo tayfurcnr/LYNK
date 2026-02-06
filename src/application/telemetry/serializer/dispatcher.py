@@ -80,7 +80,8 @@ def serialize_telemetry(name: str, *params) -> bytes:
     envelope.tlm_id = tlm_id
     payload_msg = getattr(envelope, field_name)
     for key, value in zip(field_list, params):
-        setattr(payload_msg, key, value)
+        if value is not None:
+            setattr(payload_msg, key, value)
 
     data = envelope.SerializeToString()
     logger.debug(f"[TELEMETRY] SERIALIZED | NAME: {name} | ID={tlm_id} | SIZE={len(data)}B")
