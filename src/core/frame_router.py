@@ -6,6 +6,7 @@ import random
 from src.application.command.handler.dispatcher import handle_command
 from src.application.telemetry.handler.dispatcher import handle_telemetry
 from src.application.ack.handler.dispatcher import handle_ack
+from src.application.result.handler.dispatcher import handle_result
 
 from src.core.frame_codec import load_device_id, load_team_id, build_mesh_frame
 from src.shared.log.logger import logger
@@ -17,6 +18,7 @@ dispatch_table = {
     'C': handle_command,
     'T': handle_telemetry,
     'A': handle_ack,
+    'R': handle_result,
 }
 
 def should_relay_frame(frame_dict: dict) -> bool:

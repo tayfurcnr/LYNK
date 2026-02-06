@@ -42,19 +42,27 @@ from src.application.ack.tools.dispatcher import send_ack_ok, send_ack_invalid_c
 from src.application.command.tools.cache import set_last_command
 
 _TX_CMD_MAP: Dict[str, str] = {}
+_TX_CMD_ID_MAP: Dict[str, int] = {}
 _TX_LOCK = threading.Lock()
 
-def _register_tx_cmd(tx_id: str, cmd_name: str) -> None:
+def _register_tx_cmd(tx_id: str, cmd_name: str, cmd_id: int) -> None:
     if not tx_id:
         return
     with _TX_LOCK:
         _TX_CMD_MAP[tx_id] = cmd_name
+        _TX_CMD_ID_MAP[tx_id] = cmd_id
 
 def get_tx_cmd_name(tx_id: str) -> Optional[str]:
     if not tx_id:
         return None
     with _TX_LOCK:
         return _TX_CMD_MAP.get(tx_id)
+
+def get_tx_cmd_id(tx_id: str) -> Optional[int]:
+    if not tx_id:
+        return None
+    with _TX_LOCK:
+        return _TX_CMD_ID_MAP.get(tx_id)
 
 def send_command(
     interface,
@@ -100,7 +108,7 @@ def send_command(
     # Use provided UUID or generate one (empty string should generate)
     final_tx_id = transaction_id if transaction_id else str(uuid.uuid4())
     
-    _register_tx_cmd(final_tx_id, field_name.upper())
+    _register_tx_cmd(final_tx_id, field_name.upper(), command_id)
 
     # Identify target nodes for ACK tracking
     expected_ids = []

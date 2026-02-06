@@ -1,0 +1,14 @@
+syntax = "proto3";
+package lynk.result;
+
+message CommandResult {
+  enum Status {
+    SUCCESS = 0;
+    FAILURE = 1;
+    TIMEOUT = 2;
+  }
+
+  Status status = 1;
+  uint32 error_code = 2;
+  string message = 3;
+}

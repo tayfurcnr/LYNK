@@ -1,0 +1,11 @@
+syntax = "proto3";
+package lynk.result;
+
+import "msg/result/command_result.proto";
+
+message ResultEnvelope {
+  string tx_id = 1;
+  oneof payload {
+    CommandResult result = 2;
+  }
+}

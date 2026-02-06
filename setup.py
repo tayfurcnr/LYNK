@@ -27,6 +27,7 @@ class CompileProtos(Command):
         proto_files.extend(glob.glob(os.path.join(root_dir, "msg/telemetry/*.proto")))
         proto_files.extend(glob.glob(os.path.join(root_dir, "msg/command/*.proto")))
         proto_files.extend(glob.glob(os.path.join(root_dir, "msg/ack/*.proto")))
+        proto_files.extend(glob.glob(os.path.join(root_dir, "msg/result/*.proto")))
         
         nanopb_proto = os.path.join(root_dir, "nanopb.proto")
         if os.path.exists(nanopb_proto):
@@ -92,4 +93,3 @@ if __name__ == "__main__":
         description='Mission-critical LYNK Toolkit with automated Test Lab.',
         author='LYNK Mission Control',
     )
-
