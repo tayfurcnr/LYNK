@@ -1,5 +1,5 @@
 from __future__ import annotations
-# src/tools/dev/generate_tree.py
+# lynk/tools/dev/generate_tree.py
 
 """
 Project Tree Generator

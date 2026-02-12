@@ -1,13 +1,13 @@
 import os
 import pytest
-from src.shared.config.manager import load_config
-import src.shared.config.manager as cfg_manager
+from lynk.shared.config.manager import load_config
+import lynk.shared.config.manager as cfg_manager
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_config():
     import sys
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    proto_dir = os.path.join(root_dir, "src/shared/proto")
+    proto_dir = os.path.join(root_dir, "lynk/shared/proto")
     if proto_dir not in sys.path:
         sys.path.insert(0, proto_dir)
     
@@ -23,9 +23,9 @@ def setup_config():
 
 @pytest.fixture(autouse=True)
 def reset_singletons():
-    from src.core.sequence_manager import get_sequence_manager
-    from src.application.telemetry.tools.cache import reset_cache
-    from src.application.ack.tools.tracker import get_ack_tracker
+    from lynk.core.sequence_manager import get_sequence_manager
+    from lynk.application.telemetry.tools.cache import reset_cache
+    from lynk.application.ack.tools.tracker import get_ack_tracker
     
     get_sequence_manager()._in_seq_map.clear()
     get_sequence_manager()._out_seq = 0

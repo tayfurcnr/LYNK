@@ -48,7 +48,7 @@ python3 setup.py protos
 
 **Sending (Generic Function):**
 ```python
-import src.application.telemetry.tools.dispatcher as tlm
+import lynk.application.telemetry.tools.dispatcher as tlm
 
 # Automatic parameter ordering and validation
 tlm.send_telemetry(interface, "COMPASS", heading=45.2, declination=1.3)
@@ -64,7 +64,7 @@ No extra code required! The system automatically:
 
 If special logic is needed (e.g., calculations or DB storage), add a handler in `impl.py`:
 
-**`src/application/telemetry/handler/impl.py`:**
+**`lynk/application/telemetry/handler/impl.py`:**
 ```python
 def compass(data: dict, src_id: int):
     heading = data["heading"]

@@ -1,42 +1,43 @@
 from __future__ import annotations
 import time
-import src.shared.comm.interface_factory as factory
-from src.application.telemetry.serializer.dispatcher import serialize_telemetry
-from src.application.command.serializer.dispatcher import serialize_command
-from src.core.frame_router import route_frame
-import src.core.frame_codec as codec
-from src.application.telemetry.tools.dispatcher import (
+import lynk.shared.comm.interface_factory as factory
+from lynk.application.telemetry.serializer.dispatcher import serialize_telemetry
+from lynk.application.command.serializer.dispatcher import serialize_command
+from lynk.core.frame_router import route_frame
+import lynk.core.frame_codec as codec
+from lynk.application.telemetry.tools.dispatcher import (
     send_tlm_gps,
     send_tlm_imu,
     send_tlm_battery,
     send_tlm_heartbeat
 )
-from src.application.telemetry.tools.cache import (
+from lynk.application.telemetry.tools.cache import (
     get_active_device_ids,
     get_device_data,
     get_all_cached_data,
     get_all_data_for_device,
     reset_cache
 )
-from src.application.command.tools.dispatcher import cmd_flight_takeoff
+from lynk.application.command.tools.dispatcher import cmd_flight_takeoff
 import pytest
-import src.application.ack.tools.tracker as tracker
+import lynk.application.ack.tools.tracker as tracker
 
 @pytest.fixture(autouse=True)
 def setup_lynk():
-    from src.shared.config import manager
+    from lynk.shared.config import manager
     manager._config = {
         "vehicle": {"id": 1, "team_id": 0},
         "protocol": {"start_byte": 0x24, "start_byte_2": 0x24, "version": 1},
         "interface": {"comm_type": "MOCK_UART"},
         "uart": {"port": "/dev/ttyUSB0", "baudrate": 57600, "timeout": 0.1},
-        "relay": {"enabled": True}
+        "relay": {"enabled": True},
+        "udp": {"enable_loopback": True}
     }
     # Reset factory singleton to ensure fresh interface with new config
-    import src.shared.comm.interface_factory as factory
+    import lynk.shared.comm.interface_factory as factory
     factory._interface_instance = None
     
-    from src.core.sequence_manager import get_sequence_manager
+    from lynk.core.sequence_manager import get_sequence_manager
     get_sequence_manager()._in_seq_map.clear()
     get_sequence_manager()._out_seq = 0
     

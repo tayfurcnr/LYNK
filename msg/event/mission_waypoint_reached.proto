@@ -1,0 +1,8 @@
+syntax = "proto3";
+package lynk.event;
+
+message MissionWaypointReached {
+  uint32 waypoint_index = 1;
+  uint32 total_waypoints = 2;
+  float distance_error_m = 3;
+}

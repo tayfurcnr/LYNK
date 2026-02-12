@@ -3,11 +3,10 @@ import sys
 import lz4.block
 import struct
 
-# Add src to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-
-from src.core.frame_codec import build_mesh_frame
-from src.shared.config.manager import load_config
+# Import LYNK Library
+import lynk
+from lynk.core.frame_codec import build_mesh_frame
+from lynk.shared.config.manager import load_config
 
 # Initialize config
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../'))

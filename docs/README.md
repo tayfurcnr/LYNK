@@ -39,7 +39,7 @@ pip install -r requirements-dev.txt
 1. Define message in `msg/command/your_command.proto`
 2. Add to `msg/command/command_envelope.proto`
 3. Run `python3 setup.py protos`
-4. Add handler in `src/application/command/handler/impl.py`
+4. Add handler in `lynk/application/command/handler/impl.py`
 
 ### Adding a New Telemetry
 1. Define message in `msg/telemetry/your_telemetry.proto`

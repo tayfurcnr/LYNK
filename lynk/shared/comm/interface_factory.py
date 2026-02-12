@@ -1,0 +1,48 @@
+import threading
+from typing import Literal, Optional
+from lynk.shared.config.manager import get_config
+from lynk.shared.comm.interfaces import UARTInterface, UDPInterface
+from lynk.shared.comm.mock_handler import MockUARTHandler
+from lynk.shared.comm.uart_handler import UARTHandler
+from lynk.shared.comm.udp_handler import UDPHandler
+from lynk.shared.log.logger import logger
+
+
+# Global singleton cache and lock
+_interface_instance = None
+_factory_lock = threading.Lock()
+
+def create_interface():
+    global _interface_instance
+    with _factory_lock:
+        if _interface_instance is not None:
+            return _interface_instance
+
+        cfg = get_config()
+        comm_type: Literal["UART", "MOCK_UART", "UDP"] = cfg \
+            .get("interface", {}) \
+            .get("comm_type", "UART") \
+            .upper()
+
+        if comm_type == "UART":
+            logger.info("[FACTORY] Initializing UART interface...")
+            handler = UARTHandler()
+            handler.start()
+            _interface_instance = UARTInterface(handler)
+            return _interface_instance
+
+        if comm_type == "MOCK_UART":
+            logger.info("[FACTORY] Initializing MOCK UART interface...")
+            handler = MockUARTHandler()
+            handler.start()
+            _interface_instance = UARTInterface(handler)
+            return _interface_instance
+
+        if comm_type == "UDP":
+            logger.info("[FACTORY] Initializing UDP interface...")
+            handler = UDPHandler()
+            handler.start()
+            _interface_instance = UDPInterface(handler)
+            return _interface_instance
+
+        raise ValueError(f"[FACTORY] Unsupported comm_type in config: {comm_type}")

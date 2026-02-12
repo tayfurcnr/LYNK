@@ -16,7 +16,7 @@ class CompileProtos(Command):
 
     def run(self):
         root_dir = os.path.dirname(os.path.abspath(__file__))
-        out_dir = os.path.join(root_dir, "src/shared/proto")
+        out_dir = os.path.join(root_dir, "lynk/shared/proto")
         
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
@@ -28,6 +28,8 @@ class CompileProtos(Command):
         proto_files.extend(glob.glob(os.path.join(root_dir, "msg/command/*.proto")))
         proto_files.extend(glob.glob(os.path.join(root_dir, "msg/ack/*.proto")))
         proto_files.extend(glob.glob(os.path.join(root_dir, "msg/result/*.proto")))
+        proto_files.extend(glob.glob(os.path.join(root_dir, "msg/event/*.proto")))
+        proto_files.extend(glob.glob(os.path.join(root_dir, "msg/mavlink/*.proto")))
         
         nanopb_proto = os.path.join(root_dir, "nanopb.proto")
         if os.path.exists(nanopb_proto):
@@ -65,7 +67,7 @@ if __name__ == "__main__":
     setup(
         name='lynk-toolkit',
         version='1.1.0',
-        packages=['src'],
+        packages=['lynk'],
         install_requires=[
             'pyserial',
             'crcmod',

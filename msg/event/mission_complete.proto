@@ -1,0 +1,8 @@
+syntax = "proto3";
+package lynk.event;
+
+message MissionComplete {
+  uint32 total_waypoints = 1;
+  float total_distance_m = 2;
+  float total_time_s = 3;
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package lynk.event;
+
+import "msg/event/event_enums.proto";
+
+message MotorFailure {
+  uint32 motor_id = 1;
+  uint32 current_rpm = 2;
+  uint32 expected_rpm = 3;
+  MotorFailureType failure_type = 4;
+}

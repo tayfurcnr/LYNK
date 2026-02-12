@@ -1,0 +1,12 @@
+syntax = "proto3";
+package lynk.event;
+
+import "msg/event/event_enums.proto";
+
+message CrashDetected {
+  uint32 crashed_vehicle_id = 1;
+  float estimated_crash_lat = 2;
+  float estimated_crash_lon = 3;
+  CrashDetectionMethod detection_method = 4;
+  float vertical_velocity_mps = 5;
+}

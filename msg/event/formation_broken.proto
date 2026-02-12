@@ -1,0 +1,10 @@
+syntax = "proto3";
+package lynk.event;
+
+import "msg/event/event_enums.proto";
+
+message FormationBroken {
+  uint32 missing_vehicle_id = 1;
+  FormationBrokenReason reason = 2;
+  float time_since_last_contact_s = 3;
+}

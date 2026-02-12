@@ -1,0 +1,8 @@
+syntax = "proto3";
+package lynk.event;
+
+message BatteryLow {
+  float voltage = 1;
+  uint32 remaining_percent = 2;
+  float estimated_flight_time_s = 3;
+}

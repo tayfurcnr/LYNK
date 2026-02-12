@@ -1,5 +1,5 @@
 import pytest
-from src.core.sequence_manager import get_sequence_manager
+from lynk.core.sequence_manager import get_sequence_manager
 
 def test_sequence_number_rollover_logic():
     """

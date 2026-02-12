@@ -10,22 +10,22 @@ Eliminate manual updates to `definitions.py` and `dispatcher.py` when adding new
 ## Proposed Changes
 
 ### Shared
-#### [MODIFY] [Command Dispatcher](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/src/application/command/serializer/dispatcher.py)
+#### [MODIFY] [Command Dispatcher](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/lynk/application/command/serializer/dispatcher.py)
 - Remove hardcoded `_CMD_MAP`.
 - Implement `_build_cmd_map()` that iterates `CommandEnvelope.DESCRIPTOR.oneofs_by_name['payload'].fields`.
 - Map `field.number` -> ID.
 - Map `field.name` -> Name.
 - Extract inner message fields dynamically.
 
-#### [MODIFY] [Telemetry Dispatcher](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/src/application/telemetry/serializer/dispatcher.py)
+#### [MODIFY] [Telemetry Dispatcher](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/lynk/application/telemetry/serializer/dispatcher.py)
 - Remove hardcoded `_TLM_FIELDS`.
 - Implement dynamic mapping similar to Command Dispatcher.
 
-#### [MODIFY] [Command Definitions](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/src/application/command/definitions.py)
+#### [MODIFY] [Command Definitions](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/lynk/application/command/definitions.py)
 - Use `importlib` and `pkgutil` or simple `getattr` from `handler.impl` to find handlers matching the command name.
 - Dynamically build `command_definitions`.
 
-#### [MODIFY] [Telemetry Definitions](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/src/application/telemetry/definitions.py)
+#### [MODIFY] [Telemetry Definitions](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/lynk/application/telemetry/definitions.py)
 - Similar dynamic discovery for telemetry handlers.
 
 ## Verification Plan

@@ -1,0 +1,10 @@
+syntax = "proto3";
+package lynk.event;
+
+import "msg/event/event_enums.proto";
+
+message GpsDegraded {
+  uint32 satellites = 1;
+  float hdop = 2;
+  GpsDegradedReason reason = 3;
+}

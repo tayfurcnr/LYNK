@@ -1,8 +1,8 @@
 import pytest
 import time
-from src.application.telemetry.tools.cache import set_device_data, reset_cache
-from src.application.command.tools.dispatcher import send_command
-from src.application.ack.tools.tracker import get_ack_tracker
+from lynk.application.telemetry.tools.cache import set_device_data, reset_cache
+from lynk.application.command.tools.dispatcher import send_command
+from lynk.application.ack.tools.tracker import get_ack_tracker
 
 class MockInterface:
     def send(self, data):
@@ -10,7 +10,7 @@ class MockInterface:
 
 @pytest.fixture(autouse=True)
 def setup():
-    from src.shared.config import manager
+    from lynk.shared.config import manager
     manager._config = {
         "vehicle": {"id": 1, "team_id": 0},
         "protocol": {"start_byte": 0x24, "start_byte_2": 0x24, "version": 1},
@@ -24,7 +24,7 @@ def test_adaptive_timeout_calculation(monkeypatch):
     from unittest.mock import MagicMock
     mock_tracker = MagicMock()
     
-    import src.application.ack.tools.tracker as tracker
+    import lynk.application.ack.tools.tracker as tracker
     monkeypatch.setattr(tracker, "get_ack_tracker", lambda: mock_tracker)
     
     interface = MockInterface()

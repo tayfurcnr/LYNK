@@ -1,0 +1,9 @@
+syntax = "proto3";
+package lynk.event;
+
+import "msg/event/event_enums.proto";
+
+message FailsafeTriggered {
+  FailsafeReason reason = 1;
+  FailsafeAction action = 2;
+}

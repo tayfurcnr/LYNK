@@ -1,0 +1,12 @@
+pyserial
+crcmod
+PyYAML
+protobuf
+lz4
+fastapi
+uvicorn
+
+[dev]
+pytest
+pytest-asyncio
+httpx

@@ -1,5 +1,5 @@
 import pytest
-from src.shared.config import manager
+from lynk.shared.config import manager
 
 def test_config_safe_defaults():
     """Verify that the config manager returns safe defaults when keys are missing or malformed."""

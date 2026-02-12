@@ -1,9 +1,9 @@
 import time
-from src.application.telemetry.tools.cache import set_device_data, get_active_device_ids
-from src.application.command.tools.dispatcher import send_command
-from src.application.ack.tools.tracker import get_ack_tracker
-from src.shared.log.logger import logger
-from src.shared.config.manager import load_config
+from lynk.application.telemetry.tools.cache import set_device_data, get_active_device_ids
+from lynk.application.command.tools.dispatcher import send_command
+from lynk.application.ack.tools.tracker import get_ack_tracker
+from lynk.shared.log.logger import logger
+from lynk.shared.config.manager import load_config
 
 # Mock interface
 class MockInterface:
@@ -12,7 +12,7 @@ class MockInterface:
 
 def test_swarm_ack():
     # Manual mock config setup
-    from src.shared.config import manager
+    from lynk.shared.config import manager
     manager._config = {
         "vehicle": {
             "id": 1,

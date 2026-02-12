@@ -1,7 +1,7 @@
 import pytest
 import os
 import struct
-from src.core.frame_codec import build_mesh_frame, parse_mesh_frame
+from lynk.core.frame_codec import build_mesh_frame, parse_mesh_frame
 
 def test_frame_resilience_with_noise():
     """Verify that the parser can correctly identify valid frames even when surrounded by garbage/noise bytes."""
@@ -39,7 +39,7 @@ def test_frame_resilience_with_noise():
     found_frames = []
     
     # Load start bytes from config/codec to be safe
-    from src.core.frame_codec import load_protocol_config
+    from lynk.core.frame_codec import load_protocol_config
     sb1, sb2, _ = load_protocol_config()
     MAGIC_HEAD = bytes([sb1, sb2])
     

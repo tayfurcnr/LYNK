@@ -6,15 +6,15 @@ import sys
 
 # Ensure proto path is available
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-proto_dir = os.path.join(root_dir, "src/shared/proto")
+proto_dir = os.path.join(root_dir, "lynk/shared/proto")
 if proto_dir not in sys.path:
     sys.path.append(proto_dir)
 
-from src.application.telemetry.tools.cache import set_device_data, reset_cache
-from src.application.command.tools.dispatcher import send_command
-from src.application.ack.tools.tracker import get_ack_tracker
-from src.core.frame_codec import parse_mesh_frame
-from src.application.command.serializer.dispatcher import deserialize_command
+from lynk.application.telemetry.tools.cache import set_device_data, reset_cache
+from lynk.application.command.tools.dispatcher import send_command
+from lynk.application.ack.tools.tracker import get_ack_tracker
+from lynk.core.frame_codec import parse_mesh_frame
+from lynk.application.command.serializer.dispatcher import deserialize_command
 
 class MockInterface:
     def __init__(self):
@@ -24,7 +24,7 @@ class MockInterface:
 
 @pytest.fixture(autouse=True)
 def setup():
-    from src.shared.config import manager
+    from lynk.shared.config import manager
     manager._config = {
         "vehicle": {"id": 1, "team_id": 0},
         "protocol": {"start_byte": 0x24, "start_byte_2": 0x24, "version": 1}

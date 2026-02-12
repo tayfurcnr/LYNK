@@ -71,7 +71,16 @@ async def list_tests():
 @app.get("/api/run/{test_name:path}")
 async def run_test(test_name: str):
     """Run a specific test and stream the output."""
-    test_path = os.path.join(ROOT_DIR, test_name)
+    # Validate and sanitize the path to prevent path traversal
+    test_path = os.path.normpath(os.path.join(ROOT_DIR, test_name))
+    
+    # Ensure the resolved path is within ROOT_DIR
+    if not test_path.startswith(os.path.abspath(ROOT_DIR)):
+        return {"error": "Invalid test path"}
+    
+    # Verify the file exists and is a Python test file
+    if not os.path.exists(test_path) or not test_path.endswith(".py"):
+        return {"error": "Test file not found"}
     
     async def event_generator():
         # Start pytest process

@@ -33,7 +33,7 @@ lynk-root/
 ├── docs/                     # Technical reports and diagrams
 ├── logs/                     # Log files (system.log)
 │
-├── src/                      # 🧠 LYNK Core Kernel
+├── lynk/                      # 🧠 LYNK Core Kernel
 │   ├── core/                 # Frame routing and encoding
 │   ├── application/          # ACK, Command, Telemetry modules
 │   └── shared/               # Interfaces (UDP/UART), config, and logging

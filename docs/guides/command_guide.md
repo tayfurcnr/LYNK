@@ -55,14 +55,14 @@ python3 setup.py protos
 
 ### 4. Implement the Handler (Optional)
 
-Handlers react to incoming commands. If you need special logic, create a function in `src/application/command/handler/impl.py`.
+Handlers react to incoming commands. If you need special logic, create a function in `lynk/application/command/handler/impl.py`.
 
 **Note**: If you skip this step, the system will use a **Default Bridge Handler** that automatically:
 - ✅ Acknowledges the command (`send_ack_success`).
 - ✅ Logs the data for bridge forwarding.
 - ✅ Prepares it for ROS integration.
 
-**Example `src/application/command/handler/impl.py` (if custom logic is needed):**
+**Example `lynk/application/command/handler/impl.py` (if custom logic is needed):**
 ```python
 def camera_capture(cmd_id, params, src_id, interface):
     # This overrides the default bridge handler
@@ -73,7 +73,7 @@ def camera_capture(cmd_id, params, src_id, interface):
 You can now use the generic `send_command` function. It uses introspection to find the schema by name.
 
 ```python
-import src.application.command.tools.dispatcher as cmd
+import lynk.application.command.tools.dispatcher as cmd
 
 # Automatic parameter mapping and validation
 cmd.send_command(

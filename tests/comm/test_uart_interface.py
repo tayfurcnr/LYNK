@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from src.shared.comm.uart_handler import UARTHandler
-from src.core.frame_codec import build_mesh_frame
-from src.shared.config import manager
+from lynk.shared.comm.uart_handler import UARTHandler
+from lynk.core.frame_codec import build_mesh_frame
+from lynk.shared.config import manager
 
-@patch('src.shared.comm.uart_handler.Serial')
+@patch('lynk.shared.comm.uart_handler.Serial')
 def test_uart_handler_extraction(mock_serial_class):
     """Verify that UARTHandler extracts multiple frames from a byte stream."""
     

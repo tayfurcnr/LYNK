@@ -1,9 +1,9 @@
 import pytest
 import time
 import random
-from src.core.frame_router import route_frame
-from src.core.frame_codec import parse_mesh_frame
-from src.application.telemetry.tools.cache import reset_cache, get_device_hop_count
+from lynk.core.frame_router import route_frame
+from lynk.core.frame_codec import parse_mesh_frame
+from lynk.application.telemetry.tools.cache import reset_cache, get_device_hop_count
 
 class VirtualNetwork:
     """Simulates a mesh network with multiple nodes and custom connectivity."""
@@ -22,7 +22,8 @@ class VirtualNetwork:
                     frame_dict = parse_mesh_frame(frame_bytes)
                     # Use a small delay to simulate air time
                     self.nodes[dst_id].receive(frame_bytes, frame_dict)
-                except Exception:
+                except (ValueError, KeyError) as e:
+                    # Log parsing errors but continue
                     pass
 
 class MockMeshInterface:
@@ -41,22 +42,22 @@ class MockMeshInterface:
         self.received_frames.append(frame_dict)
         # In a real app, this is called by the UART listener
         # We simulate routing logic here
-        from src.core.frame_router import route_frame
+        from lynk.core.frame_router import route_frame
         route_frame(frame_dict, self)
 
 @pytest.fixture(autouse=True)
 def setup_mesh():
-    from src.shared.config import manager
+    from lynk.shared.config import manager
     manager._config = {
         "vehicle": {"id": 1, "team_id": 0},
         "protocol": {"start_byte": 0x24, "start_byte_2": 0x24, "version": 1},
         "relay": {"enabled": True, "max_hops": 3, "delay_ms": 1}
     }
     reset_cache()
-    from src.core.relay_cache import get_relay_cache
+    from lynk.core.relay_cache import get_relay_cache
     get_relay_cache()._cache.clear()
     
-    from src.core.sequence_manager import get_sequence_manager
+    from lynk.core.sequence_manager import get_sequence_manager
     sm = get_sequence_manager()
     sm._out_seq = 0
     sm._in_seq_map.clear()
@@ -75,14 +76,14 @@ def test_multi_hop_relay_depth():
     # This is tricky because route_frame uses load_device_id() from frame_codec
     
     # Let's monkeypatch load_device_id for each router call or use a more isolated router
-    import src.core.frame_router as fr
-    import src.core.frame_codec as fc
+    import lynk.core.frame_router as fr
+    import lynk.core.frame_codec as fc
     
     # We will track how many times Node 4 receives the same packet
     node_4_receivings = []
 
     def custom_route(node_id, frame_dict, interface):
-        import src.shared.config.manager as sm
+        import lynk.shared.config.manager as sm
         # Mocking global state for the duration of this call
         with pytest.MonkeyPatch().context() as mp:
             mp.setattr(fc, "load_device_id", lambda: node_id)
@@ -91,14 +92,14 @@ def test_multi_hop_relay_depth():
 
     # Simplified simulation for this test
     # We'll just verify the logic of hop_count incrementing
-    from src.core.frame_codec import build_mesh_frame
+    from lynk.core.frame_codec import build_mesh_frame
     
     # Original frame from Node 1
     packet = build_mesh_frame(frame_type='T', src_id=1, dst_id=0xFF, payload=b"hello", seq_num=100)
     
     # Hop 1 (Node 2 receives and relays)
     # To bypass replay checking, we'll manually increment the seq map or mock it
-    from src.core.sequence_manager import get_sequence_manager
+    from lynk.core.sequence_manager import get_sequence_manager
     sm = get_sequence_manager()
 
     frame_at_2 = parse_mesh_frame(packet)
@@ -139,8 +140,8 @@ def test_multi_hop_relay_depth():
 
 def test_source_suppression_prevents_loop():
     """Verify that a node does not relay its own packet if it comes back."""
-    import src.core.frame_router as fr
-    import src.core.frame_codec as fc
+    import lynk.core.frame_router as fr
+    import lynk.core.frame_codec as fc
     
     my_packet = {
         "src_id": 1,

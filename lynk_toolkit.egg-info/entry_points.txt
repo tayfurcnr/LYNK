@@ -1,0 +1,2 @@
+[console_scripts]
+lynk-lab = test_lab:main

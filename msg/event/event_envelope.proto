@@ -1,0 +1,49 @@
+syntax = "proto3";
+package lynk.event;
+
+import "msg/event/event_enums.proto";
+import "msg/event/qr_detected.proto";
+import "msg/event/obstacle_detected.proto";
+import "msg/event/collision_risk.proto";
+import "msg/event/battery_low.proto";
+import "msg/event/failsafe_triggered.proto";
+import "msg/event/emergency_crash.proto";
+import "msg/event/gps_degraded.proto";
+import "msg/event/link_quality_degraded.proto";
+import "msg/event/motor_failure.proto";
+import "msg/event/mission_waypoint_reached.proto";
+import "msg/event/mission_complete.proto";
+import "msg/event/formation_broken.proto";
+import "msg/event/vehicle_lost.proto";
+import "msg/event/crash_detected.proto";
+import "msg/event/custom_event.proto";
+
+message EventEnvelope {
+  uint32 source_vehicle_id = 1;
+  uint32 boot_counter = 2;
+  uint32 sequence = 3;
+  EventType event_type = 4;
+  EventPriority priority = 5;
+  uint64 timestamp_ms = 6;
+  float lat = 7;
+  float lon = 8;
+  float alt = 9;
+  
+  oneof payload {
+    QrDetected qr_detected = 20;
+    ObstacleDetected obstacle_detected = 21;
+    CollisionRisk collision_risk = 30;
+    BatteryLow battery_low = 31;
+    FailsafeTriggered failsafe_triggered = 32;
+    EmergencyCrash emergency_crash = 33;
+    GpsDegraded gps_degraded = 40;
+    LinkQualityDegraded link_quality_degraded = 41;
+    MotorFailure motor_failure = 42;
+    MissionWaypointReached mission_waypoint_reached = 50;
+    MissionComplete mission_complete = 51;
+    FormationBroken formation_broken = 60;
+    VehicleLost vehicle_lost = 61;
+    CrashDetected crash_detected = 62;
+    CustomEvent custom_event = 100;
+  }
+}

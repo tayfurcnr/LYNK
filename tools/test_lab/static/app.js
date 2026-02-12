@@ -52,10 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const cp = document.createElement('div');
             cp.className = 'roadmap-checkpoint';
             cp.id = `cp-${cat.replace(/\s+/g, '-')}`;
-            cp.innerHTML = `
-                <span class="cp-label">${cat}</span>
-                <span class="cp-status" id="cp-status-${cat.replace(/\s+/g, '-')}">STANDBY</span>
-            `;
+            
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'cp-label';
+            labelSpan.textContent = cat;
+            
+            const statusSpan = document.createElement('span');
+            statusSpan.className = 'cp-status';
+            statusSpan.id = `cp-status-${cat.replace(/\s+/g, '-')}`;
+            statusSpan.textContent = 'STANDBY';
+            
+            cp.appendChild(labelSpan);
+            cp.appendChild(statusSpan);
             roadmap.appendChild(cp);
         });
     }
@@ -84,24 +92,42 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.keys(groups).sort().forEach(category => {
             const suiteDiv = document.createElement('div');
             suiteDiv.className = 'suite-group';
-            suiteDiv.innerHTML = `
-                <div class="suite-header">
-                    <h3>${category}</h3>
-                    <div class="line"></div>
-                </div>
-                <div class="test-items" id="suite-${category.replace(/\s+/g, '-')}"></div>
-            `;
+            
+            const suiteHeader = document.createElement('div');
+            suiteHeader.className = 'suite-header';
+            
+            const h3 = document.createElement('h3');
+            h3.textContent = category;
+            
+            const line = document.createElement('div');
+            line.className = 'line';
+            
+            suiteHeader.appendChild(h3);
+            suiteHeader.appendChild(line);
+            
+            const itemsContainer = document.createElement('div');
+            itemsContainer.className = 'test-items';
+            itemsContainer.id = `suite-${category.replace(/\s+/g, '-')}`;
+            
+            suiteDiv.appendChild(suiteHeader);
+            suiteDiv.appendChild(itemsContainer);
             testSuites.appendChild(suiteDiv);
 
-            const itemsContainer = suiteDiv.querySelector('.test-items');
             groups[category].forEach(test => {
                 const div = document.createElement('div');
                 div.className = `test-item ${test.is_critical ? 'critical' : ''}`;
                 div.id = `test-${test.index}`;
-                div.innerHTML = `
-                    <span class="test-name">${test.name}</span>
-                    <span class="status-icon" id="icon-${test.index}"></span>
-                `;
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'test-name';
+                nameSpan.textContent = test.name;
+                
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'status-icon';
+                iconSpan.id = `icon-${test.index}`;
+                
+                div.appendChild(nameSpan);
+                div.appendChild(iconSpan);
                 div.onclick = () => runSingleTest(test.index);
                 itemsContainer.appendChild(div);
             });
@@ -149,7 +175,8 @@ document.addEventListener('DOMContentLoaded', () => {
         log(`[LAB] INITIALIZING: ${test.name}`, 'system');
 
         return new Promise((resolve) => {
-            const eventSource = new EventSource(`/api/run/${test.path}`);
+            const encodedPath = encodeURIComponent(test.path);
+            const eventSource = new EventSource(`/api/run/${encodedPath}`);
 
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
@@ -196,7 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 log('[LAB] CONNECTION INTERRUPTED', 'error');
                 ui.status.textContent = 'ERROR';
                 ui.status.className = 'badge error';
-                testEl.className = `test-item failed ${test.is_critical ? 'critical' : ''}`;
+                const criticalClass = test.is_critical ? 'critical' : '';
+                testEl.className = `test-item failed ${criticalClass}`;
                 iconEl.textContent = '⚠';
                 eventSource.close();
                 updateRoadmapStatus(test.category, 'FAILED');
@@ -233,7 +261,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     runAllBtn.onclick = runSequential;
-    clearConsoleBtn.onclick = () => { consoleOutput.innerHTML = ''; };
+    clearConsoleBtn.onclick = () => { 
+        while (consoleOutput.firstChild) {
+            consoleOutput.removeChild(consoleOutput.firstChild);
+        }
+    };
     refreshBtn.onclick = loadTests;
 
     loadTests();

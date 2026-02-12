@@ -1,0 +1,9 @@
+syntax = "proto3";
+package lynk.event;
+
+message CollisionRisk {
+  uint32 target_vehicle_id = 1;
+  float distance_m = 2;
+  float relative_velocity_mps = 3;
+  float time_to_collision_s = 4;
+}

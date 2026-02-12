@@ -5,14 +5,14 @@ I have successfully automated the protocol mapping process for both Commands and
 ## Changes
 
 ### Dynamic Dispatchers
-Refactored `src/application/command/serializer/dispatcher.py` and `src/application/telemetry/serializer/dispatcher.py` to:
+Refactored `lynk/application/command/serializer/dispatcher.py` and `lynk/application/telemetry/serializer/dispatcher.py` to:
 - **Introspect Protobuf Envelopes**: Instead of hardcoded maps, the system now inspects `CommandEnvelope.payload` and `TelemetryEnvelope.payload` oneofs at runtime.
 - **Auto-Discovery**: It automatically maps the Field ID (tag) to the Field Name, and extracts parameter names from the inner message definitions.
 
 ### Auto-Discovery Definitions
-Refactored `src/application/command/definitions.py` and `src/application/telemetry/definitions.py` to:
+Refactored `lynk/application/command/definitions.py` and `lynk/application/telemetry/definitions.py` to:
 - **Lazy Loading**: Definitions are built on first access to ensure all Protobuf modules are loaded.
-- **Dynamic Binding**: Handlers are looked up by name (matching the Protobuf field name) in `src/application/*/handler/impl.py`.
+- **Dynamic Binding**: Handlers are looked up by name (matching the Protobuf field name) in `lynk/application/*/handler/impl.py`.
 - **Automatic Serialization**: Telemetry serializers are automatically generated as partial functions wrapping the generic `serialize_telemetry`.
 
 ## Verification Results

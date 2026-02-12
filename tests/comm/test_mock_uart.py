@@ -1,6 +1,6 @@
 from __future__ import annotations
-import src.shared.comm.interface_factory as factory
-from src.shared.config import manager
+import lynk.shared.comm.interface_factory as factory
+from lynk.shared.config import manager
 
 def test_mock_uart_interface_send_and_read():
     # Clear singleton cache for clean test

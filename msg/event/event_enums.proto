@@ -1,0 +1,88 @@
+syntax = "proto3";
+package lynk.event;
+
+// Event priority levels
+enum EventPriority {
+  PRIORITY_LOW = 0;
+  PRIORITY_NORMAL = 1;
+  PRIORITY_HIGH = 2;
+  PRIORITY_CRITICAL = 3;
+}
+
+// Event types
+enum EventType {
+  EVENT_UNKNOWN = 0;
+  EVENT_QR_DETECTED = 20;
+  EVENT_OBSTACLE_DETECTED = 21;
+  EVENT_COLLISION_RISK = 30;
+  EVENT_BATTERY_LOW = 31;
+  EVENT_FAILSAFE_TRIGGERED = 32;
+  EVENT_EMERGENCY_CRASH = 33;
+  EVENT_GPS_DEGRADED = 40;
+  EVENT_LINK_QUALITY_DEGRADED = 41;
+  EVENT_MOTOR_FAILURE = 42;
+  EVENT_MISSION_WAYPOINT_REACHED = 50;
+  EVENT_MISSION_COMPLETE = 51;
+  EVENT_FORMATION_BROKEN = 60;
+  EVENT_VEHICLE_LOST = 61;
+  EVENT_CRASH_DETECTED = 62;
+  EVENT_CUSTOM = 100;
+}
+
+// Obstacle types
+enum ObstacleType {
+  OBSTACLE_UNKNOWN = 0;
+  OBSTACLE_STATIC = 1;
+  OBSTACLE_DYNAMIC = 2;
+}
+
+// Failsafe reasons
+enum FailsafeReason {
+  FAILSAFE_RC_LOST = 0;
+  FAILSAFE_GPS_LOST = 1;
+  FAILSAFE_BATTERY_LOW = 2;
+  FAILSAFE_GCS_LOST = 3;
+}
+
+// Failsafe actions
+enum FailsafeAction {
+  FAILSAFE_RTL = 0;
+  FAILSAFE_LAND = 1;
+  FAILSAFE_HOLD = 2;
+}
+
+// Crash reasons
+enum CrashReason {
+  CRASH_MOTOR_FAILURE = 0;
+  CRASH_BATTERY_DEAD = 1;
+  CRASH_COLLISION = 2;
+  CRASH_UNKNOWN = 3;
+}
+
+// GPS degradation reasons
+enum GpsDegradedReason {
+  GPS_LOW_SATELLITES = 0;
+  GPS_HIGH_HDOP = 1;
+  GPS_SIGNAL_LOSS = 2;
+}
+
+// Motor failure types
+enum MotorFailureType {
+  MOTOR_STOPPED = 0;
+  MOTOR_DEGRADED = 1;
+  MOTOR_OVERHEATING = 2;
+}
+
+// Formation broken reasons
+enum FormationBrokenReason {
+  FORMATION_LINK_LOST = 0;
+  FORMATION_OUT_OF_RANGE = 1;
+  FORMATION_MANUAL_OVERRIDE = 2;
+}
+
+// Crash detection methods
+enum CrashDetectionMethod {
+  CRASH_DETECT_TELEMETRY_ANOMALY = 0;
+  CRASH_DETECT_VISUAL = 1;
+  CRASH_DETECT_HEARTBEAT_TIMEOUT = 2;
+}

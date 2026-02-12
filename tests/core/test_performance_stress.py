@@ -1,8 +1,8 @@
 import pytest
 import time
 import os
-from src.core.frame_codec import build_mesh_frame, parse_mesh_frame
-from src.shared.config import manager
+from lynk.core.frame_codec import build_mesh_frame, parse_mesh_frame
+from lynk.shared.config import manager
 
 def setup_module():
     manager._config = {

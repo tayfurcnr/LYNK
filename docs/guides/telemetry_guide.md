@@ -63,10 +63,10 @@ python3 setup.py protos
 
 To send the new telemetry, use the generic `send_telemetry` function or add a helper in `tools/dispatcher.py`:
 
-**`src/application/telemetry/tools/dispatcher.py`:**
+**`lynk/application/telemetry/tools/dispatcher.py`:**
 ```python
 def send_tlm_compass(interface, heading: float, declination: float, dst: int = 0xFF):
-    from src.application.telemetry.tools.builder import build_tlm_frame
+    from lynk.application.telemetry.tools.builder import build_tlm_frame
     frame = build_tlm_frame("COMPASS", heading, declination, dst)
     send_frame(interface, frame)
     logger.debug(f"[TELEMETRY] SENT COMPASS | HDG: {heading:.1f}")
@@ -74,15 +74,15 @@ def send_tlm_compass(interface, heading: float, declination: float, dst: int = 0
 
 **Usage:**
 ```python
-import src.application.telemetry.tools.dispatcher as tlm
+import lynk.application.telemetry.tools.dispatcher as tlm
 tlm.send_tlm_compass(interface, heading=45.2, declination=1.3)
 ```
 
 ## Receiving Telemetry
 
-Handlers are automatically matched by name. If you need custom processing (e.g., logging or database storage), implement a handler in `src/application/telemetry/handler/impl.py`:
+Handlers are automatically matched by name. If you need custom processing (e.g., logging or database storage), implement a handler in `lynk/application/telemetry/handler/impl.py`:
 
-**`src/application/telemetry/handler/impl.py`:**
+**`lynk/application/telemetry/handler/impl.py`:**
 ```python
 def compass(tlm_id, params, src_id, interface):
     heading = params.get("heading", 0.0)

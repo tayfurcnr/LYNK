@@ -6,8 +6,8 @@ import lz4.block
 # Add src to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-from src.core.frame_codec import build_mesh_frame, parse_mesh_frame, FLAG_COMPRESSED
-from src.shared.config.manager import get_config, load_config
+from lynk.core.frame_codec import build_mesh_frame, parse_mesh_frame, FLAG_COMPRESSED
+from lynk.shared.config.manager import get_config, load_config
 
 # Load default config for tests
 load_config(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../configs/config.yaml')))

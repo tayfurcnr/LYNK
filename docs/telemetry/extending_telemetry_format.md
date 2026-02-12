@@ -9,7 +9,7 @@ This guide explains how to add a new telemetry data type to the LYNK communicati
 Register the new telemetry type in the central definitions file. This maps the ID to its name, handler, and serialization functions.
 
 ```python
-# src/application/telemetry/definitions.py
+# lynk/application/telemetry/definitions.py
 
 telemetry_definitions = {
     ...
@@ -24,7 +24,7 @@ telemetry_definitions = {
 Add the binary pack/unpack logic to the telemetry serializer implementation.
 
 ```python
-# src/application/telemetry/serializer/impl.py
+# lynk/application/telemetry/serializer/impl.py
 
 def serialize_new_type(param1: float, param2: int) -> bytes:
     return struct.pack(">fI", param1, param2)
@@ -41,7 +41,7 @@ def deserialize_new_type(data: bytes) -> dict:
 Define how the incoming data should be processed and stored in the cache.
 
 ```python
-# src/application/telemetry/handler/impl.py
+# lynk/application/telemetry/handler/impl.py
 
 def new_type(data: dict, src_id: int):
     processed_data = {
@@ -59,7 +59,7 @@ def new_type(data: dict, src_id: int):
 Add high-level tools to easily send or build the new telemetry frame.
 
 ```python
-# src/application/telemetry/tools/dispatcher.py
+# lynk/application/telemetry/tools/dispatcher.py
 
 def send_tlm_new_type(interface, p1, p2, dst=0xFF, src=None):
     # Uses build_tlm_frame internally with ID 0x07

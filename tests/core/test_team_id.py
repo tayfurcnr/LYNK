@@ -1,12 +1,12 @@
 
 import pytest
 from unittest.mock import MagicMock, patch
-from src.core.frame_codec import build_mesh_frame, parse_mesh_frame, load_team_id
-from src.core.frame_router import route_frame
+from lynk.core.frame_codec import build_mesh_frame, parse_mesh_frame, load_team_id
+from lynk.core.frame_router import route_frame
 
 @pytest.fixture
 def mock_config():
-    with patch("src.core.frame_codec.get_config") as mock_get:
+    with patch("lynk.core.frame_codec.get_config") as mock_get:
         mock_get.return_value = {
             "vehicle": {"id": 10, "team_id": 1},
             "protocol": {"start_byte": 0x54, "start_byte_2": 0xC7, "version": 1}
@@ -31,12 +31,12 @@ def test_codec_team_id(mock_config):
 def test_router_filtering_success(mock_config):
     # Setup
     payload = b"CMD"
-    frame_bytes = build_mesh_frame(frame_type='C', src_id=10, dst_id=0xFF, payload=payload) # Broadcast
+    frame_bytes = build_mesh_frame(frame_type='C', src_id=20, dst_id=0xFF, payload=payload) # Broadcast
     frame_dict = parse_mesh_frame(frame_bytes)
     
     # Mock Handler
     mock_handler = MagicMock()
-    with patch("src.core.frame_router.dispatch_table", {'C': mock_handler}):
+    with patch("lynk.core.frame_router.dispatch_table", {'C': mock_handler}):
         route_frame(frame_dict, interface=None)
         
     # Should be called because team_id=1 (from build) matches config team_id=1
@@ -67,9 +67,9 @@ def test_router_filtering_fail(mock_config):
     
     # Mock Handler
     mock_handler = MagicMock()
-    with patch("src.core.frame_router.dispatch_table", {'C': mock_handler}):
+    with patch("lynk.core.frame_router.dispatch_table", {'C': mock_handler}):
         # Patch load_team_id in router to ensure it sees '1'
-        with patch("src.core.frame_router.load_team_id", return_value=1):
+        with patch("lynk.core.frame_router.load_team_id", return_value=1):
             route_frame(frame_dict, interface=None)
         
     # Should NOT be called

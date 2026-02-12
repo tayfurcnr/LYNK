@@ -2,7 +2,7 @@ import pytest
 import threading
 import time
 import random
-from src.application.telemetry.tools.cache import (
+from lynk.application.telemetry.tools.cache import (
     set_device_data, 
     get_device_data, 
     get_active_device_ids, 

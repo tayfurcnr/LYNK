@@ -1,0 +1,8 @@
+syntax = "proto3";
+package lynk.event;
+
+message QrDetected {
+  string qr_code = 1;
+  float confidence = 2;
+  bytes image_thumbnail = 3;
+}

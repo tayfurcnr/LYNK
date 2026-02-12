@@ -4,9 +4,9 @@ import os
 
 # Ensure project root is in path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src/shared/proto')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../lynk/shared/proto')))
 
-from src.application.command.serializer.dispatcher import serialize_command, deserialize_command
+from lynk.application.command.serializer.dispatcher import serialize_command, deserialize_command
 
 def test_serialize_command():
     # 0x03 is SYSTEM_SET_TEAM_ID, expects team_id

@@ -1,0 +1,55 @@
+import os
+import sys
+
+# Automatically add the internal protobuf directory to sys.path
+# This allows generated protobuf files to perform their internal imports 
+# (e.g. 'from msg.command import ...') without extra hacks in user scripts.
+_proto_dir = os.path.join(os.path.dirname(__file__), "shared", "proto")
+if _proto_dir not in sys.path:
+    sys.path.insert(0, _proto_dir)
+
+# --- PUBLIC API FACADE ---
+# These imports make 'import lynk' powerful and easy to use.
+
+# 1. Configuration Management
+from lynk.shared.config import manager as config
+
+# 2. Communication Setup
+from lynk.shared.comm.interface_factory import create_interface
+
+# 3. Application Layers (Dispatchers & Caches)
+from lynk.application.telemetry.tools import dispatcher as telemetry
+from lynk.application.telemetry.tools import cache as tlm_cache
+from lynk.application.command.tools import dispatcher as command
+from lynk.application.command.tools import cache as cmd_cache
+from lynk.application.event.tools import dispatcher as event
+from lynk.application.mavlink.tools import dispatcher as mavlink
+
+# 3a. MAVLink ROS Integration (optional, requires ROS)
+try:
+    from lynk.application.mavlink.ros import converter as ros
+except ImportError:
+    ros = None  # ROS not available
+
+# 4. Core Components (for advanced users)
+from lynk.core import frame_codec as codec
+from lynk.core import frame_router as router
+from lynk.core.sequence_manager import get_sequence_manager
+
+__version__ = "1.1.0"
+
+# Metadata for easy discovery
+__all__ = [
+    "config",
+    "create_interface",
+    "telemetry",
+    "tlm_cache",
+    "command",
+    "cmd_cache",
+    "event",
+    "mavlink",
+    "ros",
+    "codec",
+    "router",
+    "get_sequence_manager"
+]

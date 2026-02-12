@@ -36,5 +36,5 @@ The `Hop Count` prevents infinite packet loops. Each "Repeater" node:
 Nodes maintain a `Sequence Manager` per Source ID. If a packet arrives with a `Sequence Number` less than or equal to the last recorded one, it is rejected to prevent replay attacks.
 
 ## 🛠️ Implementation Reference
-- **Encoder/Decoder**: [src/core/frame_codec.py](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/src/core/frame_codec.py)
-- **UART Extraction**: [src/shared/comm/uart_handler.py](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/src/shared/comm/uart_handler.py)
+- **Encoder/Decoder**: [lynk/core/frame_codec.py](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/lynk/core/frame_codec.py)
+- **UART Extraction**: [lynk/shared/comm/uart_handler.py](file:///home/tayfurcnr/Desktop/HiroMarker/LYNK/lynk/shared/comm/uart_handler.py)

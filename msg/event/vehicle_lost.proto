@@ -1,0 +1,9 @@
+syntax = "proto3";
+package lynk.event;
+
+message VehicleLost {
+  uint32 lost_vehicle_id = 1;
+  float last_known_lat = 2;
+  float last_known_lon = 3;
+  float time_since_contact_s = 4;
+}

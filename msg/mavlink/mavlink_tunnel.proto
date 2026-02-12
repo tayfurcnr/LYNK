@@ -1,0 +1,9 @@
+syntax = "proto3";
+package lynk.mavlink;
+
+message MavlinkTunnel {
+  bytes payload = 1;      // Raw MAVLink packet
+  uint32 system_id = 2;   // Source system ID (e.g. 1 for GCS or Drone)
+  uint32 component_id = 3; // Source component ID (e.g. 190 for Companion PC)
+  uint64 timestamp_us = 4; // microsecond timestamp
+}

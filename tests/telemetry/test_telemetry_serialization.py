@@ -5,10 +5,10 @@ import pytest
 
 # Ensure project root is in path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src/shared/proto')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../lynk/shared/proto')))
 
-from src.application.telemetry.serializer.dispatcher import serialize_telemetry, deserialize_telemetry
-from src.application.telemetry.definitions import telemetry_definitions
+from lynk.application.telemetry.serializer.dispatcher import serialize_telemetry, deserialize_telemetry
+from lynk.application.telemetry.definitions import telemetry_definitions
 
 def test_telemetry_serialization_gps():
     # GPS expects lat, lon, alt

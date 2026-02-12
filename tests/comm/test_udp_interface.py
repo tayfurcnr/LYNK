@@ -1,8 +1,8 @@
 import pytest
 import time
 import socket
-from src.shared.comm.udp_handler import UDPHandler
-from src.shared.config import manager
+from lynk.shared.comm.udp_handler import UDPHandler
+from lynk.shared.config import manager
 
 def test_udp_handler_loopback():
     """Verify that UDPHandler can send and receive packets on loopback."""

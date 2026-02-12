@@ -21,16 +21,26 @@ udp:
   remote_port: 5001
   idle_sleep_sec: 0.0002
   rcvbuf_bytes: 16777216
-  rx_queue_size: 30
+  rx_queue_size: 75
 logging:
   enabled: true
   level: INFO
   clear_on_start: true
   write_to_file: true
+ack:
+  mode: unicast
+telemetry_monitor:
+  enabled: true
+  interval_sec: 1.0
+  file_path: logs/telemetry_monitor_node_4.log
 security:
   enabled: true
   key: '9999999999999999999999999999999999999999999999999999999999999999'
 relay:
-  enabled: false
+  enabled: true
   max_hops: 2
-  delay_ms: 50
+  delay_ms: 10
+  allowed_types:
+  - C
+  - A
+  - R

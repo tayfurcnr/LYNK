@@ -2,7 +2,7 @@ from __future__ import annotations
 import pytest
 import time
 
-from src.application.telemetry.tools.cache import (
+from lynk.application.telemetry.tools.cache import (
     set_device_data,
     get_device_data,
     get_active_device_ids,
@@ -80,14 +80,14 @@ def test_active_device_ids_detects_recent_data():
     src_1 = 1
     src_2 = 2
 
-    # src_1 eski veri
+    # lynk_1 eski veri
     set_device_data(src_1, "imu", {"x": 1})
-    time.sleep(1.1)  # src_1 eskidi
+    time.sleep(1.1)  # lynk_1 eskidi
 
-    # src_2 yeni veri
+    # lynk_2 yeni veri
     set_device_data(src_2, "gps", {"lat": 0})
 
-    # src_1 artık timeout dışında, src_2 içinde
+    # lynk_1 artık timeout dışında, src_2 içinde
     active = get_active_device_ids(timeout=1.0)
     assert src_2 in active
     assert src_1 not in active

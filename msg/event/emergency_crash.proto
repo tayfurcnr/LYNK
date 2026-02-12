@@ -1,0 +1,11 @@
+syntax = "proto3";
+package lynk.event;
+
+import "msg/event/event_enums.proto";
+
+message EmergencyCrash {
+  CrashReason reason = 1;
+  float altitude_m = 2;
+  uint32 battery_percent = 3;
+  string last_error = 4;
+}
