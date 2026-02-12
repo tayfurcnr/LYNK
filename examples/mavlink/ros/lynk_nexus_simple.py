@@ -8,11 +8,11 @@ import os
 import time
 import socket
 import threading
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QTableWidget, QTableWidgetItem, 
                              QTextEdit, QLabel, QPushButton, QLineEdit, QFrame)
-from PyQt6.QtCore import QThread, pyqtSignal, Qt
-from PyQt6.QtGui import QColor, QFont
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtGui import QColor, QFont
 
 import lynk
 
@@ -344,4 +344,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = NexusWindow()
     window.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec_())
