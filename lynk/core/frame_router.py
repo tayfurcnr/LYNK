@@ -10,7 +10,7 @@ from lynk.application.result.handler.dispatcher import handle_result
 from lynk.application.event.handler.dispatcher import handle_event
 from lynk.application.mavlink.handler.dispatcher import handle_mavlink
 
-from lynk.core.frame_codec import load_device_id, load_team_id, build_mesh_frame
+from lynk.core.frame_codec import load_device_id, load_team_id, build_mesh_frame, parse_mesh_frame
 from lynk.shared.log.logger import logger
 from lynk.shared.config.manager import get_config
 from lynk.core.relay_cache import get_relay_cache
@@ -24,6 +24,24 @@ dispatch_table = {
     'E': handle_event,
     'M': handle_mavlink,
 }
+
+def process(raw_data: bytes, interface) -> bool:
+    """
+    Simplified entry point: Parses raw bytes and routes them to the correct handler.
+    
+    Args:
+        raw_data (bytes): The raw frame read from the interface.
+        interface: The communication interface for sending responses/relays.
+        
+    Returns:
+        bool: True if processed successfully, False otherwise.
+    """
+    try:
+        frame_dict = parse_mesh_frame(raw_data)
+        return route_frame(frame_dict, interface)
+    except Exception:
+        # We don't log noise on the line
+        return False
 
 def should_relay_frame(frame_dict: dict) -> bool:
     """

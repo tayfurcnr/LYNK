@@ -10,8 +10,26 @@ from lynk.shared.config.manager import get_config
 _boot_counter = 0
 _event_sequence = 0
 _rate_limiters = {}  # priority -> (tokens, last_refill_time)
+_event_handlers: Dict[int, list] = {} # event_type -> list of callbacks
 
 RATE_LIMITS = {3: 10, 2: 5, 1: 2, 0: 1}  # CRITICAL: 10, HIGH: 5, NORMAL: 2, LOW: 1
+
+def register_handler(event_type: int, callback: Any) -> None:
+    """
+    Register a dynamic callback for a specific event type.
+    
+    Args:
+        event_type (int): Event ID (e.g., 31 for BATTERY_LOW)
+        callback (callable): Function taking event_data (dict)
+    """
+    if event_type not in _event_handlers:
+        _event_handlers[event_type] = []
+    _event_handlers[event_type].append(callback)
+    logger.debug(f"[EVENT] Callback registered for TYPE: {event_type}")
+
+def _get_dynamic_handlers(event_type: int) -> list:
+    """Internal helper to fetch registered handlers."""
+    return _event_handlers.get(event_type, [])
 
 def load_boot_counter() -> int:
     """Load persistent boot counter from storage."""

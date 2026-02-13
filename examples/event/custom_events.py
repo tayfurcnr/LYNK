@@ -22,6 +22,7 @@ def main():
     
     # Create communication interface
     interface = lynk.create_interface()
+    interface.start() # Start the transport
     
     DST_ID = 0xFF # Broadcast
 
@@ -45,6 +46,9 @@ def main():
         dst_id=DST_ID
     )
     print("   [TX] Custom Event sent.")
+    
+    time.sleep(1)
+    interface.stop() # Clean exit
 
 if __name__ == "__main__":
     main()

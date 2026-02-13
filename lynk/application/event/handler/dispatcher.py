@@ -60,15 +60,23 @@ def handle_event(payload: bytes, frame_meta: dict, interface=None):
         event_def = event_definitions.get(event_type)
         if event_def:
             logger.info(f"[EVENT] RECV | TYPE: {event_def.name} | SRC: {source_vehicle_id} | PRIORITY: {priority}")
-            
             try:
                 event_def.handler(event_type, event_data, source_vehicle_id, interface)
-                logger.debug(f"[EVENT] HANDLED | EVENT: {event_type} ({event_def.name})")
+                logger.debug(f"[EVENT] STATIC HANDLER DONE | EVENT: {event_type}")
             except Exception as e:
-                logger.error(f"[EVENT] HANDLER EXCEPTION | EVENT: {event_type}: {e}")
-                raise e
+                logger.error(f"[EVENT] STATIC HANDLER EXCEPTION | EVENT: {event_type}: {e}")
         else:
             logger.warning(f"[EVENT] Unknown event type {event_type} from SRC: {source_vehicle_id}")
+
+        # --- DYNAMIC HANDLERS (register_handler) ---
+        # We execute these for ALL events, including unknown/custom ones
+        from lynk.application.event.tools.dispatcher import _get_dynamic_handlers
+        dynamic_handlers = _get_dynamic_handlers(event_type)
+        for cb in dynamic_handlers:
+            try:
+                cb(event_data)
+            except Exception as e:
+                logger.error(f"[EVENT] DYNAMIC CALLBACK ERROR: {e}")
     
     except Exception as e:
         logger.error(f"[EVENT] ERROR | Failed to handle event: {e}")

@@ -36,6 +36,10 @@ from lynk.core import frame_codec as codec
 from lynk.core import frame_router as router
 from lynk.core.sequence_manager import get_sequence_manager
 
+def process(raw_data: bytes, interface) -> bool:
+    """Convenience alias for router.process"""
+    return router.process(raw_data, interface)
+
 __version__ = "1.1.0"
 
 # Metadata for easy discovery
@@ -51,5 +55,6 @@ __all__ = [
     "ros",
     "codec",
     "router",
-    "get_sequence_manager"
+    "get_sequence_manager",
+    "process"
 ]

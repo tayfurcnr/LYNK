@@ -25,6 +25,7 @@ def main():
     
     # Create communication interface
     interface = lynk.create_interface()
+    interface.start()
     
     # Broadcast to all
     DST_ID = 0xFF 
@@ -57,6 +58,9 @@ def main():
         dst_id=DST_ID
     )
     print("   [TX] GPS Warning sent.")
+    
+    time.sleep(1)
+    interface.stop()
 
 if __name__ == "__main__":
     main()

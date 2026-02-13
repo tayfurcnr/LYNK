@@ -224,7 +224,8 @@ def cmd_system_reboot(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     """
     Send a SYSTEM_REBOOT command to reset the target device.
@@ -236,7 +237,8 @@ def cmd_system_reboot(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 
@@ -248,7 +250,8 @@ def cmd_flight_set_mode(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     """
     Send a FLIGHT_SET_MODE command.
@@ -261,7 +264,8 @@ def cmd_flight_set_mode(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 
@@ -274,7 +278,8 @@ def cmd_flight_arming(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     """
     Send a FLIGHT_ARMING command.
@@ -288,7 +293,8 @@ def cmd_flight_arming(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 
@@ -301,7 +307,8 @@ def cmd_flight_takeoff(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     """
     Send a FLIGHT_TAKEOFF command.
@@ -315,7 +322,8 @@ def cmd_flight_takeoff(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 
@@ -330,7 +338,8 @@ def cmd_flight_land(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     """
     Send a FLIGHT_LAND command.
@@ -348,7 +357,8 @@ def cmd_flight_land(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 
@@ -363,7 +373,8 @@ def cmd_flight_goto(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     """
     Send a FLIGHT_GOTO command to navigate to a waypoint.
@@ -379,7 +390,8 @@ def cmd_flight_goto(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_flight_set_speed(
@@ -391,7 +403,8 @@ def cmd_flight_set_speed(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "FLIGHT_SET_SPEED",
@@ -402,7 +415,8 @@ def cmd_flight_set_speed(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_flight_set_altitude(
@@ -414,7 +428,8 @@ def cmd_flight_set_altitude(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "FLIGHT_SET_ALTITUDE",
@@ -425,7 +440,8 @@ def cmd_flight_set_altitude(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_flight_set_heading(
@@ -438,7 +454,8 @@ def cmd_flight_set_heading(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "FLIGHT_SET_HEADING",
@@ -450,7 +467,8 @@ def cmd_flight_set_heading(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_flight_set_roi(
@@ -464,7 +482,8 @@ def cmd_flight_set_roi(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "FLIGHT_SET_ROI",
@@ -477,7 +496,8 @@ def cmd_flight_set_roi(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_flight_set_home(
@@ -489,7 +509,8 @@ def cmd_flight_set_home(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     use_current = lat is None or lon is None
     send_command(
@@ -502,7 +523,8 @@ def cmd_flight_set_home(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_mission_upload(
@@ -515,7 +537,8 @@ def cmd_mission_upload(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     """
     Send a MISSION_UPLOAD command.
@@ -536,7 +559,8 @@ def cmd_mission_upload(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 
@@ -550,7 +574,8 @@ def cmd_mission_control(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     """
     Send a MISSION_CONTROL command.
@@ -565,7 +590,8 @@ def cmd_mission_control(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_system_set_vehicle_id(
@@ -576,7 +602,8 @@ def cmd_system_set_vehicle_id(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "SYSTEM_SET_VEHICLE_ID",
@@ -586,7 +613,8 @@ def cmd_system_set_vehicle_id(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_system_set_team_id(
@@ -597,7 +625,8 @@ def cmd_system_set_team_id(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "SYSTEM_SET_TEAM_ID",
@@ -607,7 +636,8 @@ def cmd_system_set_team_id(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_swarm_formation_execute(
@@ -621,7 +651,8 @@ def cmd_swarm_formation_execute(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "SWARM_FORMATION_EXECUTE",
@@ -634,7 +665,8 @@ def cmd_swarm_formation_execute(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_swarm_set_leader(
@@ -645,7 +677,8 @@ def cmd_swarm_set_leader(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "SWARM_SET_LEADER",
@@ -655,7 +688,8 @@ def cmd_swarm_set_leader(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_swarm_set_formation_type(
@@ -666,7 +700,8 @@ def cmd_swarm_set_formation_type(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "SWARM_SET_FORMATION_TYPE",
@@ -676,7 +711,8 @@ def cmd_swarm_set_formation_type(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_swarm_set_spacing(
@@ -687,7 +723,8 @@ def cmd_swarm_set_spacing(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "SWARM_SET_SPACING",
@@ -697,7 +734,8 @@ def cmd_swarm_set_spacing(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_swarm_set_altitude_offset(
@@ -708,7 +746,8 @@ def cmd_swarm_set_altitude_offset(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "SWARM_SET_ALTITUDE_OFFSET",
@@ -718,7 +757,8 @@ def cmd_swarm_set_altitude_offset(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
 
 def cmd_swarm_set_status(
@@ -729,7 +769,8 @@ def cmd_swarm_set_status(
     dst_team_id: Optional[int] = None,
     transaction_id: str = "",
     wait_for_ack: bool = False,
-    max_retries: int = 0
+    max_retries: int = 0,
+    **kwargs
 ) -> None:
     send_command(
         interface, "SWARM_SET_STATUS",
@@ -739,5 +780,6 @@ def cmd_swarm_set_status(
         dst_team_id=dst_team_id,
         transaction_id=transaction_id,
         wait_for_ack=wait_for_ack,
-        max_retries=max_retries
+        max_retries=max_retries,
+        **kwargs
     )
