@@ -20,6 +20,27 @@ from lynk.application.telemetry.tools.builder import (
 )
 from lynk.shared.comm.transmitter import send_frame
 from lynk.shared.log.logger import logger
+from typing import Dict, List, Any
+
+# Map for dynamic telemetry callbacks: tlm_id -> list of functions
+_tlm_handlers: Dict[int, List[Any]] = {}
+
+def register_handler(tlm_id: int, callback: Any) -> None:
+    """
+    Register a dynamic callback for a specific telemetry type.
+    
+    Args:
+        tlm_id (int): Telemetry ID (e.g., 1 for HEARTBEAT, 2 for GPS)
+        callback (callable): Function taking tlm_data (dict) and metadata
+    """
+    if tlm_id not in _tlm_handlers:
+        _tlm_handlers[tlm_id] = []
+    _tlm_handlers[tlm_id].append(callback)
+    logger.debug(f"[TELEMETRY] Callback registered for ID: {tlm_id}")
+
+def _get_dynamic_handlers(tlm_id: int) -> List[Any]:
+    """Retrieve registered handlers for a specific telemetry ID."""
+    return _tlm_handlers.get(tlm_id, [])
 
 def send_telemetry(
     interface,

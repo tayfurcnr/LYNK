@@ -74,11 +74,7 @@ def router_worker(interface):
     while True:
         raw = interface.read()
         if raw:
-            try:
-                frame = lynk.codec.parse_mesh_frame(raw)
-                lynk.router.route_frame(frame, interface)
-            except Exception:
-                pass
+            lynk.process(raw, interface)
         time.sleep(0.01)
 
 def main():

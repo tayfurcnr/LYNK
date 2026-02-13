@@ -29,20 +29,28 @@ def handle_telemetry(payload: bytes, frame_meta: dict, interface=None):
             if "raw_payload" in data:
                 logger.warning(f"[TELEMETRY] Unknown Telemetry Format | ID: {tlm_id} from SRC: {src_id}")
                 unknown(data, src_id, tlm_id)
-                return
-
-            # If it IS in schema but has no handler, use default_handler
-            from lynk.application.telemetry.handler.impl import default_handler
-            from lynk.application.telemetry.serializer.dispatcher import _get_tlm_fields
-            
-            tlm_fields = _get_tlm_fields()
-            tlm_name = next((name for name, info in tlm_fields.items() if info[2] == tlm_id), None)
-            
-            if tlm_name:
-                logger.debug(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_name}) FROM SRC: {src_id} | HOPS: {hop_count} (using default handler)")
-                default_handler(data, src_id, tlm_name, team_id=team_id, hop_count=hop_count)
             else:
-                unknown(data, src_id, tlm_id)
+                # If it IS in schema but has no handler, use default_handler
+                from lynk.application.telemetry.handler.impl import default_handler
+                from lynk.application.telemetry.serializer.dispatcher import _get_tlm_fields
+                
+                tlm_fields = _get_tlm_fields()
+                tlm_name = next((name for name, info in tlm_fields.items() if info[2] == tlm_id), None)
+                
+                if tlm_name:
+                    logger.debug(f"[TELEMETRY] RECEIVED | TLM_ID: {tlm_id} ({tlm_name}) FROM SRC: {src_id} | HOPS: {hop_count} (using default handler)")
+                    default_handler(data, src_id, tlm_name, team_id=team_id, hop_count=hop_count)
+                else:
+                    unknown(data, src_id, tlm_id)
+
+        # --- DYNAMIC HANDLERS (register_handler) ---
+        from lynk.application.telemetry.tools.dispatcher import _get_dynamic_handlers
+        dynamic_handlers = _get_dynamic_handlers(tlm_id)
+        for cb in dynamic_handlers:
+            try:
+                cb(data, {"src_id": src_id, "team_id": team_id, "hop_count": hop_count})
+            except Exception as e:
+                logger.error(f"[TELEMETRY] DYNAMIC CALLBACK ERROR: {e}")
 
     except ValueError as ve:
         logger.error(f"[TELEMETRY] Invalid telemetry format: {ve}")

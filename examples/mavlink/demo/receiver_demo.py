@@ -46,14 +46,8 @@ def main():
             # 4. Read raw bytes from interface
             raw = interface.read()
             if raw:
-                try:
-                    # 5. Parse raw bytes into a LYNK Mesh Frame
-                    frame = lynk.codec.parse_mesh_frame(raw)
-                    
-                    # 6. Route the frame (this triggers our on_mav_received callback)
-                    lynk.router.route_frame(frame, interface)
-                except Exception as e:
-                    print(f"Error processing frame: {e}")
+                # 5. Process the frame (Parses and routes to on_mav_received callback)
+                lynk.process(raw, interface)
             
             time.sleep(0.01)
     except KeyboardInterrupt:

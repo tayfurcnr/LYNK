@@ -58,3 +58,23 @@ def test_unified_process_api():
             assert result is True
             mock_parse.assert_called_once_with(dummy_raw)
             mock_route.assert_called_once_with(dummy_dict, mock_interface)
+
+def test_telemetry_register_handler():
+    """Verify that telemetry register_handler correctly triggers callbacks."""
+    from lynk.application.telemetry.tools.dispatcher import register_handler
+    from lynk.application.telemetry.handler.dispatcher import handle_telemetry
+    
+    mock_cb = MagicMock()
+    # Battery TLM ID is 34
+    register_handler(34, mock_cb)
+    
+    tlm_data = {"tlm_id": 34, "voltage": 12.0, "level": 85.0}
+    
+    with patch("lynk.application.telemetry.handler.dispatcher.deserialize_telemetry", return_value=tlm_data):
+        handle_telemetry(b"dummy_payload", {"src_id": 10, "hop_count": 1})
+        
+    # Verification (Callback receives data and meta)
+    assert mock_cb.called
+    data, meta = mock_cb.call_args[0]
+    assert data["level"] == 85.0
+    assert meta["src_id"] == 10

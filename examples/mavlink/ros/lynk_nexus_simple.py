@@ -116,11 +116,7 @@ class GatewayWorker(QThread):
         while self.running:
             raw = self.interface.read()
             if raw:
-                try:
-                    frame = lynk.codec.parse_mesh_frame(raw)
-                    lynk.router.route_frame(frame, self.interface)
-                except:
-                    pass
+                lynk.process(raw, self.interface)
             
             for vehicle_id, conn in self.connections.items():
                 self.stats_signal.emit(vehicle_id, conn.packet_count, conn.last_packet_time)

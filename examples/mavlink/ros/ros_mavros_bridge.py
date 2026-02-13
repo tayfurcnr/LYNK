@@ -107,11 +107,8 @@ class RosMavrosBridge:
                 if not raw:
                     break
                 received_any = True
-                try:
-                    frame = lynk.codec.parse_mesh_frame(raw)
-                    lynk.router.route_frame(frame, self.interface)
-                except Exception as e:
-                    print(f"[WARNING] [ROUTER ERROR]: {e}")
+                # Unified parsing and routing
+                lynk.process(raw, self.interface)
             
             # Adaptive sleep: shorter sleep if busy, 1ms if idle
             time.sleep(0.001 if received_any else 0.005)

@@ -20,6 +20,7 @@ from lynk.shared.comm.interface_factory import create_interface
 # 3. Application Layers (Dispatchers & Caches)
 from lynk.application.telemetry.tools import dispatcher as telemetry
 from lynk.application.telemetry.tools import cache as tlm_cache
+from lynk.application.telemetry.handler.dispatcher import handle_telemetry
 from lynk.application.command.tools import dispatcher as command
 from lynk.application.command.tools import cache as cmd_cache
 from lynk.application.event.tools import dispatcher as event
@@ -56,5 +57,6 @@ __all__ = [
     "codec",
     "router",
     "get_sequence_manager",
-    "process"
+    "process",
+    "handle_telemetry"
 ]
