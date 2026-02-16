@@ -45,3 +45,27 @@ relay:
   - C
   - A
   - R
+  - E
+event:
+  enabled: true
+  redundancy:
+    critical:
+      count: 3
+      delays_ms: [0, 50, 150]
+    high:
+      count: 2
+      delays_ms: [0, 100]
+    normal:
+      count: 1
+      delays_ms: [0]
+    low:
+      count: 1
+      delays_ms: [0]
+  rate_limit:
+    critical: 10
+    high: 5
+    normal: 2
+    low: 1
+  cache:
+    ttl_seconds: 60
+    max_size: 1000

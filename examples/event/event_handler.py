@@ -6,6 +6,7 @@ Demonstrates how to subscribe to and handle incoming swarm events.
 Usage:
     python3 examples/event/event_handler.py
 """
+import os
 import lynk
 import time
 import threading
@@ -41,7 +42,14 @@ def start_background_listener(interface):
 
 def main():
     # Load configuration
-    lynk.config.load_config("configs/config.yaml")
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    config_path = os.path.join(base_dir, "configs", "config.yaml")
+    
+    if os.path.exists(config_path):
+        lynk.config.load_config(config_path)
+    else:
+        # Fallback to local run
+        lynk.config.load_config("configs/config.yaml")
     
     # Create communication interface
     interface = lynk.create_interface()

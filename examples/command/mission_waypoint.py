@@ -6,14 +6,21 @@ Demonstrates how to send GOTO and navigation commands.
 Usage:
     python3 examples/command/mission_waypoint.py
 """
+import os
 import lynk
 import time
 
 def main():
-    print("🚀 Initializing Navigation Example...")
+    print("🚀 Initializing LYNK Mission Waypoint Example...")
     
     # Load configuration
-    lynk.config.load_config("configs/config.yaml")
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    config_path = os.path.join(base_dir, "configs", "config.yaml")
+    
+    if os.path.exists(config_path):
+        lynk.config.load_config(config_path)
+    else:
+        lynk.config.load_config("configs/config.yaml")
     
     # Create communication interface
     interface = lynk.create_interface()

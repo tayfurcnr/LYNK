@@ -15,6 +15,9 @@ from lynk.shared.log.logger import logger
 from lynk.shared.config.manager import get_config
 from lynk.core.relay_cache import get_relay_cache
 
+# --- CONSTANTS ---
+GLOBAL_TEAM_ID = 255  # Special ID that bypasses team filtering (Broadcast/Global Team)
+
 # Frame Type → Handler Mapping
 dispatch_table = {
     'C': handle_command,
@@ -82,10 +85,10 @@ def should_relay_frame(frame_dict: dict) -> bool:
     if frame_type not in allowed:
         return False
     
-    # Team filtering: relay own team + global (team_id=0)
+    # Team filtering: relay own team + global (team_id=GLOBAL_TEAM_ID)
     my_team = load_team_id()
     pkt_team = frame_dict["team_id"]
-    if pkt_team != 0 and pkt_team != my_team:
+    if pkt_team != GLOBAL_TEAM_ID and pkt_team != my_team:
         return False
     
     # TTL check
@@ -175,9 +178,9 @@ def route_frame(frame_dict: dict, interface) -> bool:
              # logger.debug(f"[ROUTER] IGNORED | LOOPBACK DETECTED (src={local_id})") 
              return False
 
-        # Team ID Filtering (Allow same team OR Global Team ID 0)
-        # If I am Team 0 (Global), I accept ALL teams.
-        if local_team_id != 0 and remote_team_id is not None and remote_team_id != 0 and remote_team_id != local_team_id:
+        # Team ID Filtering (Allow same team OR Global Team ID)
+        # If I am Global, I accept ALL teams.
+        if local_team_id != GLOBAL_TEAM_ID and remote_team_id is not None and remote_team_id != GLOBAL_TEAM_ID and remote_team_id != local_team_id:
              logger.debug(f"[ROUTER] IGNORED | WRONG TEAM FRAME (remote_team={remote_team_id}, local_team={local_team_id})")
              return False
 

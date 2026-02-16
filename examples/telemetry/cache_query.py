@@ -11,12 +11,14 @@ import lynk
 def main():
     print("🚀 initializing LYNK Telemetry Cache Demo...")
     
-    # 1. Load configuration
+    # 1. Load configuration (Using Node 0 - GCS Node)
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    config_path = os.path.join(base_dir, "configs", "node_1", "config.yaml")
+    config_path = os.path.join(base_dir, "configs", "node_0", "config.yaml")
+    
     if os.path.exists(config_path):
         lynk.config.load_config(config_path)
     else:
+        # Fallback for generic runs
         lynk.config.load_config("configs/config.yaml")
 
     # 2. Setup Interface

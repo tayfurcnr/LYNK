@@ -82,7 +82,7 @@ def main():
     parser.add_argument("--node", type=int, default=2, help="LYNK Node ID (loads configs/node_X/config.yaml)")
     parser.add_argument("--port", default="/dev/serial/by-id/usb-CubePilot_CubeOrange+_420024001551323039383833-if00", help="Serial port path.")
     parser.add_argument("--baud", type=int, default=57600, help="Baudrate (default: 57600)")
-    parser.add_argument("--dst", type=int, default=1, help="Target GCS ID")
+    parser.add_argument("--dst", type=int, default=255, help="Target GCS ID")
     args = parser.parse_args()
 
     # 2. Setup LYNK

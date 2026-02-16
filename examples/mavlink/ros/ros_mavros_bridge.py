@@ -51,7 +51,7 @@ class RosMavrosBridge:
         
         print(f"[INFO] LYNK-MAVROS Bridge Active (Node {node_id})")
         print(f"   - Listening to: /mavlink/from")
-        print(f"   - Forwarding to LYNK Mesh (Target GCS ID: 0)")
+        print(f"   - Forwarding to LYNK Mesh (Target GCS ID: 255)")
 
     def ros_to_lynk_callback(self, ros_msg):
         """Reconstruct full MAVLink frame from ROS message and send to LYNK."""
@@ -66,7 +66,7 @@ class RosMavrosBridge:
             lynk.mavlink.send_mavlink(
                 interface=self.interface,
                 payload=frame,
-                dst=0, 
+                dst=255, 
                 system_id=sysid,
                 component_id=compid
             )

@@ -69,7 +69,7 @@ def test_receive_event_dispatch():
         "frame_type": 'E',
         "src_id": 10,
         "dst_id": 0xFF,
-        "team_id": 0,
+        "team_id": 255,
         "payload": event_payload,
         "hop_count": 0
     }

@@ -8,17 +8,23 @@ Usage:
     python3 examples/event/custom_events.py
 """
 import os
-import time
 import lynk
+import time
 
 EVENT_CUSTOM = 100
 PRIORITY_HIGH = 2
 
 def main():
-    print("🚀 initializing LYNK Interface...")
+    print("🚀 Initializing LYNK Custom Event Generator...")
     
     # Load configuration
-    lynk.config.load_config("configs/config.yaml")
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    config_path = os.path.join(base_dir, "configs", "config.yaml")
+    
+    if os.path.exists(config_path):
+        lynk.config.load_config(config_path)
+    else:
+        lynk.config.load_config("configs/config.yaml")
     
     # Create communication interface
     interface = lynk.create_interface()
