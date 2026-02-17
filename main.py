@@ -46,11 +46,11 @@ flow_bytes = {"tx": 0, "rx": 0}
 
 # Default intervals (seconds)
 DEFAULT_INTERVALS = {
-    "imu":       0.2,  # 5.0 Hz
+    "attitude":  0.2,  # 5.0 Hz
     "gps":       0.1,  # 10.0 Hz
-    "heartbeat": 0.5,  # 2.0 Hz
-    "barometer": 0.5,  # 2.0 Hz
-    "ping":      0.5,  # 2.0 Hz
+    "state":     0.5,  # 2.0 Hz
+    "vfr_hud":   0.5,  # 2.0 Hz
+    "heartbeat":  0.5,  # 2.0 Hz
     "battery":   0.5,  # 2.0 Hz
 }
 
@@ -104,7 +104,7 @@ def print_compact_cache(cached: dict):
     cached: { src_id: { "gps": {...}, "imu": {...}, ... }, ... }
     Her alt-tipi tek satır JSON olarak yazar; timestamp'ı en sona koyar.
     """
-    preferred_order = ["gps", "imu", "battery", "heartbeat", "barometer", "ping"]
+    preferred_order = ["gps", "attitude", "battery", "state", "vfr_hud", "heartbeat"]
 
     for src_id, data_types in cached.items():
         print(f"[RECV TELEMETRY] SRC {src_id}")
@@ -258,59 +258,82 @@ def send_gps(interface, my_id, dst_id):
     # Oscillate around 37, 35
     lat = 37.0 + (random.random() * 0.01)
     lon = 35.0 + (random.random() * 0.01)
-    alt = 100.0 + random.randint(-5, 5)
-    lynk.telemetry.send_tlm_gps(interface, lat=lat, lon=lon, alt=alt, dst=dst_id, src=lynk.codec.load_device_id())
+    alt_m = 100.0 + random.randint(-5, 5)
+    
+    # Mock quality metrics
+    fix_type = 3 # 3D Fix
+    sat_count = random.randint(10, 18)
+    hdop = 0.8 + (random.random() * 0.5)
+    ts = int(time.time() * 1000)
+
+    lynk.telemetry.send_tlm_gps(
+        interface, 
+        lat=lat, lon=lon, alt_m=alt_m, rel_alt_m=alt_m,
+        fix_type=fix_type, sat_count=sat_count, hdop=hdop, timestamp_ms=ts,
+        dst=dst_id, src=lynk.codec.load_device_id()
+    )
+
     # print(f"{Colors.BLUE}[SEND] GPS{Colors.ENDC} -> Current: ({lat:.4f}, {lon:.4f}) -> DST: {dst_id}")
 
-def send_imu(interface, my_id, dst_id):
-    if not telemetry_status.get("imu", True): return
+def send_attitude(interface, my_id, dst_id):
+    if not telemetry_status.get("attitude", True): return
     r = random.uniform(-5, 5)
     p = random.uniform(-5, 5)
     y = random.uniform(0, 360)
-    lynk.telemetry.send_tlm_imu(interface, roll=r, pitch=p, yaw=y, dst=dst_id, src=lynk.codec.load_device_id())
-    # print(f"{Colors.BLUE}[SEND] IMU{Colors.ENDC} -> R:{r:.1f} P:{p:.1f} Y:{y:.1f} -> DST: {dst_id}")
+    lynk.telemetry.send_tlm_attitude(
+        interface, roll_deg=r, pitch_deg=p, yaw_deg=y,
+        timestamp_ms=int(time.time() * 1000),
+        dst=dst_id, src=lynk.codec.load_device_id()
+    )
+    # print(f"{Colors.BLUE}[SEND] ATTITUDE{Colors.ENDC} -> R:{r:.1f} P:{p:.1f} Y:{y:.1f} -> DST: {dst_id}")
 
 def send_battery(interface, my_id, dst_id):
     if not telemetry_status.get("battery", True): return
-    level = random.uniform(85, 95)
-    lynk.telemetry.send_tlm_battery(interface, voltage=11.4, current=1.5, level=level, dst=dst_id, src=lynk.codec.load_device_id())
+    level = random.uniform(70, 100)
+    lynk.telemetry.send_tlm_battery(
+        interface, voltage_v=11.4, current_a=1.5, level_pct=level,
+        timestamp_ms=int(time.time() * 1000),
+        dst=dst_id, src=lynk.codec.load_device_id()
+    )
     # print(f"{Colors.BLUE}[SEND] BATTERY{Colors.ENDC} -> {level:.1f}% -> DST: {dst_id}")
 
-def send_heartbeat(interface, my_id, dst_id):
-    if not telemetry_status.get("heartbeat", True):
+def send_state(interface, my_id, dst_id):
+    if not telemetry_status.get("state", True):
         return
-    lynk.telemetry.send_tlm_heartbeat(
+    lynk.telemetry.send_tlm_state(
         interface,
         mode="STABILIZE",
-        health="OK",
         is_armed=True,
-        gps_fix=True,
-        sat_count=12,
+        connected=True,
+        timestamp_ms=int(time.time() * 1000),
         dst=dst_id,
         src=lynk.codec.load_device_id()
     )
-    # print(f"{Colors.BLUE}[SEND] HEARTBEAT{Colors.ENDC} -> DST: {dst_id}")
+    # print(f"{Colors.BLUE}[SEND] STATE{Colors.ENDC} -> DST: {dst_id}")
 
-def send_barometer(interface, my_id, dst_id):
-    if not telemetry_status.get("barometer", True):
+
+def send_vfr_hud(interface, my_id, dst_id):
+    if not telemetry_status.get("vfr_hud", True):
         return
     alt = 100.0 + random.uniform(-2, 2)
-    lynk.telemetry.send_tlm_barometer(
+    lynk.telemetry.send_tlm_vfr_hud(
         interface,
-        vertical_speed=0.1,
-        ground_speed=4.5,
-        altitude_relative=alt,
+        airspeed_ms=15.0 + random.uniform(-1, 1),
+        groundspeed_ms=15.5 + random.uniform(-1, 1),
+        heading_deg=random.uniform(0, 360),
+        throttle=0.6,
+        alt_m=alt,
+        climb_ms=random.uniform(-0.5, 0.5),
+        timestamp_ms=int(time.time() * 1000),
         dst=dst_id,
         src=lynk.codec.load_device_id()
     )
-    # print(f"{Colors.BLUE}[SEND] BAROMETER{Colors.ENDC} -> AltRel:{alt:.2f} -> DST: {dst_id}")
+    # print(f"{Colors.BLUE}[SEND] VFR_HUD{Colors.ENDC} -> ALT: {alt:.1f}m -> DST: {dst_id}")
 
-def send_ping(interface, my_id, dst_id):
-    if not telemetry_status.get("ping", True): return
-    lynk.telemetry.send_tlm_ping(interface, dst=dst_id, src=lynk.codec.load_device_id())
-
-# ---------------------------
-# Commands (keymap)
+def send_heartbeat(interface, my_id, dst_id):
+    if not telemetry_status.get("heartbeat", True): return
+    lynk.telemetry.send_tlm_heartbeat(interface, dst=dst_id, src=lynk.codec.load_device_id())
+    # print(f"{Colors.BLUE}[SEND] HEARTBEAT{Colors.ENDC} -> DST: {dst_id}") (keymap)
 # ---------------------------
 def mission_example():
     return [
@@ -322,7 +345,7 @@ def mission_example():
 def build_keymap(my_id: int, dst_id: int) -> Dict[str, Callable[[any], None]]:
     return {
         # Broadcast / Team
-        "B": lambda interface: lynk.telemetry.send_tlm_ping(interface, dst=0, src=lynk.codec.load_device_id()),
+        "B": lambda interface: lynk.telemetry.send_tlm_heartbeat(interface, dst=0, src=lynk.codec.load_device_id()),
         # Telemetry debug
         "P": lambda interface: dump_telemetry_ages(),
         # System
@@ -362,14 +385,14 @@ def build_keymap(my_id: int, dst_id: int) -> Dict[str, Callable[[any], None]]:
 
         # Telemetry Toggles
         "7": lambda interface: toggle_telemetry("gps"),
-        "8": lambda interface: toggle_telemetry("imu"),
+        "8": lambda interface: toggle_telemetry("attitude"),
         "9": lambda interface: toggle_telemetry("battery"),
-        "0": lambda interface: toggle_telemetry("heartbeat"),
-        "-": lambda interface: toggle_telemetry("barometer"),
-        "=": lambda interface: toggle_telemetry("ping"),
+        "0": lambda interface: toggle_telemetry("state"),
+        "-": lambda interface: toggle_telemetry("vfr_hud"),
+        "=": lambda interface: toggle_telemetry("heartbeat"),
 
         # Cross-Team / Global Tests
-        "V": lambda interface: lynk.telemetry.send_tlm_ping(interface, dst=0, src=lynk.codec.load_device_id(), dst_team_id=0),
+        "V": lambda interface: lynk.telemetry.send_tlm_heartbeat(interface, dst=0, src=lynk.codec.load_device_id(), dst_team_id=0),
         "Z": lambda interface: lynk.command.cmd_flight_arming(interface, arm=True, src=lynk.codec.load_device_id(), dst=2, dst_team_id=2),
     }
 
@@ -581,11 +604,11 @@ def parse_args():
                    help="Config YAML path (default: ./configs/config.yaml)")
     # interval overrides
     p.add_argument("--gps",       type=float, default=None, help="GPS telemetry interval (s)")
-    p.add_argument("--imu",       type=float, default=None, help="IMU telemetry interval (s)")
+    p.add_argument("--attitude",  type=float, default=None, help="Attitude telemetry interval (s)")
     p.add_argument("--battery",   type=float, default=None, help="Battery telemetry interval (s)")
+    p.add_argument("--state", type=float, default=None, help="State telemetry interval (s)")
+    p.add_argument("--vfr-hud",   type=float, default=None, help="VFR_HUD telemetry interval (s)")
     p.add_argument("--heartbeat", type=float, default=None, help="Heartbeat telemetry interval (s)")
-    p.add_argument("--barometer", type=float, default=None, help="Barometer telemetry interval (s)")
-    p.add_argument("--ping",      type=float, default=None, help="Ping telemetry interval (s)")
     p.add_argument("--log-level", default="INFO", choices=["DEBUG","INFO","WARNING","ERROR"], help="Logging level")
     p.add_argument("--no-loopback", action="store_true", help="Filter out own telemetry from logs")
     return p.parse_args()
@@ -631,11 +654,11 @@ def main():
 
     # Periodic telemetry tasks
     schedule_periodic(intervals["gps"],       send_gps,       interface, my_src_id, other_dst_id)
-    schedule_periodic(intervals["imu"],       send_imu,       interface, my_src_id, other_dst_id)
+    schedule_periodic(intervals["attitude"],  send_attitude,  interface, my_src_id, other_dst_id)
     schedule_periodic(intervals["battery"],   send_battery,   interface, my_src_id, other_dst_id)
-    schedule_periodic(intervals["heartbeat"], send_heartbeat, interface, my_src_id, other_dst_id)
-    schedule_periodic(intervals["barometer"], send_barometer, interface, my_src_id, other_dst_id)
-    schedule_periodic(intervals["ping"],      send_ping,      interface, my_src_id, other_dst_id)
+    schedule_periodic(intervals["state"], send_state, interface, my_src_id, other_dst_id)
+    schedule_periodic(intervals["vfr_hud"],   send_vfr_hud,   interface, my_src_id, other_dst_id)
+    schedule_periodic(intervals["heartbeat"],   send_heartbeat,   interface, my_src_id, other_dst_id)
 
     # Receiver task
     filter_id = my_src_id if args.no_loopback else None

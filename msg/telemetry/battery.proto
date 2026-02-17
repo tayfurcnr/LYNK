@@ -2,7 +2,8 @@ syntax = "proto3";
 package lynk.telemetry;
 
 message Battery {
-  float voltage = 1;
-  float current = 2;
-  float level = 3;
+  float voltage_v = 1;
+  float current_a = 2;
+  float level_pct = 3;   // 0-100
+  uint64 timestamp_ms = 5;
 }

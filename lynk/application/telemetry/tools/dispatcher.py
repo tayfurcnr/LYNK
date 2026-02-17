@@ -1,22 +1,25 @@
 from __future__ import annotations
 # lynk/application/telemetry/tools/dispatcher.py
+import logging
 from typing import Optional
+import time
 
 """
 Telemetry Dispatcher Module
 
 Constructs and sends various telemetry frames over a communication interface.
-Each function builds a specific telemetry payload (GPS, IMU, Battery, Heartbeat)
+Each function builds a specific telemetry payload (GPS, Attitude, Battery, State, VfrHud)
 and transmits it, while logging the action for traceability.
 """
 
+import lynk.core.frame_codec as codec
 from lynk.application.telemetry.tools.builder import (
     build_tlm_gps,
-    build_tlm_imu,
+    build_tlm_attitude,
     build_tlm_battery,
-    build_tlm_heartbeat,
-    build_tlm_barometer,
-    build_tlm_ping
+    build_tlm_state,
+    build_tlm_vfr_hud,
+    build_tlm_heartbeat
 )
 from lynk.shared.comm.transmitter import send_frame
 from lynk.shared.log.logger import logger
@@ -30,7 +33,7 @@ def register_handler(tlm_id: int, callback: Any) -> None:
     Register a dynamic callback for a specific telemetry type.
     
     Args:
-        tlm_id (int): Telemetry ID (e.g., 1 for HEARTBEAT, 2 for GPS)
+        tlm_id (int): Telemetry ID (e.g., 4 for STATE, 1 for GPS)
         callback (callable): Function taking tlm_data (dict) and metadata
     """
     if tlm_id not in _tlm_handlers:
@@ -64,7 +67,7 @@ def send_telemetry(
         **params: Telemetry parameters as keyword arguments.
     
     Example:
-        send_telemetry(interface, "GPS", lat=37.0, lon=35.0, alt=100.0)
+        send_telemetry(interface, "GPS", lat=37.0, lon=35.0, alt_m=100.0, fix_type=3, sat_count=12, hdop=1.0, timestamp_ms=0)
         send_telemetry(interface, "COMPASS", heading=45.2, declination=1.3, dst=1)
     """
     from lynk.application.telemetry.serializer.dispatcher import _get_tlm_fields
@@ -101,57 +104,77 @@ def send_tlm_gps(
     interface,
     lat: float,
     lon: float,
-    alt: float,
+    alt_m: float,
+    rel_alt_m: float = 0.0,
+    fix_type: int = 3,
+    sat_count: int = 0,
+    hdop: float = 1.0,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: int | None = None,
     dst_team_id: Optional[int] = None
 ) -> None:
     """
-    Send a GPS telemetry frame containing latitude, longitude, and altitude.
+    Send a GPS telemetry frame containing position, fix quality, and timing.
 
     Args:
         interface: Communication interface instance (UART, UDP, etc.).
-        lat (float): Latitude in decimal degrees.
-        lon (float): Longitude in decimal degrees.
-        alt (float): Altitude in meters above sea level.
+        lat (float): Latitude in decimal degrees (double precision).
+        lon (float): Longitude in decimal degrees (double precision).
+        alt_m (float): Altitude in meters above sea level.
+        rel_alt_m (float): Relative altitude above home in meters.
+        fix_type (int): MAVLink GPS_FIX_TYPE (0-8).
+        sat_count (int): Number of satellites in view.
+        hdop (float): HDOP value.
+        timestamp_ms (int): Unix epoch time in ms.
         dst (int, optional): Destination device ID (default: 0xFF for broadcast).
         src (int | None, optional): Source device ID; if None, omitted.
     """
-    frame = build_tlm_gps(lat, lon, alt, dst, src, team_id=dst_team_id)
+    frame = build_tlm_gps(
+        lat, lon, alt_m, rel_alt_m, fix_type, sat_count, hdop, timestamp_ms,
+        dst, src, team_id=dst_team_id
+    )
     send_frame(interface, frame)
     target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
-    logger.debug(f"[TELEMETRY] SENT GPS | {target} | LAT: {lat:.6f}, LON: {lon:.6f}, ALT: {alt:.2f}")
+    logger.debug(
+        f"[TELEMETRY] SENT GPS | {target} | "
+        f"LAT: {lat:.7f}, LON: {lon:.7f}, ALT: {alt_m:.2f}m, REL: {rel_alt_m:.2f}m, "
+        f"FIX: {fix_type}, SATS: {sat_count}, HDOP: {hdop:.2f}"
+    )
 
-def send_tlm_imu(
+def send_tlm_attitude(
     interface,
-    roll: float,
-    pitch: float,
-    yaw: float,
+    roll_deg: float,
+    pitch_deg: float,
+    yaw_deg: float,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: int | None = None
 ) -> None:
     """
-    Send an IMU telemetry frame containing roll, pitch, and yaw angles.
+    Send an Attitude telemetry frame containing roll, pitch, and yaw angles.
 
     Args:
         interface: Communication interface instance.
-        roll (float): Roll angle in degrees.
-        pitch (float): Pitch angle in degrees.
-        yaw (float): Yaw angle in degrees.
+        roll_deg (float): Roll angle in degrees.
+        pitch_deg (float): Pitch angle in degrees.
+        yaw_deg (float): Yaw angle in degrees.
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
     """
-    frame = build_tlm_imu(roll, pitch, yaw, dst, src)
+    frame = build_tlm_attitude(roll_deg, pitch_deg, yaw_deg, timestamp_ms, dst, src)
     send_frame(interface, frame)
     logger.debug(
-        f"[TELEMETRY] SENT IMU | DST: {dst} | ROLL: {roll:.2f}, PITCH: {pitch:.2f}, YAW: {yaw:.2f}"
+        f"[TELEMETRY] SENT ATTITUDE | DST: {dst} | ROLL: {roll_deg:.2f}°, PITCH: {pitch_deg:.2f}°, YAW: {yaw_deg:.2f}°"
     )
 
 def send_tlm_battery(
     interface,
-    voltage: float,
-    current: float,
-    level: float,
+    voltage_v: float,
+    current_a: float,
+    level_pct: float,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: int | None = None
 ) -> None:
@@ -160,100 +183,118 @@ def send_tlm_battery(
 
     Args:
         interface: Communication interface instance.
-        voltage (float): Battery voltage in volts.
-        current (float): Current draw in amperes.
-        level (float): Remaining battery percentage (0.0–100.0).
+        voltage_v (float): Battery voltage in volts.
+        current_a (float): Current draw in amperes.
+        level_pct (float): Remaining battery percentage (0.0–100.0).
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
     """
-    frame = build_tlm_battery(voltage, current, level, dst, src)
+    frame = build_tlm_battery(voltage_v, current_a, level_pct, timestamp_ms, dst, src)
     send_frame(interface, frame)
     logger.debug(
-        f"[TELEMETRY] SENT BATTERY | DST: {dst} | VOLT: {voltage:.2f} V, CURR: {current:.2f} A, LEVEL: {level:.1f}%"
+        f"[TELEMETRY] SENT BATTERY | DST: {dst} | VOLT: {voltage_v:.2f}V, "
+        f"CURR: {current_a:.2f}A, LEVEL: {level_pct:.1f}%"
     )
 
-def send_tlm_heartbeat(
+def send_tlm_state(
     interface,
     mode: str,
-    health: str,
     is_armed: bool,
-    gps_fix: bool,
-    sat_count: int,
+    connected: bool = True,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: int | None = None
 ) -> None:
     """
-    Send a Heartbeat telemetry frame conveying system state information.
+    Send a State telemetry frame conveying vehicle status (MAVROS-aligned).
 
     Args:
         interface: Communication interface instance.
         mode (str): Flight mode identifier (e.g., "STABILIZE", "GUIDED").
-        health (str): Overall system health status (e.g., "OK", "WARN").
         is_armed (bool): Whether the vehicle is armed.
-        gps_fix (bool): GPS fix status.
-        sat_count (int): Number of satellites in view.
+        connected (bool): FCU connection status (default: True).
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
     """
-    frame = build_tlm_heartbeat(mode, health, is_armed, gps_fix, sat_count, dst, src)
+    frame = build_tlm_state(mode, is_armed, connected, timestamp_ms, dst, src)
     send_frame(interface, frame)
     logger.debug(
-        f"[TELEMETRY] SENT HEARTBEAT | DST: {dst} | MODE: {mode}, HEALTH: {health}, "
-        f"ARMED: {is_armed}, GPS_FIX: {gps_fix}, SATS: {sat_count}"
+        f"[TELEMETRY] SENT STATE | DST: {dst} | MODE: {mode}, "
+        f"ARMED: {is_armed}, CONNECTED: {connected}"
     )
 
-def send_tlm_barometer(
+def send_tlm_vfr_hud(
     interface,
-    vertical_speed: float,
-    ground_speed: float,
-    altitude_relative: float,
+    airspeed_ms: float,
+    groundspeed_ms: float,
+    heading_deg: float,
+    throttle: float,
+    alt_m: float,
+    climb_ms: float,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: int | None = None
 ) -> None:
     """
-    Send a Barometer telemetry frame.
+    Send a VFR_HUD telemetry frame.
 
     Args:
         interface: Communication interface instance.
-        vertical_speed (float): Vertical speed in m/s.
-        ground_speed (float): Ground speed of the vehicle in m/s.
-        altitude_relative (float): Altitude relative to home in meters.
+        airspeed_ms (float): Airspeed in m/s.
+        groundspeed_ms (float): Ground speed in m/s.
+        heading_deg (float): Heading in degrees (0-360).
+        throttle (float): Throttle percentage (0.0-1.0).
+        alt_m (float): Altitude in meters (MSL).
+        climb_ms (float): Climb rate in m/s.
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
     """
-    frame = build_tlm_barometer(vertical_speed, ground_speed, altitude_relative, dst, src)
+    frame = build_tlm_vfr_hud(
+        airspeed_ms, groundspeed_ms, heading_deg, throttle, alt_m, climb_ms, timestamp_ms,
+        dst, src
+    )
     send_frame(interface, frame)
     logger.debug(
-        f"[TELEMETRY] SENT BAROMETER | DST: {dst} | V_SPEED: {vertical_speed:.2f}, GND_SPEED: {ground_speed:.2f}, ALT_REL: {altitude_relative:.2f}"
+        f"[TELEMETRY] SENT VFR_HUD | DST: {dst} | GS: {groundspeed_ms:.2f}m/s, "
+        f"HDG: {heading_deg:.1f}°, ALT: {alt_m:.2f}m"
     )
 
-# --- State for auto-ping ---
-_ping_sequence = 0
+# --- State for auto-heartbeat ---
+_hb_sequence = 0
 
-def send_tlm_ping(
+def send_tlm_heartbeat(
     interface,
     sequence: int | None = None,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: int | None = None,
     dst_team_id: Optional[int] = None
 ) -> None:
     """
-    Send a Ping telemetry frame.
+    Send a Heartbeat telemetry frame.
 
     If sequence is not provided, an auto-incrementing sequence number will be used.
 
     Args:
         interface: Communication interface instance.
-        sequence (int | None, optional): A sequence number for the ping.
+        sequence (int | None, optional): A sequence number for the heartbeat.
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
+        dst_team_id (int | None, optional): Destination team ID.
     """
-    global _ping_sequence
+    global _hb_sequence
     if sequence is None:
-        sequence = _ping_sequence
-        _ping_sequence += 1
+        sequence = _hb_sequence
+        _hb_sequence += 1
+    
+    if timestamp_ms == 0:
+        timestamp_ms = int(time.time() * 1000)
 
-    frame = build_tlm_ping(sequence, dst, src, team_id=dst_team_id)
+    frame = build_tlm_heartbeat(sequence, timestamp_ms, dst, src, team_id=dst_team_id)
     send_frame(interface, frame)
     target = f"DST: {dst}" if dst_team_id is None else f"DST: {dst} @ TEAM: {dst_team_id}"
-    logger.debug(f"[TELEMETRY] SENT PING | {target} | SEQUENCE: {sequence}")
+    logger.debug(f"[TELEMETRY] SENT HEARTBEAT | {target} | SEQ: {sequence} | MS: {timestamp_ms}")

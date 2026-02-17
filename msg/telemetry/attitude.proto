@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package lynk.telemetry;
+
+message Attitude {
+  float roll_deg = 1;
+  float pitch_deg = 2;
+  float yaw_deg = 3;
+
+  uint64 timestamp_ms = 4;
+}

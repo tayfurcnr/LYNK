@@ -1,12 +1,8 @@
 syntax = "proto3";
+
 package lynk.telemetry;
 
-import "nanopb.proto";
-
 message Heartbeat {
-  string mode = 1 [(nanopb).max_length = 32];
-  string health = 2 [(nanopb).max_length = 32];
-  bool is_armed = 3;
-  bool gps_fix = 4;
-  uint32 sat_count = 5;
+  uint32 sequence = 1;
+  uint64 timestamp_ms = 2;
 }

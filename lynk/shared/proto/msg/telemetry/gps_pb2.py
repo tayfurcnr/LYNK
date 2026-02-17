@@ -3,6 +3,7 @@
 
 import sys
 _b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))
+from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
@@ -19,9 +20,69 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lynk.telemetry',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x17msg/telemetry/gps.proto\x12\x0elynk.telemetry\",\n\x03Gps\x12\x0b\n\x03lat\x18\x01 \x01(\x02\x12\x0b\n\x03lon\x18\x02 \x01(\x02\x12\x0b\n\x03\x61lt\x18\x03 \x01(\x02\x62\x06proto3')
+  serialized_pb=_b('\n\x17msg/telemetry/gps.proto\x12\x0elynk.telemetry\"\xa6\x01\n\x03Gps\x12\x0b\n\x03lat\x18\x01 \x01(\x01\x12\x0b\n\x03lon\x18\x02 \x01(\x01\x12\r\n\x05\x61lt_m\x18\x03 \x01(\x02\x12\x11\n\trel_alt_m\x18\x04 \x01(\x02\x12,\n\x08\x66ix_type\x18\x05 \x01(\x0e\x32\x1a.lynk.telemetry.GpsFixType\x12\x11\n\tsat_count\x18\x06 \x01(\r\x12\x0c\n\x04hdop\x18\x07 \x01(\x02\x12\x14\n\x0ctimestamp_ms\x18\x08 \x01(\x04*\xb9\x01\n\nGpsFixType\x12\x12\n\x0eGPS_FIX_NO_GPS\x10\x00\x12\x12\n\x0eGPS_FIX_NO_FIX\x10\x01\x12\x0e\n\nGPS_FIX_2D\x10\x02\x12\x0e\n\nGPS_FIX_3D\x10\x03\x12\x10\n\x0cGPS_FIX_DGPS\x10\x04\x12\x15\n\x11GPS_FIX_RTK_FLOAT\x10\x05\x12\x15\n\x11GPS_FIX_RTK_FIXED\x10\x06\x12\x12\n\x0eGPS_FIX_STATIC\x10\x07\x12\x0f\n\x0bGPS_FIX_PPP\x10\x08\x62\x06proto3')
 )
 
+_GPSFIXTYPE = _descriptor.EnumDescriptor(
+  name='GpsFixType',
+  full_name='lynk.telemetry.GpsFixType',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='GPS_FIX_NO_GPS', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GPS_FIX_NO_FIX', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GPS_FIX_2D', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GPS_FIX_3D', index=3, number=3,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GPS_FIX_DGPS', index=4, number=4,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GPS_FIX_RTK_FLOAT', index=5, number=5,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GPS_FIX_RTK_FIXED', index=6, number=6,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GPS_FIX_STATIC', index=7, number=7,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='GPS_FIX_PPP', index=8, number=8,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=213,
+  serialized_end=398,
+)
+_sym_db.RegisterEnumDescriptor(_GPSFIXTYPE)
+
+GpsFixType = enum_type_wrapper.EnumTypeWrapper(_GPSFIXTYPE)
+GPS_FIX_NO_GPS = 0
+GPS_FIX_NO_FIX = 1
+GPS_FIX_2D = 2
+GPS_FIX_3D = 3
+GPS_FIX_DGPS = 4
+GPS_FIX_RTK_FLOAT = 5
+GPS_FIX_RTK_FIXED = 6
+GPS_FIX_STATIC = 7
+GPS_FIX_PPP = 8
 
 
 
@@ -34,22 +95,57 @@ _GPS = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='lat', full_name='lynk.telemetry.Gps.lat', index=0,
-      number=1, type=2, cpp_type=6, label=1,
+      number=1, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='lon', full_name='lynk.telemetry.Gps.lon', index=1,
-      number=2, type=2, cpp_type=6, label=1,
+      number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='alt', full_name='lynk.telemetry.Gps.alt', index=2,
+      name='alt_m', full_name='lynk.telemetry.Gps.alt_m', index=2,
       number=3, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='rel_alt_m', full_name='lynk.telemetry.Gps.rel_alt_m', index=3,
+      number=4, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='fix_type', full_name='lynk.telemetry.Gps.fix_type', index=4,
+      number=5, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='sat_count', full_name='lynk.telemetry.Gps.sat_count', index=5,
+      number=6, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='hdop', full_name='lynk.telemetry.Gps.hdop', index=6,
+      number=7, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='timestamp_ms', full_name='lynk.telemetry.Gps.timestamp_ms', index=7,
+      number=8, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -65,11 +161,13 @@ _GPS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=43,
-  serialized_end=87,
+  serialized_start=44,
+  serialized_end=210,
 )
 
+_GPS.fields_by_name['fix_type'].enum_type = _GPSFIXTYPE
 DESCRIPTOR.message_types_by_name['Gps'] = _GPS
+DESCRIPTOR.enum_types_by_name['GpsFixType'] = _GPSFIXTYPE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Gps = _reflection.GeneratedProtocolMessageType('Gps', (_message.Message,), dict(

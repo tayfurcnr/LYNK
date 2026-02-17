@@ -7,9 +7,11 @@ from lynk.core.frame_router import route_frame
 import lynk.core.frame_codec as codec
 from lynk.application.telemetry.tools.dispatcher import (
     send_tlm_gps,
-    send_tlm_imu,
+    send_tlm_attitude,
     send_tlm_battery,
-    send_tlm_heartbeat
+    send_tlm_state,
+    send_tlm_vfr_hud,
+    build_tlm_vfr_hud
 )
 from lynk.application.telemetry.tools.cache import (
     get_active_device_ids,
@@ -59,21 +61,33 @@ def process_all_frames(interface):
 
 def send_all_test_telemetries(interface):
     """
-    Sends GPS, IMU, BATTERY, and HEARTBEAT telemetry for devices 1 and 2.
+    Sends GPS, ATTITUDE, BATTERY, STATE, and VFR_HUD telemetry for devices 1 and 2.
     """
     now = time.time()
 
-    send_tlm_gps(interface, lat=37.1111, lon=35.1111, alt=100.0, dst=1, src=1)
-    send_tlm_imu(interface, roll=1.1, pitch=2.2, yaw=3.3, dst=1, src=1)
-    send_tlm_battery(interface, voltage=11.1, current=4.2, level=95.0, dst=1, src=1)
-    send_tlm_heartbeat(interface, mode="GUIDED", health="OK", is_armed=True,
-                       gps_fix=True, sat_count=10, dst=1, src=1)
+    send_tlm_gps(interface, lat=37.1111, lon=35.1111, alt_m=100.0, 
+                 fix_type=3, sat_count=12, hdop=1.1, timestamp_ms=int(time.time()*1000),
+                 dst=1, src=1)
+    send_tlm_attitude(interface, roll_deg=1.1, pitch_deg=2.2, yaw_deg=3.3,
+                      timestamp_ms=int(time.time()*1000), dst=1, src=1)
+    send_tlm_battery(interface, voltage_v=11.1, current_a=4.2, level_pct=95.0,
+                     timestamp_ms=int(time.time()*1000), dst=1, src=1)
+    send_tlm_state(interface, mode="GUIDED", is_armed=True,
+                   connected=True, timestamp_ms=int(time.time()*1000), dst=1, src=1)
+    send_tlm_vfr_hud(interface, airspeed_ms=10.0, groundspeed_ms=11.0, heading_deg=180.0, 
+                     throttle=0.5, alt_m=100.0, climb_ms=1.1, timestamp_ms=int(time.time()*1000), dst=1, src=1)
 
-    send_tlm_gps(interface, lat=36.1111, lon=33.1111, alt=90.0, dst=1, src=2)
-    send_tlm_imu(interface, roll=15.1, pitch=5.0, yaw=7.0, dst=1, src=2)
-    send_tlm_battery(interface, voltage=10.9, current=4.1, level=77.0, dst=1, src=2)
-    send_tlm_heartbeat(interface, mode="AUTO", health="OK", is_armed=True,
-                       gps_fix=True, sat_count=11, dst=1, src=2)
+    send_tlm_gps(interface, lat=36.1111, lon=33.1111, alt_m=90.0, 
+                 fix_type=3, sat_count=11, hdop=1.2, timestamp_ms=int(time.time()*1000),
+                 dst=1, src=2)
+    send_tlm_attitude(interface, roll_deg=15.1, pitch_deg=5.0, yaw_deg=7.0,
+                      timestamp_ms=int(time.time()*1000), dst=1, src=2)
+    send_tlm_battery(interface, voltage_v=10.9, current_a=4.1, level_pct=77.0,
+                     timestamp_ms=int(time.time()*1000), dst=1, src=2)
+    send_tlm_state(interface, mode="AUTO", is_armed=True,
+                   connected=True, timestamp_ms=int(time.time()*1000), dst=1, src=2)
+    send_tlm_vfr_hud(interface, airspeed_ms=5.0, groundspeed_ms=5.5, heading_deg=90.0, 
+                     throttle=0.3, alt_m=50.0, climb_ms=0.0, timestamp_ms=int(time.time()*1000), dst=1, src=2)
 
 
 def test_lynk_full_flow():
@@ -88,7 +102,7 @@ def test_lynk_full_flow():
     cmd_flight_takeoff(interface, altitude_m=30.0, src=1, dst=1)
     process_all_frames(interface)
 
-    # ✅ Verify telemetry data and heartbeat for devices 1, 2
+    # ✅ Verify telemetry data and state for devices 1, 2
     for src_id in [1, 2]:
         data = get_all_data_for_device(src_id)
         assert data is not None, f"❌ No telemetry data for device {src_id}!"
@@ -96,8 +110,8 @@ def test_lynk_full_flow():
         for dtype, values in data.items():
             print(f"  - {dtype}: {values}")
 
-        assert "heartbeat" in data, f"❌ No heartbeat data for device {src_id}!"
-        print(f"  ✅ Heartbeat: {data['heartbeat']}")
+        assert "state" in data, f"❌ No state data for device {src_id}!"
+        print(f"  ✅ State: {data['state']}")
 
     # ✅ Active device check (before timeout)
     active_ids = get_active_device_ids(timeout=3.0)
@@ -108,10 +122,12 @@ def test_lynk_full_flow():
     print("\n⏳ Waiting 4 seconds (devices 1 and 2 should timeout)...")
     time.sleep(4)
 
-    # 🛰 Send GPS + HEARTBEAT for new device 3
-    send_tlm_gps(interface, lat=35.1111, lon=33.1111, alt=90.0, dst=1, src=3)
-    send_tlm_heartbeat(interface, mode="RTL", health="OK", is_armed=False,
-                       gps_fix=True, sat_count=9, dst=1, src=3)
+    # 🛰 Send GPS + STATE for new device 3
+    send_tlm_gps(interface, lat=35.1111, lon=33.1111, alt_m=90.0, 
+                 fix_type=3, sat_count=10, hdop=1.3, timestamp_ms=int(time.time()*1000),
+                 dst=1, src=3)
+    send_tlm_state(interface, mode="RTL", is_armed=False,
+                   connected=True, timestamp_ms=int(time.time()*1000), dst=1, src=3)
 
     process_all_frames(interface)
 
@@ -127,12 +143,12 @@ def test_lynk_full_flow():
     for k, v in battery_data.items():
         print(f"   {k}: {v}")
 
-    # ✅ Heartbeat check for all devices
-    print("\n🫀 [HEARTBEAT] Verifying heartbeat presence:")
+    # ✅ State check for all devices
+    print("\n🫀 [STATE] Verifying state presence:")
     for src_id in [1, 2, 3]:
-        heartbeat = get_device_data(src_id, "heartbeat")
-        assert heartbeat is not None, f"❌ No heartbeat data for device {src_id}!"
-        print(f"   ✅ Device {src_id}: {heartbeat}")
+        state_data = get_device_data(src_id, "state")
+        assert state_data is not None, f"❌ No state data for device {src_id}!"
+        print(f"   ✅ Device {src_id}: {state_data}")
 
     # ✅ Final telemetry cache printout
     print("\n📦 [CACHE] All cached telemetry data:")

@@ -29,58 +29,88 @@ def gps(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int =
     gps_data = {
         "lat": data["lat"],
         "lon": data["lon"],
-        "alt": data["alt"],
+        "alt_m": data["alt_m"],
+        "fix_type": data["fix_type"],
+        "sat_count": data["sat_count"],
+        "hdop": data["hdop"],
+        "timestamp_ms": data["timestamp_ms"],
+        "rel_alt_m": data["rel_alt_m"],
     }
     set_device_data(src_id, "gps", gps_data, team_id=team_id, hop_count=hop_count)
     logger.debug(f"[TELEMETRY] GPS received from SRC: {src_id} (Team: {team_id})")
-    logger.debug(f"[TELEMETRY] → LAT: {gps_data['lat']:.6f}, LON: {gps_data['lon']:.6f}, ALT: {gps_data['alt']:.2f}")
+    logger.debug(
+        f"[TELEMETRY] → LAT: {gps_data['lat']:.7f}, LON: {gps_data['lon']:.7f}, "
+        f"ALT: {gps_data['alt_m']:.2f}m, REL: {gps_data['rel_alt_m']:.2f}m, "
+        f"FIX: {gps_data['fix_type']}, SATS: {gps_data['sat_count']}, HDOP: {gps_data['hdop']:.2f}"
+    )
 
-def imu(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int = 0):
-    imu_data = {
-        "roll": data["roll"],
-        "pitch": data["pitch"],
-        "yaw": data["yaw"],
+
+def attitude(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int = 0):
+    attitude_data = {
+        "roll_deg": data["roll_deg"],
+        "pitch_deg": data["pitch_deg"],
+        "yaw_deg": data["yaw_deg"],
+        "timestamp_ms": data["timestamp_ms"],
     }
-    set_device_data(src_id, "imu", imu_data, team_id=team_id, hop_count=hop_count)
-    logger.debug(f"[TELEMETRY] IMU received from SRC: {src_id} (Team: {team_id})")
-    logger.debug(f"[TELEMETRY] → Roll: {imu_data['roll']:.2f}, Pitch: {imu_data['pitch']:.2f}, Yaw: {imu_data['yaw']:.2f}")
+    set_device_data(src_id, "attitude", attitude_data, team_id=team_id, hop_count=hop_count)
+    logger.debug(f"[TELEMETRY] ATTITUDE received from SRC: {src_id} (Team: {team_id})")
+    logger.debug(
+        f"[TELEMETRY] → Roll: {attitude_data['roll_deg']:.2f}°, "
+        f"Pitch: {attitude_data['pitch_deg']:.2f}°, Yaw: {attitude_data['yaw_deg']:.2f}°"
+    )
 
 def battery(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int = 0):
     battery_data = {
-        "voltage": data["voltage"],
-        "current": data["current"],
-        "level": data["level"]
+        "voltage_v": data["voltage_v"],
+        "current_a": data["current_a"],
+        "level_pct": data["level_pct"],
+        "timestamp_ms": data["timestamp_ms"],
     }
     set_device_data(src_id, "battery", battery_data, team_id=team_id, hop_count=hop_count)
     logger.debug(f"[TELEMETRY] BATTERY received from SRC: {src_id} (Team: {team_id})")
-    logger.debug(f"[TELEMETRY] → V: {battery_data['voltage']:.2f}V, I: {battery_data['current']:.2f}A, Level: {battery_data['level']:.1f}%")
+    logger.debug(
+        f"[TELEMETRY] → V: {battery_data['voltage_v']:.2f}V, "
+        f"I: {battery_data['current_a']:.2f}A, Level: {battery_data['level_pct']:.1f}%"
+    )
 
-def heartbeat(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int = 0):
-    hb = {
+def state(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int = 0):
+    state_data = {
         "mode": data["mode"],
-        "health": data["health"],
         "is_armed": data["is_armed"],
-        "gps_fix": data["gps_fix"],
-        "sat_count": data["sat_count"]
+        "connected": data["connected"],
+        "timestamp_ms": data["timestamp_ms"],
     }
-    set_device_data(src_id, "heartbeat", hb, team_id=team_id, hop_count=hop_count)
-    logger.debug(f"[TELEMETRY] HEARTBEAT received from SRC: {src_id} (Team: {team_id})")
-    logger.debug(f"[TELEMETRY] → MODE: {hb['mode']}, HEALTH: {hb['health']}, ARMED: {hb['is_armed']}, GPS_FIX: {hb['gps_fix']}, SATS: {hb['sat_count']}")
+    set_device_data(src_id, "state", state_data, team_id=team_id, hop_count=hop_count)
+    logger.debug(f"[TELEMETRY] STATE received from SRC: {src_id} (Team: {team_id})")
+    logger.debug(
+        f"[TELEMETRY] → MODE: {state_data['mode']}, ARMED: {state_data['is_armed']}, "
+        f"CONNECTED: {state_data['connected']}"
+    )
+
 
 def unknown(data: dict, src_id: int, tlm_id: int):
     logger.warning(f"[TELEMETRY] Unknown telemetry ID {tlm_id} from SRC: {src_id}")
 
-def barometer(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int = 0):
-    baro_data = {
-        "vertical_speed": data["vertical_speed"],
-        "ground_speed": data["ground_speed"],
-        "altitude_relative": data["altitude_relative"],
+def vfr_hud(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int = 0):
+    vfr_data = {
+        "airspeed_ms": data["airspeed_ms"],
+        "groundspeed_ms": data["groundspeed_ms"],
+        "heading_deg": data["heading_deg"],
+        "throttle": data["throttle"],
+        "alt_m": data["alt_m"],
+        "climb_ms": data["climb_ms"],
+        "timestamp_ms": data["timestamp_ms"],
     }
-    set_device_data(src_id, "barometer", baro_data, team_id=team_id, hop_count=hop_count)
-    logger.debug(f"[TELEMETRY] Barometer received from SRC: {src_id} (Team: {team_id})")
-    logger.debug(f"[TELEMETRY] → Vertical Speed: {baro_data['vertical_speed']:.2f}, Ground Speed: {baro_data['ground_speed']:.2f}, Altitude Relative: {baro_data['altitude_relative']:.2f}")
+    set_device_data(src_id, "vfr_hud", vfr_data, team_id=team_id, hop_count=hop_count)
+    logger.debug(f"[TELEMETRY] VFR_HUD received from SRC: {src_id} (Team: {team_id})")
+    logger.debug(
+        f"[TELEMETRY] → GS: {vfr_data['groundspeed_ms']:.2f}m/s, "
+        f"HDG: {vfr_data['heading_deg']:.1f}°, ALT: {vfr_data['alt_m']:.2f}m"
+    )
 
-def ping(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int = 0):
+def heartbeat(data: dict, src_id: int, team_id: Optional[int] = None, hop_count: int = 0):
     sequence = data["sequence"]
-    set_device_data(src_id, "ping", {"sequence": sequence}, team_id=team_id, hop_count=hop_count)
-    logger.debug(f"[TELEMETRY] PING received from SRC: {src_id} (Team: {team_id}) with sequence {sequence}")
+    ts = data["timestamp_ms"]
+    hb_data = {"sequence": sequence, "timestamp_ms": ts}
+    set_device_data(src_id, "heartbeat", hb_data, team_id=team_id, hop_count=hop_count)
+    logger.debug(f"[TELEMETRY] HEARTBEAT received from SRC: {src_id} (Team: {team_id}) | SEQ: {sequence}")

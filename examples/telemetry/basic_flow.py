@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Example 01: Telemetry Flow
-Demonstrates how to send and receive telemetry (Battery, GPS, Heartbeat).
+Demonstrates how to send and receive telemetry (Battery, GPS, State).
 Includes a background listener and dynamic callback registration.
 
 Usage:
@@ -56,10 +56,29 @@ def main():
             # Send Battery (This will trigger our own callback above if we are monitoring dst=1/broadcast)
             lynk.telemetry.send_tlm_battery(
                 interface,
-                voltage=12.5,
-                current=5.2,
-                level=98.0,
+                voltage_v=12.5,
+                current_a=5.2,
+                level_pct=98.0,
                 dst=1 # Sending to ourselves to see the callback work
+            )
+            
+            # Send Heartbeat
+            lynk.telemetry.send_tlm_heartbeat(
+                interface,
+                dst=1 # Sending to ourselves to see the callback work
+            )
+            
+            # Send VFR_HUD
+            lynk.telemetry.send_tlm_vfr_hud(
+                interface,
+                airspeed_ms=12.0,
+                groundspeed_ms=12.2,
+                heading_deg=45.0,
+                throttle=0.5,
+                alt_m=100.5,
+                climb_ms=0.2,
+                timestamp_ms=int(time.time() * 1000),
+                dst=1
             )
             
             # Send GPS
@@ -67,9 +86,14 @@ def main():
                 interface,
                 lat=41.0082,
                 lon=28.9784,
-                alt=100.0,
+                alt_m=100.0,
+                fix_type=3,
+                sat_count=12,
+                hdop=1.0,
+                timestamp_ms=int(time.time() * 1000),
                 dst=255 # Broadcast
             )
+
             
             print("   [TX] Battery and GPS sent.")
             time.sleep(2.0)

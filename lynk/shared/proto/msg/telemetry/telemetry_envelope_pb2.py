@@ -13,11 +13,11 @@ _sym_db = _symbol_database.Default()
 
 
 from msg.telemetry import gps_pb2 as msg_dot_telemetry_dot_gps__pb2
-from msg.telemetry import imu_pb2 as msg_dot_telemetry_dot_imu__pb2
+from msg.telemetry import attitude_pb2 as msg_dot_telemetry_dot_attitude__pb2
 from msg.telemetry import battery_pb2 as msg_dot_telemetry_dot_battery__pb2
+from msg.telemetry import state_pb2 as msg_dot_telemetry_dot_state__pb2
+from msg.telemetry import vfr_hud_pb2 as msg_dot_telemetry_dot_vfr__hud__pb2
 from msg.telemetry import heartbeat_pb2 as msg_dot_telemetry_dot_heartbeat__pb2
-from msg.telemetry import barometer_pb2 as msg_dot_telemetry_dot_barometer__pb2
-from msg.telemetry import ping_pb2 as msg_dot_telemetry_dot_ping__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -25,9 +25,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lynk.telemetry',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n&msg/telemetry/telemetry_envelope.proto\x12\x0elynk.telemetry\x1a\x17msg/telemetry/gps.proto\x1a\x17msg/telemetry/imu.proto\x1a\x1bmsg/telemetry/battery.proto\x1a\x1dmsg/telemetry/heartbeat.proto\x1a\x1dmsg/telemetry/barometer.proto\x1a\x18msg/telemetry/ping.proto\"\xa9\x02\n\x11TelemetryEnvelope\x12\x0f\n\x06tlm_id\x18\xff\x01 \x01(\r\x12\"\n\x03gps\x18\x01 \x01(\x0b\x32\x13.lynk.telemetry.GpsH\x00\x12\"\n\x03imu\x18\x02 \x01(\x0b\x32\x13.lynk.telemetry.ImuH\x00\x12*\n\x07\x62\x61ttery\x18\x03 \x01(\x0b\x32\x17.lynk.telemetry.BatteryH\x00\x12.\n\theartbeat\x18\x04 \x01(\x0b\x32\x19.lynk.telemetry.HeartbeatH\x00\x12.\n\tbarometer\x18\x05 \x01(\x0b\x32\x19.lynk.telemetry.BarometerH\x00\x12$\n\x04ping\x18\x06 \x01(\x0b\x32\x14.lynk.telemetry.PingH\x00\x42\t\n\x07payloadb\x06proto3')
+  serialized_pb=_b('\n&msg/telemetry/telemetry_envelope.proto\x12\x0elynk.telemetry\x1a\x17msg/telemetry/gps.proto\x1a\x1cmsg/telemetry/attitude.proto\x1a\x1bmsg/telemetry/battery.proto\x1a\x19msg/telemetry/state.proto\x1a\x1bmsg/telemetry/vfr_hud.proto\x1a\x1dmsg/telemetry/heartbeat.proto\"\xb0\x02\n\x11TelemetryEnvelope\x12\x0f\n\x06tlm_id\x18\xff\x01 \x01(\r\x12\"\n\x03gps\x18\x01 \x01(\x0b\x32\x13.lynk.telemetry.GpsH\x00\x12,\n\x08\x61ttitude\x18\x02 \x01(\x0b\x32\x18.lynk.telemetry.AttitudeH\x00\x12*\n\x07\x62\x61ttery\x18\x03 \x01(\x0b\x32\x17.lynk.telemetry.BatteryH\x00\x12&\n\x05state\x18\x04 \x01(\x0b\x32\x15.lynk.telemetry.StateH\x00\x12)\n\x07vfr_hud\x18\x05 \x01(\x0b\x32\x16.lynk.telemetry.VfrHudH\x00\x12.\n\theartbeat\x18\x06 \x01(\x0b\x32\x19.lynk.telemetry.HeartbeatH\x00\x42\t\n\x07payloadb\x06proto3')
   ,
-  dependencies=[msg_dot_telemetry_dot_gps__pb2.DESCRIPTOR,msg_dot_telemetry_dot_imu__pb2.DESCRIPTOR,msg_dot_telemetry_dot_battery__pb2.DESCRIPTOR,msg_dot_telemetry_dot_heartbeat__pb2.DESCRIPTOR,msg_dot_telemetry_dot_barometer__pb2.DESCRIPTOR,msg_dot_telemetry_dot_ping__pb2.DESCRIPTOR,])
+  dependencies=[msg_dot_telemetry_dot_gps__pb2.DESCRIPTOR,msg_dot_telemetry_dot_attitude__pb2.DESCRIPTOR,msg_dot_telemetry_dot_battery__pb2.DESCRIPTOR,msg_dot_telemetry_dot_state__pb2.DESCRIPTOR,msg_dot_telemetry_dot_vfr__hud__pb2.DESCRIPTOR,msg_dot_telemetry_dot_heartbeat__pb2.DESCRIPTOR,])
 
 
 
@@ -54,7 +54,7 @@ _TELEMETRYENVELOPE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='imu', full_name='lynk.telemetry.TelemetryEnvelope.imu', index=2,
+      name='attitude', full_name='lynk.telemetry.TelemetryEnvelope.attitude', index=2,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -68,21 +68,21 @@ _TELEMETRYENVELOPE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='heartbeat', full_name='lynk.telemetry.TelemetryEnvelope.heartbeat', index=4,
+      name='state', full_name='lynk.telemetry.TelemetryEnvelope.state', index=4,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='barometer', full_name='lynk.telemetry.TelemetryEnvelope.barometer', index=5,
+      name='vfr_hud', full_name='lynk.telemetry.TelemetryEnvelope.vfr_hud', index=5,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='ping', full_name='lynk.telemetry.TelemetryEnvelope.ping', index=6,
+      name='heartbeat', full_name='lynk.telemetry.TelemetryEnvelope.heartbeat', index=6,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -103,34 +103,34 @@ _TELEMETRYENVELOPE = _descriptor.Descriptor(
       name='payload', full_name='lynk.telemetry.TelemetryEnvelope.payload',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=226,
-  serialized_end=523,
+  serialized_start=230,
+  serialized_end=534,
 )
 
 _TELEMETRYENVELOPE.fields_by_name['gps'].message_type = msg_dot_telemetry_dot_gps__pb2._GPS
-_TELEMETRYENVELOPE.fields_by_name['imu'].message_type = msg_dot_telemetry_dot_imu__pb2._IMU
+_TELEMETRYENVELOPE.fields_by_name['attitude'].message_type = msg_dot_telemetry_dot_attitude__pb2._ATTITUDE
 _TELEMETRYENVELOPE.fields_by_name['battery'].message_type = msg_dot_telemetry_dot_battery__pb2._BATTERY
+_TELEMETRYENVELOPE.fields_by_name['state'].message_type = msg_dot_telemetry_dot_state__pb2._STATE
+_TELEMETRYENVELOPE.fields_by_name['vfr_hud'].message_type = msg_dot_telemetry_dot_vfr__hud__pb2._VFRHUD
 _TELEMETRYENVELOPE.fields_by_name['heartbeat'].message_type = msg_dot_telemetry_dot_heartbeat__pb2._HEARTBEAT
-_TELEMETRYENVELOPE.fields_by_name['barometer'].message_type = msg_dot_telemetry_dot_barometer__pb2._BAROMETER
-_TELEMETRYENVELOPE.fields_by_name['ping'].message_type = msg_dot_telemetry_dot_ping__pb2._PING
 _TELEMETRYENVELOPE.oneofs_by_name['payload'].fields.append(
   _TELEMETRYENVELOPE.fields_by_name['gps'])
 _TELEMETRYENVELOPE.fields_by_name['gps'].containing_oneof = _TELEMETRYENVELOPE.oneofs_by_name['payload']
 _TELEMETRYENVELOPE.oneofs_by_name['payload'].fields.append(
-  _TELEMETRYENVELOPE.fields_by_name['imu'])
-_TELEMETRYENVELOPE.fields_by_name['imu'].containing_oneof = _TELEMETRYENVELOPE.oneofs_by_name['payload']
+  _TELEMETRYENVELOPE.fields_by_name['attitude'])
+_TELEMETRYENVELOPE.fields_by_name['attitude'].containing_oneof = _TELEMETRYENVELOPE.oneofs_by_name['payload']
 _TELEMETRYENVELOPE.oneofs_by_name['payload'].fields.append(
   _TELEMETRYENVELOPE.fields_by_name['battery'])
 _TELEMETRYENVELOPE.fields_by_name['battery'].containing_oneof = _TELEMETRYENVELOPE.oneofs_by_name['payload']
 _TELEMETRYENVELOPE.oneofs_by_name['payload'].fields.append(
+  _TELEMETRYENVELOPE.fields_by_name['state'])
+_TELEMETRYENVELOPE.fields_by_name['state'].containing_oneof = _TELEMETRYENVELOPE.oneofs_by_name['payload']
+_TELEMETRYENVELOPE.oneofs_by_name['payload'].fields.append(
+  _TELEMETRYENVELOPE.fields_by_name['vfr_hud'])
+_TELEMETRYENVELOPE.fields_by_name['vfr_hud'].containing_oneof = _TELEMETRYENVELOPE.oneofs_by_name['payload']
+_TELEMETRYENVELOPE.oneofs_by_name['payload'].fields.append(
   _TELEMETRYENVELOPE.fields_by_name['heartbeat'])
 _TELEMETRYENVELOPE.fields_by_name['heartbeat'].containing_oneof = _TELEMETRYENVELOPE.oneofs_by_name['payload']
-_TELEMETRYENVELOPE.oneofs_by_name['payload'].fields.append(
-  _TELEMETRYENVELOPE.fields_by_name['barometer'])
-_TELEMETRYENVELOPE.fields_by_name['barometer'].containing_oneof = _TELEMETRYENVELOPE.oneofs_by_name['payload']
-_TELEMETRYENVELOPE.oneofs_by_name['payload'].fields.append(
-  _TELEMETRYENVELOPE.fields_by_name['ping'])
-_TELEMETRYENVELOPE.fields_by_name['ping'].containing_oneof = _TELEMETRYENVELOPE.oneofs_by_name['payload']
 DESCRIPTOR.message_types_by_name['TelemetryEnvelope'] = _TELEMETRYENVELOPE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

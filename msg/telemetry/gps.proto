@@ -1,8 +1,36 @@
 syntax = "proto3";
+
 package lynk.telemetry;
 
 message Gps {
-  float lat = 1;
-  float lon = 2;
-  float alt = 3;
+
+  // Position (WGS84)
+  double lat = 1;        // degrees
+  double lon = 2;        // degrees
+  float  alt_m = 3;      // meters (MSL)
+  float  rel_alt_m = 4;  // meters above home (/mavros/global_position/rel_alt)
+
+  // Fix quality (MAVLink GPS_FIX_TYPE)
+  GpsFixType fix_type = 5;
+  uint32 sat_count = 6;  // satellites_visible
+
+  // Horizontal Dilution of Precision
+  float hdop = 7;        // gpsraw.eph / 100.0  (örn 1.21)
+
+  // Unix epoch time (ms)
+  uint64 timestamp_ms = 8;
+}
+
+
+// MAVLink GPS_FIX_TYPE (birebir uyumlu)
+enum GpsFixType {
+  GPS_FIX_NO_GPS    = 0;  // No GPS connected
+  GPS_FIX_NO_FIX    = 1;  // No position information
+  GPS_FIX_2D        = 2;  // 2D position
+  GPS_FIX_3D        = 3;  // 3D position
+  GPS_FIX_DGPS      = 4;  // DGPS / SBAS aided
+  GPS_FIX_RTK_FLOAT = 5;  // RTK Float
+  GPS_FIX_RTK_FIXED = 6;  // RTK Fixed
+  GPS_FIX_STATIC    = 7;  // Static (base station)
+  GPS_FIX_PPP       = 8;  // PPP solution
 }

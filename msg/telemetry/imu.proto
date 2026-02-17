@@ -1,8 +1,0 @@
-syntax = "proto3";
-package lynk.telemetry;
-
-message Imu {
-  float roll = 1;
-  float pitch = 2;
-  float yaw = 3;
-}

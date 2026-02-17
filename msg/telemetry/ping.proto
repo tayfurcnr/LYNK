@@ -1,6 +1,0 @@
-syntax = "proto3";
-package lynk.telemetry;
-
-message Ping {
-  uint32 sequence = 1;
-}

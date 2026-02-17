@@ -30,7 +30,7 @@ def test_adaptive_timeout_calculation(monkeypatch):
     interface = MockInterface()
     
     # 1. Simulate a node 4 hops away
-    set_device_data(src_id=10, data_type="heartbeat", data={"mode": 1}, team_id=0, hop_count=4)
+    set_device_data(src_id=10, data_type="state", data={"mode": 1}, team_id=0, hop_count=4)
     
     # 2. Send command to this node
     send_command(interface, "SYSTEM_REBOOT", dst=10, ack_timeout=2.0, wait_for_ack=True)

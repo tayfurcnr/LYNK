@@ -12,7 +12,6 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-import nanopb_pb2 as nanopb__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -20,9 +19,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lynk.telemetry',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x1dmsg/telemetry/heartbeat.proto\x12\x0elynk.telemetry\x1a\x0cnanopb.proto\"m\n\tHeartbeat\x12\x13\n\x04mode\x18\x01 \x01(\tB\x05\x92?\x02\x08 \x12\x15\n\x06health\x18\x02 \x01(\tB\x05\x92?\x02\x08 \x12\x10\n\x08is_armed\x18\x03 \x01(\x08\x12\x0f\n\x07gps_fix\x18\x04 \x01(\x08\x12\x11\n\tsat_count\x18\x05 \x01(\rb\x06proto3')
-  ,
-  dependencies=[nanopb__pb2.DESCRIPTOR,])
+  serialized_pb=_b('\n\x1dmsg/telemetry/heartbeat.proto\x12\x0elynk.telemetry\"3\n\tHeartbeat\x12\x10\n\x08sequence\x18\x01 \x01(\r\x12\x14\n\x0ctimestamp_ms\x18\x02 \x01(\x04\x62\x06proto3')
+)
 
 
 
@@ -35,36 +33,15 @@ _HEARTBEAT = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='mode', full_name='lynk.telemetry.Heartbeat.mode', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=_b('\222?\002\010 '), file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='health', full_name='lynk.telemetry.Heartbeat.health', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=_b('\222?\002\010 '), file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='is_armed', full_name='lynk.telemetry.Heartbeat.is_armed', index=2,
-      number=3, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='sequence', full_name='lynk.telemetry.Heartbeat.sequence', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='gps_fix', full_name='lynk.telemetry.Heartbeat.gps_fix', index=3,
-      number=4, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='sat_count', full_name='lynk.telemetry.Heartbeat.sat_count', index=4,
-      number=5, type=13, cpp_type=3, label=1,
+      name='timestamp_ms', full_name='lynk.telemetry.Heartbeat.timestamp_ms', index=1,
+      number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -81,8 +58,8 @@ _HEARTBEAT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=63,
-  serialized_end=172,
+  serialized_start=49,
+  serialized_end=100,
 )
 
 DESCRIPTOR.message_types_by_name['Heartbeat'] = _HEARTBEAT
@@ -96,6 +73,4 @@ Heartbeat = _reflection.GeneratedProtocolMessageType('Heartbeat', (_message.Mess
 _sym_db.RegisterMessage(Heartbeat)
 
 
-_HEARTBEAT.fields_by_name['mode']._options = None
-_HEARTBEAT.fields_by_name['health']._options = None
 # @@protoc_insertion_point(module_scope)

@@ -2,11 +2,11 @@ syntax = "proto3";
 package lynk.telemetry;
 
 import "msg/telemetry/gps.proto";
-import "msg/telemetry/imu.proto";
+import "msg/telemetry/attitude.proto";
 import "msg/telemetry/battery.proto";
+import "msg/telemetry/state.proto";
+import "msg/telemetry/vfr_hud.proto";
 import "msg/telemetry/heartbeat.proto";
-import "msg/telemetry/barometer.proto";
-import "msg/telemetry/ping.proto";
 
 message TelemetryEnvelope {
   // Telemetry ID'yi payload tag ile esliyoruz.
@@ -14,10 +14,10 @@ message TelemetryEnvelope {
   
   oneof payload {
     Gps gps = 1;
-    Imu imu = 2;
+    Attitude attitude = 2;
     Battery battery = 3;
-    Heartbeat heartbeat = 4;
-    Barometer barometer = 5;
-    Ping ping = 6;
+    State state = 4;
+    VfrHud vfr_hud = 5;
+    Heartbeat heartbeat = 6;
   }
 }

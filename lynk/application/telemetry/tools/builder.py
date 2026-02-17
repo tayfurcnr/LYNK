@@ -43,7 +43,12 @@ def build_tlm_frame(
 def build_tlm_gps(
     lat: float,
     lon: float,
-    alt: float,
+    alt_m: float,
+    rel_alt_m: float = 0.0,
+    fix_type: int = 3,
+    sat_count: int = 0,
+    hdop: float = 1.0,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: Optional[int] = None,
     team_id: Optional[int] = None
@@ -52,46 +57,56 @@ def build_tlm_gps(
     Build a GPS telemetry frame.
 
     Args:
-        lat (float): Latitude in decimal degrees.
-        lon (float): Longitude in decimal degrees.
-        alt (float): Altitude in meters.
+        lat (float): Latitude in decimal degrees (double precision).
+        lon (float): Longitude in decimal degrees (double precision).
+        alt_m (float): Altitude in meters (MSL).
+        rel_alt_m (float): Relative altitude above home in meters.
+        fix_type (int): GPS fix type (0-8).
+        sat_count (int): Satellites visible.
+        hdop (float): HDOP value.
+        timestamp_ms (int): Unix epoch time in ms.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
 
     Returns:
         bytes: Mesh frame containing serialized GPS data.
     """
-    return build_tlm_frame("GPS", [lat, lon, alt], dst, src, team_id=team_id)
+    params = [lat, lon, alt_m, rel_alt_m, fix_type, sat_count, hdop, timestamp_ms]
+    return build_tlm_frame("GPS", params, dst, src, team_id=team_id)
 
 
-def build_tlm_imu(
-    roll: float,
-    pitch: float,
-    yaw: float,
+
+def build_tlm_attitude(
+    roll_deg: float,
+    pitch_deg: float,
+    yaw_deg: float,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: Optional[int] = None,
     team_id: Optional[int] = None
 ) -> bytes:
     """
-    Build an IMU telemetry frame.
+    Build an Attitude telemetry frame.
 
     Args:
-        roll (float): Roll angle in degrees.
-        pitch (float): Pitch angle in degrees.
-        yaw (float): Yaw angle in degrees.
+        roll_deg (float): Roll angle in degrees.
+        pitch_deg (float): Pitch angle in degrees.
+        yaw_deg (float): Yaw angle in degrees.
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
 
     Returns:
-        bytes: Mesh frame containing serialized IMU data.
+        bytes: Mesh frame containing serialized attitude data.
     """
-    return build_tlm_frame("IMU", [roll, pitch, yaw], dst, src, team_id=team_id)
+    return build_tlm_frame("ATTITUDE", [roll_deg, pitch_deg, yaw_deg, timestamp_ms], dst, src, team_id=team_id)
 
 
 def build_tlm_battery(
-    voltage: float,
-    current: float,
-    level: float,
+    voltage_v: float,
+    current_a: float,
+    level_pct: float,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: Optional[int] = None,
     team_id: Optional[int] = None
@@ -100,89 +115,100 @@ def build_tlm_battery(
     Build a battery telemetry frame.
 
     Args:
-        voltage (float): Battery voltage in volts.
-        current (float): Current draw in amperes.
-        level (float): Remaining battery percentage (0.0–100.0).
+        voltage_v (float): Battery voltage in volts.
+        current_a (float): Current draw in amperes.
+        level_pct (float): Remaining battery percentage (0.0–100.0).
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
 
     Returns:
         bytes: Mesh frame containing serialized battery data.
     """
-    return build_tlm_frame("BATTERY", [voltage, current, level], dst, src, team_id=team_id)
+    return build_tlm_frame("BATTERY", [voltage_v, current_a, level_pct, timestamp_ms], dst, src, team_id=team_id)
 
 
-def build_tlm_heartbeat(
+def build_tlm_state(
     mode: str,
-    health: str,
     is_armed: bool,
-    gps_fix: bool,
-    sat_count: int,
+    connected: bool = True,
+    timestamp_ms: int = 0,
     dst: int = 0xFF,
     src: Optional[int] = None,
     team_id: Optional[int] = None
 ) -> bytes:
     """
-    Build a heartbeat telemetry frame conveying system status.
+    Build a state telemetry frame conveying vehicle status (MAVROS-aligned).
 
     Args:
-        mode (str): Flight mode identifier (e.g., "GUIDED").
-        health (str): Health status (e.g., "OK" or "WARN").
-        is_armed (bool): Whether the system is armed.
-        gps_fix (bool): GPS fix status.
-        sat_count (int): Number of satellites in view.
+        mode (str): Flight mode identifier (e.g., "STABILIZE", "GUIDED").
+        is_armed (bool): Whether the vehicle is armed.
+        connected (bool): FCU connection status (default: True).
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
+        dst (int, optional): Destination device ID.
+        src (int | None, optional): Source device ID.
+
+    Returns:
+        bytes: Mesh frame containing serialized state data.
+    """
+    return build_tlm_frame(
+        "STATE",
+        [mode, is_armed, connected, timestamp_ms],
+        dst,
+        src,
+        team_id=team_id
+    )
+
+
+def build_tlm_vfr_hud(
+    airspeed_ms: float,
+    groundspeed_ms: float,
+    heading_deg: float,
+    throttle: float,
+    alt_m: float,
+    climb_ms: float,
+    timestamp_ms: int = 0,
+    dst: int = 0xFF,
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
+) -> bytes:
+    """
+    Build a VFR_HUD telemetry frame (MAVROS-aligned).
+
+    Args:
+        airspeed_ms (float): Airspeed in m/s.
+        groundspeed_ms (float): Ground speed in m/s.
+        heading_deg (float): Heading in degrees (0-360).
+        throttle (float): Throttle percentage (0.0-1.0).
+        alt_m (float): Altitude in meters (MSL).
+        climb_ms (float): Climb rate in m/s.
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
+        dst (int, optional): Destination device ID.
+        src (int | None, optional): Source device ID.
+
+    Returns:
+        bytes: Mesh frame containing serialized VFR_HUD data.
+    """
+    params = [airspeed_ms, groundspeed_ms, heading_deg, throttle, alt_m, climb_ms, timestamp_ms]
+    return build_tlm_frame("VFR_HUD", params, dst, src, team_id=team_id)
+
+def build_tlm_heartbeat(
+    sequence: int,
+    timestamp_ms: int = 0,
+    dst: int = 0xFF,
+    src: Optional[int] = None,
+    team_id: Optional[int] = None
+) -> bytes:
+    """
+    Build a heartbeat telemetry frame.
+
+    Args:
+        sequence (int): A sequence number for the heartbeat.
+        timestamp_ms (int): Unix epoch timestamp in milliseconds.
         dst (int, optional): Destination device ID.
         src (int | None, optional): Source device ID.
 
     Returns:
         bytes: Mesh frame containing serialized heartbeat data.
     """
-    return build_tlm_frame(
-        "HEARTBEAT",
-        [mode, health, is_armed, gps_fix, sat_count],
-        dst,
-        src,
-        team_id=team_id
-    )
-
-def build_tlm_barometer(
-    vertical_speed: float,
-    ground_speed: float,
-    altitude_relative: float,
-    dst: int = 0xFF,
-    src: Optional[int] = None,
-    team_id: Optional[int] = None
-) -> bytes:
-    """
-    Build a barometer telemetry frame.
-
-    Args:
-        vertical_speed (float): Vertical speed in m/s.
-        ground speed (float): Ground speed of the vehicle in m/s.
-        altitude_relative (float): Altitude relative to home in meters.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-
-    Returns:
-        bytes: Mesh frame containing serialized barometer data.
-    """
-    return build_tlm_frame("BAROMETER", [vertical_speed, ground_speed, altitude_relative], dst, src, team_id=team_id)
-
-def build_tlm_ping(
-    sequence: int,
-    dst: int = 0xFF,
-    src: Optional[int] = None,
-    team_id: Optional[int] = None
-) -> bytes:
-    """
-    Build a ping telemetry frame.
-
-    Args:
-        sequence (int): A sequence number for the ping.
-        dst (int, optional): Destination device ID.
-        src (int | None, optional): Source device ID.
-
-    Returns:
-        bytes: Mesh frame containing serialized ping data.
-    """
-    return build_tlm_frame("PING", [sequence], dst, src, team_id=team_id)
+    return build_tlm_frame("HEARTBEAT", [sequence, timestamp_ms], dst, src, team_id=team_id)

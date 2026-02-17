@@ -41,8 +41,8 @@ def test_team_broadcast_ack():
     tracker = get_ack_tracker()
     
     # Node A (Team 1), Node B (Team 2)
-    set_device_data(src_id=10, data_type="heartbeat", data={"mode": 1}, team_id=1)
-    set_device_data(src_id=20, data_type="heartbeat", data={"mode": 1}, team_id=2)
+    set_device_data(src_id=10, data_type="state", data={"mode": 1}, team_id=1)
+    set_device_data(src_id=20, data_type="state", data={"mode": 1}, team_id=2)
     
     results_received = {}
     event = threading.Event()
@@ -70,8 +70,8 @@ def test_global_broadcast_ack():
     interface = MockInterface()
     tracker = get_ack_tracker()
     
-    set_device_data(src_id=10, data_type="heartbeat", data={"mode": 1}, team_id=1)
-    set_device_data(src_id=20, data_type="heartbeat", data={"mode": 1}, team_id=2)
+    set_device_data(src_id=10, data_type="state", data={"mode": 1}, team_id=1)
+    set_device_data(src_id=20, data_type="state", data={"mode": 1}, team_id=2)
     
     results_received = {}
     event = threading.Event()

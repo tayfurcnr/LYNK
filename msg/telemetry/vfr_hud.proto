@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package lynk.telemetry;
+
+message VfrHud {
+  float airspeed_ms = 1;      // m/s
+  float groundspeed_ms = 2;   // m/s
+  float heading_deg = 3;      // 0..360
+  float throttle = 4;         // 0.0..1.0 (normalized)
+  float alt_m = 5;            // MSL altitude
+  float climb_ms = 6;         // climb rate m/s
+
+  uint64 timestamp_ms = 7;
+}

@@ -30,8 +30,8 @@ def test_swarm_ack():
     
     # 1. Setup mock telemetry
     logger.info("Setting up mock topology: Node A (Team 1), Node B (Team 2)")
-    set_device_data(src_id=10, data_type="heartbeat", data={"mode": 1}, team_id=1)
-    set_device_data(src_id=20, data_type="heartbeat", data={"mode": 1}, team_id=2)
+    set_device_data(src_id=10, data_type="state", data={"mode": 1}, team_id=1)
+    set_device_data(src_id=20, data_type="state", data={"mode": 1}, team_id=2)
     
     def on_ack_received(results):
         logger.info(f"CALLBACK RECEIVED: {results}")

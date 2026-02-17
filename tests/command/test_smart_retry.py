@@ -38,8 +38,8 @@ def test_smart_retry_logic():
     tracker = get_ack_tracker()
     
     # Node A (10), Node B (20)
-    set_device_data(src_id=10, data_type="heartbeat", data={"mode": 1}, team_id=1)
-    set_device_data(src_id=20, data_type="heartbeat", data={"mode": 1}, team_id=1)
+    set_device_data(src_id=10, data_type="state", data={"mode": 1}, team_id=1)
+    set_device_data(src_id=20, data_type="state", data={"mode": 1}, team_id=1)
     
     results_received = {}
     event = threading.Event()

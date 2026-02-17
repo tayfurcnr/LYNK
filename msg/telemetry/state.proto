@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package lynk.telemetry;
+
+message State {
+
+  string mode = 1;        // STABILIZE, AUTO, GUIDED ...
+  bool is_armed = 2;      // MAVROS: State.armed
+  bool connected = 3;     // MAVROS: State.connected (FCU link)
+
+  // Unix epoch time (ms)
+  uint64 timestamp_ms = 4;
+}

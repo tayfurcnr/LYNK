@@ -21,7 +21,7 @@ def clear_cache_before_test():
 def test_set_and_get_data_with_timestamp():
     src_id = 1
     data_type = "gps"
-    payload = {"lat": 1.0, "lon": 2.0, "alt": 3.0}
+    payload = {"lat": 1.0, "lon": 2.0, "alt_m": 3.0}
 
     set_device_data(src_id, data_type, payload)
     result = get_device_data(src_id, data_type)
@@ -29,51 +29,52 @@ def test_set_and_get_data_with_timestamp():
     assert result is not None
     assert "timestamp" in result
     assert result["lat"] == 1.0
-    assert result["alt"] == 3.0
+    assert result["alt_m"] == 3.0
+
     assert isinstance(result["timestamp"], float)
 
 
 def test_overwrite_existing_entry():
     src_id = 42
     data_type = "battery"
-    old = {"voltage": 11.1}
-    new = {"voltage": 11.8}
+    old = {"voltage_v": 11.1}
+    new = {"voltage_v": 11.8}
 
     set_device_data(src_id, data_type, old)
     time.sleep(0.01)
     set_device_data(src_id, data_type, new)
 
     result = get_device_data(src_id, data_type)
-    assert result["voltage"] == 11.8
+    assert result["voltage_v"] == 11.8
     assert "timestamp" in result
 
 
 def test_get_unknown_returns_none():
-    assert get_device_data(999, "imu") is None
+    assert get_device_data(999, "attitude") is None
 
 
 def test_get_all_data_for_device():
     src_id = 7
     set_device_data(src_id, "gps", {"lat": 10})
-    set_device_data(src_id, "imu", {"roll": 1})
+    set_device_data(src_id, "attitude", {"roll_deg": 1})
 
     all_data = get_all_data_for_device(src_id)
     assert "gps" in all_data
-    assert "imu" in all_data
+    assert "attitude" in all_data
     assert all_data["gps"]["lat"] == 10
 
 
 def test_get_all_cached_data_structure():
     src_id = 123
-    set_device_data(src_id, "heartbeat", {"mode": "AUTO", "src_id": 999})
+    set_device_data(src_id, "state", {"mode": "AUTO", "src_id": 999})
 
     cached = get_all_cached_data()
     assert src_id in cached
     assert "team_id" in cached[src_id]
     assert "telemetry" in cached[src_id]
-    assert "heartbeat" in cached[src_id]["telemetry"]
+    assert "state" in cached[src_id]["telemetry"]
     # We no longer filter out src_id from the payload in get_all_cached_data for performance/simplicity
-    assert cached[src_id]["telemetry"]["heartbeat"]["src_id"] == 999
+    assert cached[src_id]["telemetry"]["state"]["src_id"] == 999
 
 
 def test_active_device_ids_detects_recent_data():
@@ -81,7 +82,7 @@ def test_active_device_ids_detects_recent_data():
     src_2 = 2
 
     # lynk_1 eski veri
-    set_device_data(src_1, "imu", {"x": 1})
+    set_device_data(src_1, "attitude", {"roll_deg": 1})
     time.sleep(1.1)  # lynk_1 eskidi
 
     # lynk_2 yeni veri

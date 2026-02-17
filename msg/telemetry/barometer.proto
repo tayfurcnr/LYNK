@@ -1,8 +1,0 @@
-syntax = "proto3";
-package lynk.telemetry;
-
-message Barometer {
-  float vertical_speed = 1;
-  float ground_speed = 2;
-  float altitude_relative = 3;
-}
