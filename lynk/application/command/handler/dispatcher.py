@@ -3,6 +3,7 @@ from lynk.application.command.serializer.dispatcher import deserialize_command
 from lynk.application.command.definitions import command_definitions
 from lynk.shared.log.logger import logger
 from lynk.application.command.handler.cache import get_cmd_idempotency_cache
+from lynk.application.command.tools.cache import attach_transaction_id_if_match
 
 def unknown(cmd_id: int, params: bytes, src_id: int, transaction_id: str = "", interface=None):
     logger.warning(f"[COMMAND] Unknown command ID {cmd_id} from SRC: {src_id} | Protobuf mapping missing.")
@@ -61,6 +62,11 @@ def handle_command(payload: bytes, frame_meta: dict, interface=None):
             )
             try:
                 cmd_def.handler(cmd_id, params, src_id, interface)
+                attached = attach_transaction_id_if_match(cmd_id, params, transaction_id)
+                if not attached:
+                    logger.debug(
+                        "[COMMAND] TX_ID attach skipped due to cache mismatch (possible concurrent update)."
+                    )
                 logger.debug(f"[COMMAND] HANDLED | CMD: {cmd_id} ({cmd_def.name})") # Confirm return
                 
                 # Automatically send success ACK if not already handled
