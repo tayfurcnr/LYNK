@@ -19,12 +19,21 @@ from lynk.shared.comm.interface_factory import create_interface
 
 # 3. Application Layers (Dispatchers & Caches)
 from lynk.application.telemetry.tools import dispatcher as telemetry
+from lynk.application.telemetry.tools import builder as telemetry_builder
 from lynk.application.telemetry.tools import cache as tlm_cache
 from lynk.application.telemetry.handler.dispatcher import handle_telemetry
 from lynk.application.command.tools import dispatcher as command
 from lynk.application.command.tools import cache as cmd_cache
+from lynk.application.command.definitions import command_definitions
+from lynk.application.ack.definitions import ack_definitions
+from lynk.application.ack.serializer.dispatcher import deserialize_ack
+from lynk.application.result.serializer.dispatcher import deserialize_result
 from lynk.application.event.tools import dispatcher as event
+from lynk.application.event.definitions import event_definitions
+from lynk.application.event.serializer.dispatcher import deserialize_event
 from lynk.application.mavlink.tools import dispatcher as mavlink
+from lynk.application.mavlink.serializer.dispatcher import deserialize_mavlink
+from lynk.application.mavlink.serializer.dispatcher import serialize_mavlink
 
 # 3a. MAVLink ROS Integration (optional, requires ROS)
 try:
@@ -48,11 +57,20 @@ __all__ = [
     "config",
     "create_interface",
     "telemetry",
+    "telemetry_builder",
     "tlm_cache",
     "command",
     "cmd_cache",
+    "command_definitions",
+    "ack_definitions",
+    "deserialize_ack",
+    "deserialize_result",
     "event",
+    "event_definitions",
+    "deserialize_event",
     "mavlink",
+    "deserialize_mavlink",
+    "serialize_mavlink",
     "ros",
     "codec",
     "router",
@@ -60,3 +78,12 @@ __all__ = [
     "process",
     "handle_telemetry"
 ]
+
+
+def __getattr__(name):
+    """Compatibility aliases for older/newer integration points."""
+    if name == "telemetry_builder":
+        from lynk.application.telemetry.tools import builder as _builder
+
+        return _builder
+    raise AttributeError(f"module 'lynk' has no attribute '{name}'")
