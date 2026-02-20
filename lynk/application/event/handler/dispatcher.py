@@ -4,6 +4,9 @@ from lynk.application.event.serializer.dispatcher import deserialize_event
 from lynk.application.event.definitions import event_definitions
 from lynk.shared.log.logger import logger
 
+GREEN_BOLD = "\033[92m\033[1m"
+RESET = "\033[0m"
+
 # Duplicate detection cache
 _received_events = {}  # (source_vehicle_id, tx_id, event_type, seq_num) -> timestamp_ms
 CACHE_TTL_MS = 60000
@@ -35,6 +38,7 @@ def handle_event(payload: bytes, frame_meta: dict, interface=None):
         
         # Source metadata now comes from mesh frame header in simplified envelope.
         source_vehicle_id = frame_meta.get("src_id")
+        dst_id = frame_meta.get("dst_id")
         frame_seq_num = frame_meta.get("seq_num")
         event_type = event_data.get("event_type")
         priority = int(event_data.get("priority", 0) or 0)
@@ -60,7 +64,7 @@ def handle_event(payload: bytes, frame_meta: dict, interface=None):
         event_def = event_definitions.get(event_type)
         if event_def:
             logger.info(
-                f"[EVENT] RECV | TYPE: {event_def.name} | SRC: {source_vehicle_id} | PRIORITY: {priority} | TX_ID: {tx_id}"
+                f"{GREEN_BOLD}[EVENT] RECV | TYPE: {event_def.name} | SRC: {source_vehicle_id} -> DST: {dst_id} | TX_ID: {tx_id}{RESET}"
             )
             try:
                 event_def.handler(event_type, event_data, source_vehicle_id, interface)

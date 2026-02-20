@@ -1,6 +1,9 @@
 from __future__ import annotations
 from lynk.shared.log.logger import logger
 
+GREEN_BOLD = "\033[92m\033[1m"
+RESET = "\033[0m"
+
 def default_handler(event_type: int, event_data: dict, src_id: int, interface=None):
     """Default handler for events without specific implementation."""
     logger.info(f"[EVENT] Default handler for event_type={event_type} from SRC={src_id}")
@@ -109,5 +112,16 @@ def crash_detected(event_type: int, event_data: dict, src_id: int, interface=Non
 def custom_event(event_type: int, event_data: dict, src_id: int, interface=None):
     """Handle custom event."""
     payload = event_data.get("payload", {})
-    event_name = payload.get("event_name", "")
-    logger.info(f"[EVENT] Custom event '{event_name}' from vehicle {src_id}")
+    details = dict(payload)
+    metadata = details.get("metadata")
+    if metadata is not None:
+        try:
+            details["metadata"] = dict(metadata)
+        except Exception:
+            details["metadata"] = str(metadata)
+    if "raw_data" in details and isinstance(details["raw_data"], (bytes, bytearray)):
+        details["raw_data_len"] = len(details["raw_data"])
+        details.pop("raw_data", None)
+    logger.info(
+        f"{GREEN_BOLD}[EVENT] CUSTOM_EVENT PARAMS: {details}{RESET}"
+    )
