@@ -13,6 +13,23 @@ CACHE_TTL_MS = 60000
 _last_cleanup = 0
 CLEANUP_INTERVAL_MS = 10000
 
+
+def _payload_for_log(payload: dict) -> dict:
+    if not isinstance(payload, dict):
+        return {}
+    data = dict(payload)
+    metadata = data.get("metadata")
+    if metadata is not None:
+        try:
+            data["metadata"] = dict(metadata)
+        except Exception:
+            data["metadata"] = str(metadata)
+    raw_data = data.get("raw_data")
+    if isinstance(raw_data, (bytes, bytearray)):
+        data["raw_data_len"] = len(raw_data)
+        data.pop("raw_data", None)
+    return data
+
 def cleanup_expired_events():
     """Periyodik cache temizliği"""
     now_ms = time.time() * 1000
@@ -63,8 +80,12 @@ def handle_event(payload: bytes, frame_meta: dict, interface=None):
         # Get event definition
         event_def = event_definitions.get(event_type)
         if event_def:
+            payload_log = _payload_for_log(event_data.get("payload", {}))
             logger.info(
                 f"{GREEN_BOLD}[EVENT] RECV | TYPE: {event_def.name} | SRC: {source_vehicle_id} -> DST: {dst_id} | TX_ID: {tx_id}{RESET}"
+            )
+            logger.info(
+                f"{GREEN_BOLD}[EVENT] {event_def.name} PARAMS: {payload_log}{RESET}"
             )
             try:
                 event_def.handler(event_type, event_data, source_vehicle_id, interface)

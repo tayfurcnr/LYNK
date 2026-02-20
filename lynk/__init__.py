@@ -23,6 +23,7 @@ from lynk.application.telemetry.tools import builder as telemetry_builder
 from lynk.application.telemetry.tools import cache as tlm_cache
 from lynk.application.telemetry.handler.dispatcher import handle_telemetry
 from lynk.application.command.tools import dispatcher as command
+from lynk.application.command.tools.dispatcher import get_command_schema
 from lynk.application.command.tools import cache as cmd_cache
 from lynk.application.command.definitions import command_definitions
 from lynk.application.ack.definitions import ack_definitions
@@ -61,6 +62,7 @@ __all__ = [
     "telemetry_builder",
     "tlm_cache",
     "command",
+    "get_command_schema",
     "cmd_cache",
     "command_definitions",
     "ack_definitions",

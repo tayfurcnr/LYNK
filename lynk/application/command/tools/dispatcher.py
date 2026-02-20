@@ -64,6 +64,35 @@ def get_tx_cmd_id(tx_id: str) -> Optional[int]:
     with _TX_LOCK:
         return _TX_CMD_ID_MAP.get(tx_id)
 
+
+def get_command_schema() -> Dict[int, Dict[str, Any]]:
+    """
+    Public command schema view for integrations.
+
+    Returns:
+        {
+          <cmd_id>: {
+            "name": "<COMMAND_NAME>",
+            "field_name": "<protobuf_field_name>",
+            "param_names": [ ... ]
+          },
+          ...
+        }
+    """
+    from lynk.application.command.serializer.dispatcher import _get_cmd_map
+
+    cmd_map = _get_cmd_map() or {}
+    schema: Dict[int, Dict[str, Any]] = {}
+    for cmd_id, value in cmd_map.items():
+        field_name, param_names = value
+        command_name = str(field_name or "").upper()
+        schema[int(cmd_id)] = {
+            "name": command_name,
+            "field_name": str(field_name or ""),
+            "param_names": [str(p) for p in (param_names or [])],
+        }
+    return schema
+
 def send_command(
     interface,
     command: str | int,

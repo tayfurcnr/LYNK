@@ -111,17 +111,4 @@ def crash_detected(event_type: int, event_data: dict, src_id: int, interface=Non
 
 def custom_event(event_type: int, event_data: dict, src_id: int, interface=None):
     """Handle custom event."""
-    payload = event_data.get("payload", {})
-    details = dict(payload)
-    metadata = details.get("metadata")
-    if metadata is not None:
-        try:
-            details["metadata"] = dict(metadata)
-        except Exception:
-            details["metadata"] = str(metadata)
-    if "raw_data" in details and isinstance(details["raw_data"], (bytes, bytearray)):
-        details["raw_data_len"] = len(details["raw_data"])
-        details.pop("raw_data", None)
-    logger.info(
-        f"{GREEN_BOLD}[EVENT] CUSTOM_EVENT PARAMS: {details}{RESET}"
-    )
+    return
