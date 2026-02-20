@@ -31,6 +31,7 @@ from lynk.application.result.serializer.dispatcher import deserialize_result
 from lynk.application.event.tools import dispatcher as event
 from lynk.application.event.definitions import event_definitions
 from lynk.application.event.serializer.dispatcher import deserialize_event
+from lynk.application.event.serializer.dispatcher import get_event_payload_schema
 from lynk.application.mavlink.tools import dispatcher as mavlink
 from lynk.application.mavlink.serializer.dispatcher import deserialize_mavlink
 from lynk.application.mavlink.serializer.dispatcher import serialize_mavlink
@@ -68,6 +69,7 @@ __all__ = [
     "event",
     "event_definitions",
     "deserialize_event",
+    "get_event_payload_schema",
     "mavlink",
     "deserialize_mavlink",
     "serialize_mavlink",

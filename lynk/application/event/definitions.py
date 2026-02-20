@@ -13,8 +13,8 @@ class EventDefinitionsDict(dict):
         if self._loaded:
             return
         
-        from lynk.application.event.serializer.dispatcher import _get_event_map
-        event_map = _get_event_map()
+        from lynk.application.event.serializer.dispatcher import get_event_payload_schema
+        event_map = get_event_payload_schema()
         
         for event_id, (field_name, _) in event_map.items():
             handler_func = getattr(handler, field_name, None)

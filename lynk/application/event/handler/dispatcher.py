@@ -5,7 +5,7 @@ from lynk.application.event.definitions import event_definitions
 from lynk.shared.log.logger import logger
 
 # Duplicate detection cache
-_received_events = {}  # (vehicle_id, boot_counter, sequence) -> timestamp_ms
+_received_events = {}  # (source_vehicle_id, tx_id, event_type, seq_num) -> timestamp_ms
 CACHE_TTL_MS = 60000
 _last_cleanup = 0
 CLEANUP_INTERVAL_MS = 10000
@@ -33,13 +33,13 @@ def handle_event(payload: bytes, frame_meta: dict, interface=None):
     try:
         event_data = deserialize_event(payload)
         
-        # Extract metadata
-        source_vehicle_id = event_data.get("source_vehicle_id")
-        boot_counter = event_data.get("boot_counter")
-        sequence = event_data.get("sequence")
+        # Source metadata now comes from mesh frame header in simplified envelope.
+        source_vehicle_id = frame_meta.get("src_id")
+        frame_seq_num = frame_meta.get("seq_num")
         event_type = event_data.get("event_type")
-        priority = event_data.get("priority")
-        timestamp_ms = event_data.get("timestamp_ms")
+        priority = int(event_data.get("priority", 0) or 0)
+        tx_id = str(event_data.get("transaction_id") or "")
+        timestamp_ms = int(time.time() * 1000)
         
         # Periyodik cleanup
         now_ms = time.time() * 1000
@@ -48,7 +48,7 @@ def handle_event(payload: bytes, frame_meta: dict, interface=None):
             _last_cleanup = now_ms
         
         # Duplicate check
-        event_key = (source_vehicle_id, boot_counter, sequence)
+        event_key = (source_vehicle_id, tx_id, event_type, frame_seq_num)
         if event_key in _received_events:
             logger.debug(f"[EVENT] Duplicate ignored: {event_key}")
             return
@@ -59,7 +59,9 @@ def handle_event(payload: bytes, frame_meta: dict, interface=None):
         # Get event definition
         event_def = event_definitions.get(event_type)
         if event_def:
-            logger.info(f"[EVENT] RECV | TYPE: {event_def.name} | SRC: {source_vehicle_id} | PRIORITY: {priority}")
+            logger.info(
+                f"[EVENT] RECV | TYPE: {event_def.name} | SRC: {source_vehicle_id} | PRIORITY: {priority} | TX_ID: {tx_id}"
+            )
             try:
                 event_def.handler(event_type, event_data, source_vehicle_id, interface)
                 logger.debug(f"[EVENT] STATIC HANDLER DONE | EVENT: {event_type}")

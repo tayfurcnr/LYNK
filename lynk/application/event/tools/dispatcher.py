@@ -1,6 +1,7 @@
 from __future__ import annotations
 import time
 from typing import Optional, Dict, Any
+from lynk.application.event.serializer.dispatcher import get_event_payload_schema as _get_event_payload_schema
 from lynk.application.event.serializer.dispatcher import serialize_event
 from lynk.core.frame_codec import build_mesh_frame, load_device_id
 from lynk.shared.log.logger import logger
@@ -13,6 +14,11 @@ _rate_limiters = {}  # priority -> (tokens, last_refill_time)
 _event_handlers: Dict[int, list] = {} # event_type -> list of callbacks
 
 RATE_LIMITS = {3: 10, 2: 5, 1: 2, 0: 1}  # CRITICAL: 10, HIGH: 5, NORMAL: 2, LOW: 1
+
+
+def get_event_payload_schema():
+    """Public accessor exposed via lynk.event namespace."""
+    return _get_event_payload_schema()
 
 def register_handler(event_type: int, callback: Any) -> None:
     """
@@ -79,9 +85,6 @@ def send_event(
     event_type: int,
     priority: int,
     payload_params: Optional[Dict[str, Any]] = None,
-    lat: Optional[float] = None,
-    lon: Optional[float] = None,
-    alt: Optional[float] = None,
     dst_id: int = 0xFF
 ):
     """
@@ -92,7 +95,6 @@ def send_event(
         event_type (int): Event type ID
         priority (int): Event priority (0=LOW, 1=NORMAL, 2=HIGH, 3=CRITICAL)
         payload_params (dict): Event-specific parameters
-        lat, lon, alt (float): Optional location
         dst_id (int): Destination ID (default: 0xFF broadcast)
     """
     # Rate limiting check
@@ -100,22 +102,14 @@ def send_event(
         return
     
     source_vehicle_id = load_device_id()
-    boot_counter = load_boot_counter()
-    sequence = get_next_sequence()
-    timestamp_ms = int(time.time() * 1000)
+    _ = load_boot_counter()
+    _ = get_next_sequence()
     
     # Serialize event
     event_payload = serialize_event(
-        source_vehicle_id=source_vehicle_id,
-        boot_counter=boot_counter,
-        sequence=sequence,
         event_type=event_type,
         priority=priority,
-        timestamp_ms=timestamp_ms,
         payload_params=payload_params,
-        lat=lat,
-        lon=lon,
-        alt=alt
     )
     
     # Build mesh frame

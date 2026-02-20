@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import MagicMock, patch
-import time
 from lynk.application.event.tools.dispatcher import send_event
 from lynk.core.frame_codec import parse_mesh_frame
 from lynk.core.frame_router import route_frame
@@ -56,12 +55,9 @@ def test_receive_event_dispatch():
     
     # Construct a valid event frame
     event_payload = serialize_event(
-        source_vehicle_id=10,
-        boot_counter=1,
-        sequence=1,
         event_type=EVENT_CUSTOM,
         priority=PRIORITY_HIGH,
-        timestamp_ms=int(time.time()*1000),
+        transaction_id="dispatch-test",
         payload_params={"event_name": "DISPATCH_TEST", "description": "Should trigger handler"}
     )
     
@@ -74,9 +70,12 @@ def test_receive_event_dispatch():
         "hop_count": 0
     }
     
-    # Mock the specific handler implementation
-    # We need to patch where it is IMPORTED or defined
-    with patch("lynk.application.event.handler.impl.custom_event") as mock_handler:
+    # Patch event definition lookup to inject a deterministic mock handler.
+    mock_handler = MagicMock()
+    mock_def = MagicMock()
+    mock_def.name = "CUSTOM_EVENT"
+    mock_def.handler = mock_handler
+    with patch("lynk.application.event.handler.dispatcher.event_definitions.get", return_value=mock_def):
         route_frame(frame_dict, interface=None)
         
         # Verify handler was called

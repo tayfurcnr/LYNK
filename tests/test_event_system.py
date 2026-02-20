@@ -1,5 +1,4 @@
 import pytest
-import time
 from lynk.application.event.serializer.dispatcher import serialize_event, deserialize_event
 from lynk.application.event.handler.dispatcher import handle_event
 from lynk.core.frame_codec import build_mesh_frame, parse_mesh_frame
@@ -20,12 +19,9 @@ def test_event_serialization_deserialization():
     """Test that an event can be serialized and deserialized correctly."""
     
     # Create test data
-    src_id = 10
-    boot_count = 5
-    seq = 100
     event_type = 20  # EVENT_QR_DETECTED (from enum)
-    priority = 1     # PRIORITY_NORMAL
-    ts = int(time.time() * 1000)
+    priority = 1
+    tx_id = "evt-test-1"
     
     payload_params = {
         "qr_code": "TEST-QR-123",
@@ -34,12 +30,9 @@ def test_event_serialization_deserialization():
     
     # Serialize
     raw_payload = serialize_event(
-        source_vehicle_id=src_id,
-        boot_counter=boot_count,
-        sequence=seq,
         event_type=event_type,
         priority=priority,
-        timestamp_ms=ts,
+        transaction_id=tx_id,
         payload_params=payload_params
     )
     
@@ -48,12 +41,9 @@ def test_event_serialization_deserialization():
     # Deserialize
     decoded = deserialize_event(raw_payload)
     
-    assert decoded["source_vehicle_id"] == src_id
-    assert decoded["boot_counter"] == boot_count
-    assert decoded["sequence"] == seq
     assert decoded["event_type"] == event_type
     assert decoded["priority"] == priority
-    assert decoded["timestamp_ms"] == ts
+    assert decoded["transaction_id"] == tx_id
     assert decoded["payload"]["qr_code"] == "TEST-QR-123"
     assert abs(decoded["payload"]["confidence"] - 0.95) < 0.001
 
@@ -62,12 +52,9 @@ def test_event_handler_duplicate_detection(mock_interface):
     
     # Prepare an event payload
     event_payload = serialize_event(
-        source_vehicle_id=1,
-        boot_counter=1,
-        sequence=50,
         event_type=20, # QR Detected
         priority=1,
-        timestamp_ms=123456789,
+        transaction_id="dup-test",
         payload_params={"qr_code": "DUP-TEST", "confidence": 1.0}
     )
     
@@ -96,12 +83,9 @@ def test_event_handler_duplicate_detection(mock_interface):
 def test_full_frame_flow():
     """Test wrapping event in mesh frame and parsing back."""
     event_payload = serialize_event(
-        source_vehicle_id=2,
-        boot_counter=1,
-        sequence=1,
         event_type=33, # EMERGENCY_CRASH
-        priority=3,    # CRITICAL
-        timestamp_ms=1000,
+        priority=3,
+        transaction_id="frame-flow",
         payload_params={"reason": 2, "altitude_m": 15.5, "battery_percent": 10, "last_error": "IMU_FAIL"}
     )
     

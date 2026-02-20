@@ -19,15 +19,9 @@ import "msg/event/crash_detected.proto";
 import "msg/event/custom_event.proto";
 
 message EventEnvelope {
-  uint32 source_vehicle_id = 1;
-  uint32 boot_counter = 2;
-  uint32 sequence = 3;
-  EventType event_type = 4;
-  EventPriority priority = 5;
-  uint64 timestamp_ms = 6;
-  float lat = 7;
-  float lon = 8;
-  float alt = 9;
+  EventType event_type = 1;
+  EventPriority priority = 2;
+  string transaction_id = 101;
   
   oneof payload {
     QrDetected qr_detected = 20;

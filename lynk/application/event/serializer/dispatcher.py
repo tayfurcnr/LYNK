@@ -55,30 +55,35 @@ def _get_event_map():
     logger.debug(f"[EVENT] Loaded {len(_EVENT_MAP)} events from Protobuf introspection")
     return _EVENT_MAP
 
+
+def get_event_payload_schema():
+    """
+    Public, stable accessor for event payload schema.
+
+    Returns:
+        dict[int, tuple[str, list[str]]]: event_type -> (oneof field name, payload field names)
+    """
+    event_map = _get_event_map()
+    # Return a detached copy so callers cannot mutate shared internal cache.
+    return {
+        int(event_id): (str(field_name), list(fields))
+        for event_id, (field_name, fields) in event_map.items()
+    }
+
 def serialize_event(
-    source_vehicle_id: int,
-    boot_counter: int,
-    sequence: int,
     event_type: int,
-    priority: int,
-    timestamp_ms: int,
+    priority: Optional[int] = None,
+    transaction_id: Optional[str] = None,
     payload_params: Optional[Dict[str, Any]] = None,
-    lat: Optional[float] = None,
-    lon: Optional[float] = None,
-    alt: Optional[float] = None
 ) -> bytes:
     """
     Serializes an event into a protobuf payload.
     
     Parameters:
-        source_vehicle_id (int): Event source vehicle ID
-        boot_counter (int): Persistent boot counter
-        sequence (int): Monotonic sequence within boot
         event_type (int): Event type ID (20-100)
-        priority (int): Event priority (0-3)
-        timestamp_ms (int): Event timestamp
+        priority (int): Optional event priority (0-3), defaults to 0
+        transaction_id (str): Optional transaction correlation id
         payload_params (dict): Event-specific parameters
-        lat, lon, alt (float): Optional location
         
     Returns:
         bytes: Serialized event
@@ -94,19 +99,9 @@ def serialize_event(
     event_pb = _get_pb()
     envelope = event_pb.EventEnvelope()
     
-    envelope.source_vehicle_id = source_vehicle_id
-    envelope.boot_counter = boot_counter
-    envelope.sequence = sequence
     envelope.event_type = event_type
-    envelope.priority = priority
-    envelope.timestamp_ms = timestamp_ms
-    
-    if lat is not None:
-        envelope.lat = lat
-    if lon is not None:
-        envelope.lon = lon
-    if alt is not None:
-        envelope.alt = alt
+    envelope.priority = int(priority or 0)
+    envelope.transaction_id = str(transaction_id or "")
     
     payload_msg = getattr(envelope, field_name)
     payload_msg.SetInParent()
@@ -121,7 +116,7 @@ def serialize_event(
                 setattr(payload_msg, key, val)
 
     data = envelope.SerializeToString()
-    logger.debug(f"[EVENT] SERIALIZED | TYPE: {event_type} | SRC: {source_vehicle_id} | SIZE={len(data)}B")
+    logger.debug(f"[EVENT] SERIALIZED | TYPE: {event_type} | TX_ID: {transaction_id} | SIZE={len(data)}B")
     return data
 
 def deserialize_event(payload: bytes) -> dict:
@@ -133,15 +128,9 @@ def deserialize_event(payload: bytes) -> dict:
         
     Returns:
         dict: {
-            "source_vehicle_id": int,
-            "boot_counter": int,
-            "sequence": int,
             "event_type": int,
             "priority": int,
-            "timestamp_ms": int,
-            "lat": float (optional),
-            "lon": float (optional),
-            "alt": float (optional),
+            "transaction_id": str,
             "payload": dict
         }
     """
@@ -158,22 +147,10 @@ def deserialize_event(payload: bytes) -> dict:
     which = envelope.WhichOneof("payload")
 
     result = {
-        "source_vehicle_id": envelope.source_vehicle_id,
-        "boot_counter": envelope.boot_counter,
-        "sequence": envelope.sequence,
         "event_type": event_type,
-        "priority": envelope.priority,
-        "timestamp_ms": envelope.timestamp_ms,
+        "priority": int(getattr(envelope, "priority", 0) or 0),
+        "transaction_id": str(getattr(envelope, "transaction_id", "") or ""),
     }
-    
-    # In proto3, scalar fields have default values (0.0 for float).
-    # We include them if they are non-zero or if we accept 0.0 as a valid coordinate.
-    # For simplicity, we just include them if they are present in the message (which they always are in proto3 object)
-    # but practically we might want to filter 0.0 if it means "not set".
-    # However, since we removed 'optional', they are always returned.
-    result["lat"] = envelope.lat
-    result["lon"] = envelope.lon
-    result["alt"] = envelope.alt
 
     if event_type not in event_map or not which:
         logger.warning(f"[EVENT] Unknown or unmapped event type: {event_type}")
@@ -184,6 +161,6 @@ def deserialize_event(payload: bytes) -> dict:
     msg = getattr(envelope, which)
     params = {key: getattr(msg, key) for key in field_list}
 
-    logger.debug(f"[EVENT] DESERIALIZED | TYPE: {event_type} | SRC: {envelope.source_vehicle_id}")
+    logger.debug(f"[EVENT] DESERIALIZED | TYPE: {event_type} | TX_ID: {result.get('transaction_id', '')}")
     result["payload"] = params
     return result
