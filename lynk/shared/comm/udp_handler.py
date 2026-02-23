@@ -63,7 +63,11 @@ class UDPHandler:
                                    socket.inet_aton(self.remote_ip),
                                    socket.inet_aton(self.local_ip))
                 self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-                self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+                self.sock.setsockopt(
+                    socket.IPPROTO_IP,
+                    socket.IP_MULTICAST_LOOP,
+                    1 if self.enable_loopback else 0,
+                )
             except Exception as e:
                 # Multicast might fail on some interfaces, log but continue
                 logger.warning(f"[UDPHandler] Multicast setup failed: {e}")
@@ -90,6 +94,8 @@ class UDPHandler:
         self.idle_sleep_sec  = float(udp_cfg.get("idle_sleep_sec", 0.001))
         # RX queue size (optional)
         self.rx_queue_size   = int(udp_cfg.get("rx_queue_size", 100))
+        # Allow self-receive on multicast only when explicitly enabled.
+        self.enable_loopback = bool(udp_cfg.get("enable_loopback", False))
 
     def start(self):
         if self.running:

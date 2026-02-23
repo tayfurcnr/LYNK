@@ -19,7 +19,7 @@ udp:
   local_port: 5001
   remote_ip: 239.1.2.3
   remote_port: 5001
-  enable_loopback: false
+  enable_loopback: true
   idle_sleep_sec: 0.0002
   rcvbuf_bytes: 16777216
   rx_queue_size: 75
@@ -38,7 +38,7 @@ security:
   enabled: true
   key: '9999999999999999999999999999999999999999999999999999999999999999'
 relay:
-  enabled: true
+  enabled: false
   max_hops: 2
   delay_ms: 10
   allowed_types:

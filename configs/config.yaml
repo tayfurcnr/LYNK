@@ -22,6 +22,7 @@ udp:
   idle_sleep_sec: 0.0002
   rcvbuf_bytes: 16777216
   rx_queue_size: 75
+  enable_loopback: true
 logging:
   enabled: true
   level: INFO
