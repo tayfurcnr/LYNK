@@ -3,4 +3,5 @@ package lynk.command;
 
 message SystemSetTeamId {
   uint32 team_id = 1;
+  bool persist = 2;
 }

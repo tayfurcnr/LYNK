@@ -25,13 +25,16 @@ def system_reboot(cmd_id, params, src_id, interface):
     _log_recv("[COMMAND] RECV | TYPE: SYSTEM_REBOOT")
     set_last_command(cmd_id, params, {})
 
-def _handle_vehicle_id_update(vehicle_id: int, cmd_id, params):
-    """Helper to update vehicle ID in config."""
+def _handle_vehicle_id_update(vehicle_id: int, cmd_id, params, persist: bool):
+    """Helper to update vehicle ID in runtime config and optionally persist."""
     from lynk.shared.config.manager import get_config, save_config
     get_config()["vehicle"]["id"] = vehicle_id
-    parsed = {"id": vehicle_id}
-    _log_recv(f"[COMMAND] RECV | TYPE: SYSTEM_SET_VEHICLE_ID | ID updated to: {vehicle_id}")
-    save_config()
+    parsed = {"id": vehicle_id, "persist": bool(persist)}
+    _log_recv(
+        f"[COMMAND] RECV | TYPE: SYSTEM_SET_VEHICLE_ID | ID updated to: {vehicle_id} | PERSIST: {bool(persist)}"
+    )
+    if persist:
+        save_config()
     set_last_command(cmd_id, params, parsed)
 
 def system_set_vehicle_id(cmd_id, params, src_id, interface):
@@ -40,20 +43,25 @@ def system_set_vehicle_id(cmd_id, params, src_id, interface):
         if vehicle_id is None:
             logger.warning("[COMMAND] INVALID PARAMS | CMD: SYSTEM_SET_VEHICLE_ID | vehicle_id missing")
             return
-        _handle_vehicle_id_update(vehicle_id, cmd_id, params)
+        persist = bool(params.get("persist", False))
+        _handle_vehicle_id_update(vehicle_id, cmd_id, params, persist)
     elif len(params) == 4:
         vehicle_id, = struct.unpack(">I", params)
-        _handle_vehicle_id_update(vehicle_id, cmd_id, params)
+        _handle_vehicle_id_update(vehicle_id, cmd_id, params, False)
+    elif len(params) == 5:
+        vehicle_id, persist = struct.unpack(">IB", params)
+        _handle_vehicle_id_update(vehicle_id, cmd_id, params, bool(persist))
     else:
         logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SYSTEM_SET_VEHICLE_ID | PRM LEN: {len(params)}")
 
-def _handle_team_id_update(team_id: int, cmd_id, params):
-    """Helper to update team ID in config."""
+def _handle_team_id_update(team_id: int, cmd_id, params, persist: bool):
+    """Helper to update team ID in runtime config and optionally persist."""
     from lynk.shared.config.manager import get_config, save_config
     get_config()["vehicle"]["team_id"] = team_id
-    parsed = {"team_id": team_id}
-    _log_recv(f"[COMMAND] RECV | TYPE: SYSTEM_SET_TEAM_ID | Team ID updated to: {team_id}")
-    save_config()
+    parsed = {"team_id": team_id, "persist": bool(persist)}
+    _log_recv(f"[COMMAND] RECV | TYPE: SYSTEM_SET_TEAM_ID | Team ID updated to: {team_id} | PERSIST: {bool(persist)}")
+    if persist:
+        save_config()
     set_last_command(cmd_id, params, parsed)
 
 def system_set_team_id(cmd_id, params, src_id, interface):
@@ -62,10 +70,14 @@ def system_set_team_id(cmd_id, params, src_id, interface):
         if team_id is None:
             logger.warning("[COMMAND] INVALID PARAMS | CMD: SYSTEM_SET_TEAM_ID | team_id missing")
             return
-        _handle_team_id_update(team_id, cmd_id, params)
+        persist = bool(params.get("persist", False))
+        _handle_team_id_update(team_id, cmd_id, params, persist)
     elif len(params) == 1:
         team_id, = struct.unpack(">B", params)
-        _handle_team_id_update(team_id, cmd_id, params)
+        _handle_team_id_update(team_id, cmd_id, params, False)
+    elif len(params) == 2:
+        team_id, persist = struct.unpack(">BB", params)
+        _handle_team_id_update(team_id, cmd_id, params, bool(persist))
     else:
         logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SYSTEM_SET_TEAM_ID | PRM LEN: {len(params)}")
 

@@ -626,6 +626,7 @@ def cmd_mission_control(
 def cmd_system_set_vehicle_id(
     interface: SendableInterface,
     id: int,
+    persist: bool = False,
     dst: int = 0xFF,
     src: Optional[int] = None,
     dst_team_id: Optional[int] = None,
@@ -637,6 +638,7 @@ def cmd_system_set_vehicle_id(
     send_command(
         interface, "SYSTEM_SET_VEHICLE_ID",
         vehicle_id=id,
+        persist=bool(persist),
         dst=dst,
         src=src,
         dst_team_id=dst_team_id,
@@ -649,6 +651,7 @@ def cmd_system_set_vehicle_id(
 def cmd_system_set_team_id(
     interface: SendableInterface,
     team_id: int,
+    persist: bool = False,
     dst: int = 0xFF,
     src: Optional[int] = None,
     dst_team_id: Optional[int] = None,
@@ -660,6 +663,7 @@ def cmd_system_set_team_id(
     send_command(
         interface, "SYSTEM_SET_TEAM_ID",
         team_id=team_id,
+        persist=bool(persist),
         dst=dst,
         src=src,
         dst_team_id=dst_team_id,

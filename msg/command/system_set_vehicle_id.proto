@@ -3,4 +3,5 @@ package lynk.command;
 
 message SystemSetVehicleId {
   uint32 vehicle_id = 1;
+  bool persist = 2;
 }

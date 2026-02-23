@@ -12,8 +12,8 @@ The Command module is the primary interface for triggering actions on remote nod
 | ID | Name | Parameters | Description |
 | :--- | :--- | :--- | :--- |
 | `0x01` | `SYSTEM_REBOOT` | None | Triggers system restart. |
-| `0x02` | `SYSTEM_SET_VEHICLE_ID`| `uint32 id` | Sets local node identifier. |
-| `0x03` | `SYSTEM_SET_TEAM_ID` | `uint32 team_id` | Sets team membership. |
+| `0x02` | `SYSTEM_SET_VEHICLE_ID`| `uint32 id, bool persist` | Sets local node identifier (`persist=true` writes config). |
+| `0x03` | `SYSTEM_SET_TEAM_ID` | `uint32 team_id, bool persist` | Sets team membership (`persist=true` writes config). |
 | `0x15` | `FLIGHT_SET_MODE` | `str mode` | E.g., "GUIDED", "LAND", "AUTO". |
 | `0x16` | `FLIGHT_ARMING` | `bool arm` | Arm (1) or Disarm (0) the platform. |
 | `0x17` | `FLIGHT_TAKEOFF` | `float alt` | Immediate climb to target altitude. |

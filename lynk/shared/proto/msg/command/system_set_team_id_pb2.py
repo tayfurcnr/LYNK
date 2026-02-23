@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lynk.command',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n$msg/command/system_set_team_id.proto\x12\x0clynk.command\"\"\n\x0fSystemSetTeamId\x12\x0f\n\x07team_id\x18\x01 \x01(\rb\x06proto3')
+  serialized_pb=_b('\n$msg/command/system_set_team_id.proto\x12\x0clynk.command\"3\n\x0fSystemSetTeamId\x12\x0f\n\x07team_id\x18\x01 \x01(\r\x12\x0f\n\x07persist\x18\x02 \x01(\x08\x62\x06proto3')
 )
 
 
@@ -39,6 +39,13 @@ _SYSTEMSETTEAMID = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='persist', full_name='lynk.command.SystemSetTeamId.persist', index=1,
+      number=2, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -52,7 +59,7 @@ _SYSTEMSETTEAMID = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=54,
-  serialized_end=88,
+  serialized_end=105,
 )
 
 DESCRIPTOR.message_types_by_name['SystemSetTeamId'] = _SYSTEMSETTEAMID
