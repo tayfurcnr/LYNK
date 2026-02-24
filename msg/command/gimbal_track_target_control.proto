@@ -1,0 +1,13 @@
+syntax = "proto3";
+package lynk.command;
+
+import "msg/command/command_enums.proto";
+
+message GimbalTrackTargetControl {
+  bool enable = 1;
+  StreamType video_type = 2;
+  uint32 x0 = 3;
+  uint32 y0 = 4;
+  uint32 x1 = 5;
+  uint32 y1 = 6;
+}

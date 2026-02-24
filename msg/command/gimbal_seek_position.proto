@@ -1,0 +1,10 @@
+syntax = "proto3";
+package lynk.command;
+
+message GimbalSeekPosition {
+  float target_yaw = 1;
+  float target_pitch = 2;
+  float target_roll = 3;
+  uint32 speed = 4;
+  float tolerance = 5;
+}

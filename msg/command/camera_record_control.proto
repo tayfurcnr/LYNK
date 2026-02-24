@@ -1,0 +1,6 @@
+syntax = "proto3";
+package lynk.command;
+
+message CameraRecordControl {
+  bool enable = 1;
+}

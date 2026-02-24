@@ -22,6 +22,21 @@ import "msg/command/swarm_set_formation_type.proto";
 import "msg/command/swarm_set_spacing.proto";
 import "msg/command/swarm_set_altitude_offset.proto";
 import "msg/command/swarm_set_status.proto";
+import "msg/command/gimbal_set_mode.proto";
+import "msg/command/gimbal_set_attitude.proto";
+import "msg/command/gimbal_set_velocity.proto";
+import "msg/command/gimbal_stop.proto";
+import "msg/command/gimbal_home.proto";
+import "msg/command/gimbal_track_target_control.proto";
+import "msg/command/gimbal_seek_position.proto";
+import "msg/command/gimbal_calibrate.proto";
+import "msg/command/camera_take_photo.proto";
+import "msg/command/camera_record_control.proto";
+import "msg/command/camera_set_digital_zoom.proto";
+import "msg/command/camera_set_white_balance.proto";
+import "msg/command/thermal_set_false_color.proto";
+import "msg/command/camera_stream_control.proto";
+import "msg/command/gimbal_get_sd_capacity.proto";
 
 message CommandEnvelope {
   // Command ID'yi payload ID ile uyumlu olmasi icin 1-1 esliyoruz.
@@ -54,5 +69,22 @@ message CommandEnvelope {
     SwarmSetSpacing swarm_set_spacing = 64; // 0x40
     SwarmSetAltitudeOffset swarm_set_altitude_offset = 65; // 0x41
     SwarmSetStatus swarm_set_status = 66; // 0x42
+
+    // Gimbal / Camera commands
+    GimbalSetMode gimbal_set_mode = 81; // 0x51
+    GimbalSetAttitude gimbal_set_attitude = 82; // 0x52
+    GimbalSetVelocity gimbal_set_velocity = 83; // 0x53
+    GimbalStop gimbal_stop = 84; // 0x54
+    GimbalHome gimbal_home = 85; // 0x55
+    GimbalTrackTargetControl gimbal_track_target_control = 86; // 0x56
+    GimbalSeekPosition gimbal_seek_position = 88; // 0x58
+    GimbalCalibrate gimbal_calibrate = 89; // 0x59
+    CameraTakePhoto camera_take_photo = 90; // 0x5A
+    CameraRecordControl camera_record_control = 91; // 0x5B
+    CameraSetDigitalZoom camera_set_digital_zoom = 93; // 0x5D
+    CameraSetWhiteBalance camera_set_white_balance = 94; // 0x5E
+    ThermalSetFalseColor thermal_set_false_color = 95; // 0x5F
+    CameraStreamControl camera_stream_control = 96; // 0x60
+    GimbalGetSdCapacity gimbal_get_sd_capacity = 98; // 0x62
   }
 }

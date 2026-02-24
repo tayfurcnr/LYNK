@@ -496,3 +496,101 @@ def swarm_set_status(cmd_id, params, src_id, interface):
             logger.warning(f"[COMMAND] INVALID PARAMS | CMD: SWARM_SET_STATUS | Could not decode status string")
     else:
         logger.warning("[COMMAND] INVALID PARAMS | CMD: SWARM_SET_STATUS")
+
+
+def _handle_dict_command(cmd_id, params, cmd_name: str, required_keys=None):
+    if not _is_dict_params(params):
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: {cmd_name} | expected dict, got {type(params).__name__}")
+        return
+    required_keys = required_keys or []
+    missing = [k for k in required_keys if params.get(k) is None]
+    if missing:
+        logger.warning(f"[COMMAND] INVALID PARAMS | CMD: {cmd_name} | missing: {missing}")
+        return
+    parsed = dict(params)
+    _log_recv(f"[COMMAND] RECV | TYPE: {cmd_name} | PARAMS: {parsed}")
+    set_last_command(cmd_id, params, parsed)
+
+
+def gimbal_set_mode(cmd_id, params, src_id, interface):
+    _handle_dict_command(cmd_id, params, "GIMBAL_SET_MODE", required_keys=["mode"])
+
+
+def gimbal_set_attitude(cmd_id, params, src_id, interface):
+    _handle_dict_command(
+        cmd_id, params, "GIMBAL_SET_ATTITUDE", required_keys=["yaw_deg", "pitch_deg", "roll_deg", "speed"]
+    )
+
+
+def gimbal_set_velocity(cmd_id, params, src_id, interface):
+    _handle_dict_command(
+        cmd_id, params, "GIMBAL_SET_VELOCITY", required_keys=["yaw_rate_dps", "pitch_rate_dps", "roll_rate_dps"]
+    )
+
+
+def gimbal_stop(cmd_id, params, src_id, interface):
+    _log_recv("[COMMAND] RECV | TYPE: GIMBAL_STOP")
+    set_last_command(cmd_id, params, {})
+
+
+def gimbal_home(cmd_id, params, src_id, interface):
+    _log_recv("[COMMAND] RECV | TYPE: GIMBAL_HOME")
+    set_last_command(cmd_id, params, {})
+
+
+def gimbal_track_target_control(cmd_id, params, src_id, interface):
+    if not _is_dict_params(params):
+        logger.warning("[COMMAND] INVALID PARAMS | CMD: GIMBAL_TRACK_TARGET_CONTROL | expected dict")
+        return
+    if params.get("enable") is None:
+        logger.warning("[COMMAND] INVALID PARAMS | CMD: GIMBAL_TRACK_TARGET_CONTROL | missing: ['enable']")
+        return
+    if bool(params.get("enable")):
+        required_when_enabled = ["video_type", "x0", "y0", "x1", "y1"]
+        missing = [k for k in required_when_enabled if params.get(k) is None]
+        if missing:
+            logger.warning(f"[COMMAND] INVALID PARAMS | CMD: GIMBAL_TRACK_TARGET_CONTROL | missing: {missing}")
+            return
+    parsed = dict(params)
+    _log_recv(f"[COMMAND] RECV | TYPE: GIMBAL_TRACK_TARGET_CONTROL | PARAMS: {parsed}")
+    set_last_command(cmd_id, params, parsed)
+
+
+def gimbal_seek_position(cmd_id, params, src_id, interface):
+    _handle_dict_command(
+        cmd_id, params, "GIMBAL_SEEK_POSITION", required_keys=["target_yaw", "target_pitch", "target_roll", "speed", "tolerance"]
+    )
+
+
+def gimbal_calibrate(cmd_id, params, src_id, interface):
+    _handle_dict_command(cmd_id, params, "GIMBAL_CALIBRATE", required_keys=["calibration_type"])
+
+
+def camera_take_photo(cmd_id, params, src_id, interface):
+    _log_recv("[COMMAND] RECV | TYPE: CAMERA_TAKE_PHOTO")
+    set_last_command(cmd_id, params, {})
+
+
+def camera_record_control(cmd_id, params, src_id, interface):
+    _handle_dict_command(cmd_id, params, "CAMERA_RECORD_CONTROL", required_keys=["enable"])
+
+
+def camera_set_digital_zoom(cmd_id, params, src_id, interface):
+    _handle_dict_command(cmd_id, params, "CAMERA_SET_DIGITAL_ZOOM", required_keys=["level"])
+
+
+def camera_set_white_balance(cmd_id, params, src_id, interface):
+    _handle_dict_command(cmd_id, params, "CAMERA_SET_WHITE_BALANCE", required_keys=["mode"])
+
+
+def thermal_set_false_color(cmd_id, params, src_id, interface):
+    _handle_dict_command(cmd_id, params, "THERMAL_SET_FALSE_COLOR", required_keys=["palette"])
+
+
+def camera_stream_control(cmd_id, params, src_id, interface):
+    _handle_dict_command(cmd_id, params, "CAMERA_STREAM_CONTROL", required_keys=["stream_type", "enable"])
+
+
+def gimbal_get_sd_capacity(cmd_id, params, src_id, interface):
+    _log_recv("[COMMAND] RECV | TYPE: GIMBAL_GET_SD_CAPACITY")
+    set_last_command(cmd_id, params, {})

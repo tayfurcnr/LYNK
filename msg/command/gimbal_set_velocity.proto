@@ -1,0 +1,8 @@
+syntax = "proto3";
+package lynk.command;
+
+message GimbalSetVelocity {
+  float yaw_rate_dps = 1;
+  float pitch_rate_dps = 2;
+  float roll_rate_dps = 3;
+}

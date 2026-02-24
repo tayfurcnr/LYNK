@@ -10,36 +10,10 @@ Defines high‐level command functions that build and send specific command fram
 over a communication interface, while logging each action.
 """
 
-import struct
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, Optional, Protocol
 
-from lynk.application.command.tools.builder import (
-    build_cmd_system_reboot,
-    build_cmd_flight_set_mode,
-    build_cmd_flight_takeoff,
-    build_cmd_flight_goto,
-    build_cmd_flight_set_speed,
-    build_cmd_flight_set_altitude,
-    build_cmd_flight_set_heading,
-    build_cmd_flight_set_home,
-    build_cmd_flight_set_roi,
-    build_cmd_flight_land,
-    build_cmd_flight_arming,
-    build_cmd_system_set_vehicle_id,
-    build_cmd_system_set_team_id,
-    build_cmd_mission_upload, 
-    build_cmd_mission_control,
-    build_cmd_swarm_formation_execute,
-    build_cmd_swarm_set_leader,
-    build_cmd_swarm_set_formation_type,
-    build_cmd_swarm_set_spacing,
-    build_cmd_swarm_set_altitude_offset,
-    build_cmd_swarm_set_status
-)
 from lynk.shared.comm.transmitter import send_frame
 from lynk.shared.log.logger import logger
-from lynk.application.ack.tools.dispatcher import send_ack_ok, send_ack_invalid_cmd
-from lynk.application.command.tools.cache import set_last_command
 
 _TX_CMD_MAP: Dict[str, str] = {}
 _TX_CMD_ID_MAP: Dict[str, int] = {}
@@ -227,12 +201,14 @@ def send_command(
     )
     logger.debug(f"[COMMAND] Dispatching {field_name.upper()} | TX_ID: {final_tx_id} | WAIT={wait_for_ack}")
 
-    if wait_for_ack and tracker_registered:
-        # Block until the completion event is set by the (potentially recursive) callback
-        total_max_wait = adjusted_timeout + (max_retries * retry_interval) + 1.0
-        finished = completion_event.wait(timeout=total_max_wait)
-        if not finished:
-            logger.warning(f"[COMMAND] wait_for_ack timed out after {total_max_wait}s")
+    if wait_for_ack:
+        if tracker_registered:
+            # Block until the completion event is set by the (potentially recursive) callback
+            total_max_wait = adjusted_timeout + (max_retries * retry_interval) + 1.0
+            finished = completion_event.wait(timeout=total_max_wait)
+            if not finished:
+                logger.warning(f"[COMMAND] wait_for_ack timed out after {total_max_wait}s")
+        # Keep return type stable for callers when wait_for_ack=True.
         return _accumulated_results
 
     return None
@@ -816,3 +792,63 @@ def cmd_swarm_set_status(
         max_retries=max_retries,
         **kwargs
     )
+
+
+def cmd_gimbal_set_mode(interface: SendableInterface, mode: int, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "GIMBAL_SET_MODE", mode=int(mode), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_gimbal_set_attitude(interface: SendableInterface, yaw_deg: float, pitch_deg: float, roll_deg: float, speed: int, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "GIMBAL_SET_ATTITUDE", yaw_deg=float(yaw_deg), pitch_deg=float(pitch_deg), roll_deg=float(roll_deg), speed=int(speed), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_gimbal_set_velocity(interface: SendableInterface, yaw_rate_dps: float, pitch_rate_dps: float, roll_rate_dps: float, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "GIMBAL_SET_VELOCITY", yaw_rate_dps=float(yaw_rate_dps), pitch_rate_dps=float(pitch_rate_dps), roll_rate_dps=float(roll_rate_dps), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_gimbal_stop(interface: SendableInterface, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "GIMBAL_STOP", dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_gimbal_home(interface: SendableInterface, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "GIMBAL_HOME", dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_gimbal_track_target_control(interface: SendableInterface, enable: bool, video_type: int = 0, x0: int = 0, y0: int = 0, x1: int = 0, y1: int = 0, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "GIMBAL_TRACK_TARGET_CONTROL", enable=bool(enable), video_type=int(video_type), x0=int(x0), y0=int(y0), x1=int(x1), y1=int(y1), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_gimbal_seek_position(interface: SendableInterface, target_yaw: float, target_pitch: float, target_roll: float, speed: int, tolerance: float, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "GIMBAL_SEEK_POSITION", target_yaw=float(target_yaw), target_pitch=float(target_pitch), target_roll=float(target_roll), speed=int(speed), tolerance=float(tolerance), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_gimbal_calibrate(interface: SendableInterface, calibration_type: int, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "GIMBAL_CALIBRATE", calibration_type=int(calibration_type), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_camera_take_photo(interface: SendableInterface, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "CAMERA_TAKE_PHOTO", dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_camera_record_control(interface: SendableInterface, enable: bool, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "CAMERA_RECORD_CONTROL", enable=bool(enable), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_camera_set_digital_zoom(interface: SendableInterface, level: int, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "CAMERA_SET_DIGITAL_ZOOM", level=int(level), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_camera_set_white_balance(interface: SendableInterface, mode: int, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "CAMERA_SET_WHITE_BALANCE", mode=int(mode), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_thermal_set_false_color(interface: SendableInterface, palette: int, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "THERMAL_SET_FALSE_COLOR", palette=int(palette), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_camera_stream_control(interface: SendableInterface, stream_type: int, enable: bool, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "CAMERA_STREAM_CONTROL", stream_type=int(stream_type), enable=bool(enable), dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)
+
+
+def cmd_gimbal_get_sd_capacity(interface: SendableInterface, dst: int = 0xFF, src: Optional[int] = None, dst_team_id: Optional[int] = None, transaction_id: str = "", wait_for_ack: bool = False, max_retries: int = 0, **kwargs) -> None:
+    send_command(interface, "GIMBAL_GET_SD_CAPACITY", dst=dst, src=src, dst_team_id=dst_team_id, transaction_id=transaction_id, wait_for_ack=wait_for_ack, max_retries=max_retries, **kwargs)

@@ -1,0 +1,6 @@
+syntax = "proto3";
+package lynk.command;
+
+message GimbalCalibrate {
+  uint32 calibration_type = 1;
+}

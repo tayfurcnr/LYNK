@@ -1,0 +1,8 @@
+syntax = "proto3";
+package lynk.command;
+
+import "msg/command/command_enums.proto";
+
+message ThermalSetFalseColor {
+  FalseColorPalette palette = 1;
+}

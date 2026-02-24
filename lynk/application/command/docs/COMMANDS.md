@@ -22,6 +22,21 @@ The Command module is the primary interface for triggering actions on remote nod
 | `0x1E` | `FLIGHT_LAND` | None | Land at current location. |
 | `0x29` | `MISSION_UPLOAD` | `JSON` | Upload bulk waypoint or mission data. |
 | `0x2A` | `MISSION_CONTROL` | `JSON` | START, PAUSE, or ABORT active mission. |
+| `0x51` | `GIMBAL_SET_MODE` | `uint32 mode` | Set gimbal mode (follow/lock/follow_lock). |
+| `0x52` | `GIMBAL_SET_ATTITUDE` | `yaw_deg, pitch_deg, roll_deg, speed` | Set target gimbal attitude with speed. |
+| `0x53` | `GIMBAL_SET_VELOCITY` | `yaw_rate_dps, pitch_rate_dps, roll_rate_dps` | Continuous gimbal rate control. |
+| `0x54` | `GIMBAL_STOP` | None | Emergency stop gimbal motion. |
+| `0x55` | `GIMBAL_HOME` | None | Return gimbal to home position. |
+| `0x56` | `GIMBAL_TRACK_TARGET_CONTROL` | `enable, video_type, x0, y0, x1, y1` | `enable=true`: start tracking with bbox, `enable=false`: stop tracking. |
+| `0x58` | `GIMBAL_SEEK_POSITION` | `target_yaw, target_pitch, target_roll, speed, tolerance` | Seek to target gimbal orientation. |
+| `0x59` | `GIMBAL_CALIBRATE` | `uint32 calibration_type` | Trigger gimbal calibration routine. |
+| `0x5A` | `CAMERA_TAKE_PHOTO` | None | Capture single photo. |
+| `0x5B` | `CAMERA_RECORD_CONTROL` | `bool enable` | `enable=true`: start recording, `enable=false`: stop recording. |
+| `0x5D` | `CAMERA_SET_DIGITAL_ZOOM` | `uint32 level` | Set zoom level / incremental zoom command. |
+| `0x5E` | `CAMERA_SET_WHITE_BALANCE` | `uint32 mode` | Set RGB white balance mode. |
+| `0x5F` | `THERMAL_SET_FALSE_COLOR` | `uint32 palette` | Set thermal false-color palette. |
+| `0x60` | `CAMERA_STREAM_CONTROL` | `stream_type, enable` | Start/stop RGB or thermal stream. |
+| `0x62` | `GIMBAL_GET_SD_CAPACITY` | None | Query SD capacity (result/event layer integration required). |
 
 ## 🛠 Extension Procedure
 
