@@ -18,12 +18,15 @@ class EventDefinitionsDict(dict):
         
         for event_id, (field_name, _) in event_map.items():
             handler_func = getattr(handler, field_name, None)
+            name = field_name.upper()
             
             if not handler_func:
-                handler_func = handler.default_handler
+                handler_func = (
+                    lambda eid, event_data, src_id, interface=None, _name=name:
+                    handler.default_handler(eid, event_data, src_id, interface, event_name=_name)
+                )
                 logger.debug(f"[EVENT] Using default_handler for event '{field_name}' (ID: {event_id})")
             
-            name = field_name.upper()
             self[event_id] = EventDefinition(event_id, name, handler_func)
         
         self._loaded = True

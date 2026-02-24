@@ -13,13 +13,22 @@ import json
 def _is_dict_params(params) -> bool:
     return isinstance(params, dict)
 
-def default_handler(cmd_id: int, params: dict | bytes, src_id: int, interface):
+def default_handler(cmd_id: int, params: dict | bytes, src_id: int, interface, cmd_name: str = ""):
     """
     Default command handler for commands without a specific implementation.
     Acknowledge the command and log for bridge forwarding.
     """
-    _log_recv(f"[COMMAND] RECV | GOTO BRIDGE | CMD_ID: {cmd_id} from SRC: {src_id}")
-    set_last_command(cmd_id, params, params if isinstance(params, dict) else {})
+    label = (cmd_name or f"CMD_ID:{cmd_id}").upper()
+    if isinstance(params, dict):
+        parsed = dict(params)
+        _log_recv(f"[COMMAND] RECV | TYPE: {label} | PARAMS: {parsed}")
+    elif isinstance(params, (bytes, bytearray)):
+        parsed = {"raw_params_hex": bytes(params).hex()}
+        _log_recv(f"[COMMAND] RECV | TYPE: {label} | RAW_HEX: {parsed['raw_params_hex']}")
+    else:
+        parsed = {}
+        _log_recv(f"[COMMAND] RECV | TYPE: {label}")
+    set_last_command(cmd_id, params, parsed)
 
 def system_reboot(cmd_id, params, src_id, interface):
     _log_recv("[COMMAND] RECV | TYPE: SYSTEM_REBOOT")

@@ -4,10 +4,12 @@ from lynk.shared.log.logger import logger
 GREEN_BOLD = "\033[92m\033[1m"
 RESET = "\033[0m"
 
-def default_handler(event_type: int, event_data: dict, src_id: int, interface=None):
+def default_handler(event_type: int, event_data: dict, src_id: int, interface=None, event_name: str = ""):
     """Default handler for events without specific implementation."""
-    logger.info(f"[EVENT] Default handler for event_type={event_type} from SRC={src_id}")
-    logger.debug(f"[EVENT] Event data: {event_data}")
+    label = (event_name or f"EVENT_TYPE:{event_type}").upper()
+    payload = event_data.get("payload", {}) if isinstance(event_data, dict) else {}
+    logger.info(f"[EVENT] RECV | TYPE: {label} | SRC: {src_id}")
+    logger.info(f"[EVENT] {label} PARAMS: {payload}")
 
 # Detection Events
 def qr_detected(event_type: int, event_data: dict, src_id: int, interface=None):
