@@ -41,6 +41,8 @@ def build_cmd_frame(
     return build_mesh_frame('C', source, dst, payload, team_id=team_id)
 
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
+# The dispatcher calls build_cmd_frame directly for better flexibility.
 def build_cmd_system_reboot(
     dst: int,
     src: Optional[int] = None,
@@ -60,6 +62,7 @@ def build_cmd_system_reboot(
     return build_cmd_frame(0x01, dst=dst, src=src, team_id=team_id, transaction_id=transaction_id)
 
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_set_mode(
     mode: str,
     dst: int,
@@ -81,6 +84,7 @@ def build_cmd_flight_set_mode(
     return build_cmd_frame(0x15, {"mode": mode}, dst, src, team_id=team_id, transaction_id=transaction_id)
 
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_takeoff(
     altitude_m: float,
     min_pitch_deg: Optional[float] = None,
@@ -108,6 +112,7 @@ def build_cmd_flight_takeoff(
     return build_cmd_frame(0x17, params, dst, src, team_id=team_id, transaction_id=transaction_id)
 
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_land(
     mode: int = 0,
     target_lat: Optional[float] = None,
@@ -131,6 +136,7 @@ def build_cmd_flight_land(
     }
     return build_cmd_frame(0x1E, params, dst, src, team_id=team_id, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_goto(
     lat: float,
     lon: float,
@@ -153,6 +159,7 @@ def build_cmd_flight_goto(
     params = {"lat": lat, "lon": lon, "alt": alt, "alt_ref": alt_ref if alt_ref is not None else 0}
     return build_cmd_frame(0x18, params, dst, src, team_id=team_id, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_set_speed(
     speed_mps: float,
     scope: Optional[int] = None,
@@ -164,6 +171,7 @@ def build_cmd_flight_set_speed(
     params = {"speed_mps": speed_mps, "scope": scope if scope is not None else 0}
     return build_cmd_frame(0x19, params, dst, src, team_id=team_id, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_set_altitude(
     alt_m: float,
     alt_ref: Optional[int] = None,
@@ -175,6 +183,7 @@ def build_cmd_flight_set_altitude(
     params = {"alt_m": alt_m, "alt_ref": alt_ref if alt_ref is not None else 0}
     return build_cmd_frame(0x1A, params, dst, src, team_id=team_id, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_set_heading(
     mode: int,
     yaw_deg: float,
@@ -186,6 +195,7 @@ def build_cmd_flight_set_heading(
     params = {"mode": mode, "yaw_deg": yaw_deg, "turn": turn if turn is not None else 0}
     return build_cmd_frame(0x1B, params, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_arming(
     arm: bool,
     force: bool = False,
@@ -206,6 +216,7 @@ def build_cmd_flight_arming(
     params = {"arm": bool(arm), "force": bool(force)}
     return build_cmd_frame(0x16, params, dst, src, team_id=team_id, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_mission_upload(
     mission_id: int,
     waypoints: list,
@@ -226,6 +237,7 @@ def build_cmd_mission_upload(
     return build_cmd_frame(0x29, params, dst, src, transaction_id=transaction_id)
 
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_mission_control(
     action: str,
     start_index: Optional[int] = None,
@@ -246,6 +258,7 @@ def build_cmd_mission_control(
     params = {"json": json.dumps(payload, separators=(',', ':'))}
     return build_cmd_frame(0x2A, params, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_set_roi(
     roi_mode: int,
     lat: Optional[float] = None,
@@ -265,6 +278,7 @@ def build_cmd_flight_set_roi(
     }
     return build_cmd_frame(0x1D, params, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_flight_set_home(
     lat: Optional[float] = None,
     lon: Optional[float] = None,
@@ -279,6 +293,7 @@ def build_cmd_flight_set_home(
     }
     return build_cmd_frame(0x1C, params, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_system_set_vehicle_id(
     id: int,
     dst: int = 0xFF,
@@ -287,6 +302,7 @@ def build_cmd_system_set_vehicle_id(
 ) -> bytes:
     return build_cmd_frame(0x02, {"vehicle_id": id}, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_system_set_team_id(
     team_id: int,
     dst: int = 0xFF,
@@ -295,6 +311,7 @@ def build_cmd_system_set_team_id(
 ) -> bytes:
     return build_cmd_frame(0x03, {"team_id": team_id}, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_swarm_formation_execute(
     leader_id: int,
     formation_type: str,
@@ -320,6 +337,7 @@ def build_cmd_swarm_formation_execute(
         params["altitude_offset"] = altitude_offset
     return build_cmd_frame(0x3D, params, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_swarm_set_leader(
     leader_id: int,
     dst: int = 0xFF,
@@ -328,6 +346,7 @@ def build_cmd_swarm_set_leader(
 ) -> bytes:
     return build_cmd_frame(0x3E, {"leader_id": leader_id}, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_swarm_set_formation_type(
     formation_type: str,
     dst: int = 0xFF,
@@ -336,6 +355,7 @@ def build_cmd_swarm_set_formation_type(
 ) -> bytes:
     return build_cmd_frame(0x3F, {"formation_type": formation_type}, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_swarm_set_spacing(
     spacing_offset: float,
     dst: int = 0xFF,
@@ -344,6 +364,7 @@ def build_cmd_swarm_set_spacing(
 ) -> bytes:
     return build_cmd_frame(0x40, {"spacing_offset": spacing_offset}, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_swarm_set_altitude_offset(
     altitude_offset: float,
     dst: int = 0xFF,
@@ -352,6 +373,7 @@ def build_cmd_swarm_set_altitude_offset(
 ) -> bytes:
     return build_cmd_frame(0x41, {"altitude_offset": altitude_offset}, dst, src, transaction_id=transaction_id)
 
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_swarm_set_status(
     status: str,
     dst: int = 0xFF,
