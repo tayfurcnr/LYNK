@@ -11,6 +11,7 @@ import "msg/event/emergency_crash.proto";
 import "msg/event/gps_degraded.proto";
 import "msg/event/link_quality_degraded.proto";
 import "msg/event/motor_failure.proto";
+import "msg/event/command_status.proto";
 import "msg/event/mission_waypoint_reached.proto";
 import "msg/event/mission_complete.proto";
 import "msg/event/formation_broken.proto";
@@ -33,6 +34,7 @@ message EventEnvelope {
     GpsDegraded gps_degraded = 40;
     LinkQualityDegraded link_quality_degraded = 41;
     MotorFailure motor_failure = 42;
+    CommandStatus command_status = 43;
     MissionWaypointReached mission_waypoint_reached = 50;
     MissionComplete mission_complete = 51;
     FormationBroken formation_broken = 60;

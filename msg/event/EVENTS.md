@@ -58,6 +58,7 @@ message EventEnvelope {
     GpsDegraded gps_degraded = 40;
     LinkQualityDegraded link_quality_degraded = 41;
     MotorFailure motor_failure = 42;
+    CommandStatus command_status = 43;
     
     // Mission events
     MissionWaypointReached mission_waypoint_reached = 50;
@@ -207,6 +208,7 @@ enum EventType {
   EVENT_GPS_DEGRADED = 40;
   EVENT_LINK_QUALITY_DEGRADED = 41;
   EVENT_MOTOR_FAILURE = 42;
+  EVENT_COMMAND_STATUS = 43;
   
   // Mission events (50-59)
   EVENT_MISSION_WAYPOINT_REACHED = 50;

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lynk.event',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x1bmsg/event/event_enums.proto\x12\nlynk.event*`\n\rEventPriority\x12\x10\n\x0cPRIORITY_LOW\x10\x00\x12\x13\n\x0fPRIORITY_NORMAL\x10\x01\x12\x11\n\rPRIORITY_HIGH\x10\x02\x12\x15\n\x11PRIORITY_CRITICAL\x10\x03*\xae\x03\n\tEventType\x12\x11\n\rEVENT_UNKNOWN\x10\x00\x12\x15\n\x11\x45VENT_QR_DETECTED\x10\x14\x12\x1b\n\x17\x45VENT_OBSTACLE_DETECTED\x10\x15\x12\x18\n\x14\x45VENT_COLLISION_RISK\x10\x1e\x12\x15\n\x11\x45VENT_BATTERY_LOW\x10\x1f\x12\x1c\n\x18\x45VENT_FAILSAFE_TRIGGERED\x10 \x12\x19\n\x15\x45VENT_EMERGENCY_CRASH\x10!\x12\x16\n\x12\x45VENT_GPS_DEGRADED\x10(\x12\x1f\n\x1b\x45VENT_LINK_QUALITY_DEGRADED\x10)\x12\x17\n\x13\x45VENT_MOTOR_FAILURE\x10*\x12\"\n\x1e\x45VENT_MISSION_WAYPOINT_REACHED\x10\x32\x12\x1a\n\x16\x45VENT_MISSION_COMPLETE\x10\x33\x12\x1a\n\x16\x45VENT_FORMATION_BROKEN\x10<\x12\x16\n\x12\x45VENT_VEHICLE_LOST\x10=\x12\x18\n\x14\x45VENT_CRASH_DETECTED\x10>\x12\x10\n\x0c\x45VENT_CUSTOM\x10\x64*O\n\x0cObstacleType\x12\x14\n\x10OBSTACLE_UNKNOWN\x10\x00\x12\x13\n\x0fOBSTACLE_STATIC\x10\x01\x12\x14\n\x10OBSTACLE_DYNAMIC\x10\x02*n\n\x0e\x46\x61ilsafeReason\x12\x14\n\x10\x46\x41ILSAFE_RC_LOST\x10\x00\x12\x15\n\x11\x46\x41ILSAFE_GPS_LOST\x10\x01\x12\x18\n\x14\x46\x41ILSAFE_BATTERY_LOW\x10\x02\x12\x15\n\x11\x46\x41ILSAFE_GCS_LOST\x10\x03*H\n\x0e\x46\x61ilsafeAction\x12\x10\n\x0c\x46\x41ILSAFE_RTL\x10\x00\x12\x11\n\rFAILSAFE_LAND\x10\x01\x12\x11\n\rFAILSAFE_HOLD\x10\x02*f\n\x0b\x43rashReason\x12\x17\n\x13\x43RASH_MOTOR_FAILURE\x10\x00\x12\x16\n\x12\x43RASH_BATTERY_DEAD\x10\x01\x12\x13\n\x0f\x43RASH_COLLISION\x10\x02\x12\x11\n\rCRASH_UNKNOWN\x10\x03*S\n\x11GpsDegradedReason\x12\x16\n\x12GPS_LOW_SATELLITES\x10\x00\x12\x11\n\rGPS_HIGH_HDOP\x10\x01\x12\x13\n\x0fGPS_SIGNAL_LOSS\x10\x02*P\n\x10MotorFailureType\x12\x11\n\rMOTOR_STOPPED\x10\x00\x12\x12\n\x0eMOTOR_DEGRADED\x10\x01\x12\x15\n\x11MOTOR_OVERHEATING\x10\x02*k\n\x15\x46ormationBrokenReason\x12\x17\n\x13\x46ORMATION_LINK_LOST\x10\x00\x12\x1a\n\x16\x46ORMATION_OUT_OF_RANGE\x10\x01\x12\x1d\n\x19\x46ORMATION_MANUAL_OVERRIDE\x10\x02*w\n\x14\x43rashDetectionMethod\x12\"\n\x1e\x43RASH_DETECT_TELEMETRY_ANOMALY\x10\x00\x12\x17\n\x13\x43RASH_DETECT_VISUAL\x10\x01\x12\"\n\x1e\x43RASH_DETECT_HEARTBEAT_TIMEOUT\x10\x02\x62\x06proto3')
+  serialized_pb=_b('\n\x1bmsg/event/event_enums.proto\x12\nlynk.event*`\n\rEventPriority\x12\x10\n\x0cPRIORITY_LOW\x10\x00\x12\x13\n\x0fPRIORITY_NORMAL\x10\x01\x12\x11\n\rPRIORITY_HIGH\x10\x02\x12\x15\n\x11PRIORITY_CRITICAL\x10\x03*\xc8\x03\n\tEventType\x12\x11\n\rEVENT_UNKNOWN\x10\x00\x12\x15\n\x11\x45VENT_QR_DETECTED\x10\x14\x12\x1b\n\x17\x45VENT_OBSTACLE_DETECTED\x10\x15\x12\x18\n\x14\x45VENT_COLLISION_RISK\x10\x1e\x12\x15\n\x11\x45VENT_BATTERY_LOW\x10\x1f\x12\x1c\n\x18\x45VENT_FAILSAFE_TRIGGERED\x10 \x12\x19\n\x15\x45VENT_EMERGENCY_CRASH\x10!\x12\x16\n\x12\x45VENT_GPS_DEGRADED\x10(\x12\x1f\n\x1b\x45VENT_LINK_QUALITY_DEGRADED\x10)\x12\x17\n\x13\x45VENT_MOTOR_FAILURE\x10*\x12\x18\n\x14\x45VENT_COMMAND_STATUS\x10+\x12\"\n\x1e\x45VENT_MISSION_WAYPOINT_REACHED\x10\x32\x12\x1a\n\x16\x45VENT_MISSION_COMPLETE\x10\x33\x12\x1a\n\x16\x45VENT_FORMATION_BROKEN\x10<\x12\x16\n\x12\x45VENT_VEHICLE_LOST\x10=\x12\x18\n\x14\x45VENT_CRASH_DETECTED\x10>\x12\x10\n\x0c\x45VENT_CUSTOM\x10\x64*O\n\x0cObstacleType\x12\x14\n\x10OBSTACLE_UNKNOWN\x10\x00\x12\x13\n\x0fOBSTACLE_STATIC\x10\x01\x12\x14\n\x10OBSTACLE_DYNAMIC\x10\x02*n\n\x0e\x46\x61ilsafeReason\x12\x14\n\x10\x46\x41ILSAFE_RC_LOST\x10\x00\x12\x15\n\x11\x46\x41ILSAFE_GPS_LOST\x10\x01\x12\x18\n\x14\x46\x41ILSAFE_BATTERY_LOW\x10\x02\x12\x15\n\x11\x46\x41ILSAFE_GCS_LOST\x10\x03*H\n\x0e\x46\x61ilsafeAction\x12\x10\n\x0c\x46\x41ILSAFE_RTL\x10\x00\x12\x11\n\rFAILSAFE_LAND\x10\x01\x12\x11\n\rFAILSAFE_HOLD\x10\x02*f\n\x0b\x43rashReason\x12\x17\n\x13\x43RASH_MOTOR_FAILURE\x10\x00\x12\x16\n\x12\x43RASH_BATTERY_DEAD\x10\x01\x12\x13\n\x0f\x43RASH_COLLISION\x10\x02\x12\x11\n\rCRASH_UNKNOWN\x10\x03*S\n\x11GpsDegradedReason\x12\x16\n\x12GPS_LOW_SATELLITES\x10\x00\x12\x11\n\rGPS_HIGH_HDOP\x10\x01\x12\x13\n\x0fGPS_SIGNAL_LOSS\x10\x02*P\n\x10MotorFailureType\x12\x11\n\rMOTOR_STOPPED\x10\x00\x12\x12\n\x0eMOTOR_DEGRADED\x10\x01\x12\x15\n\x11MOTOR_OVERHEATING\x10\x02*k\n\x15\x46ormationBrokenReason\x12\x17\n\x13\x46ORMATION_LINK_LOST\x10\x00\x12\x1a\n\x16\x46ORMATION_OUT_OF_RANGE\x10\x01\x12\x1d\n\x19\x46ORMATION_MANUAL_OVERRIDE\x10\x02*w\n\x14\x43rashDetectionMethod\x12\"\n\x1e\x43RASH_DETECT_TELEMETRY_ANOMALY\x10\x00\x12\x17\n\x13\x43RASH_DETECT_VISUAL\x10\x01\x12\"\n\x1e\x43RASH_DETECT_HEARTBEAT_TIMEOUT\x10\x02*\x8d\x01\n\x16\x43ommandExecutionStatus\x12\x1a\n\x16\x43OMMAND_STATUS_UNKNOWN\x10\x00\x12\x1c\n\x18\x43OMMAND_STATUS_COMPLETED\x10\x01\x12\x19\n\x15\x43OMMAND_STATUS_FAILED\x10\x02\x12\x1e\n\x1a\x43OMMAND_STATUS_IN_PROGRESS\x10\x03\x62\x06proto3')
 )
 
 _EVENTPRIORITY = _descriptor.EnumDescriptor(
@@ -101,34 +101,38 @@ _EVENTTYPE = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='EVENT_MISSION_WAYPOINT_REACHED', index=10, number=50,
+      name='EVENT_COMMAND_STATUS', index=10, number=43,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='EVENT_MISSION_COMPLETE', index=11, number=51,
+      name='EVENT_MISSION_WAYPOINT_REACHED', index=11, number=50,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='EVENT_FORMATION_BROKEN', index=12, number=60,
+      name='EVENT_MISSION_COMPLETE', index=12, number=51,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='EVENT_VEHICLE_LOST', index=13, number=61,
+      name='EVENT_FORMATION_BROKEN', index=13, number=60,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='EVENT_CRASH_DETECTED', index=14, number=62,
+      name='EVENT_VEHICLE_LOST', index=14, number=61,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='EVENT_CUSTOM', index=15, number=100,
+      name='EVENT_CRASH_DETECTED', index=15, number=62,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='EVENT_CUSTOM', index=16, number=100,
       serialized_options=None,
       type=None),
   ],
   containing_type=None,
   serialized_options=None,
   serialized_start=142,
-  serialized_end=572,
+  serialized_end=598,
 )
 _sym_db.RegisterEnumDescriptor(_EVENTTYPE)
 
@@ -154,8 +158,8 @@ _OBSTACLETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=574,
-  serialized_end=653,
+  serialized_start=600,
+  serialized_end=679,
 )
 _sym_db.RegisterEnumDescriptor(_OBSTACLETYPE)
 
@@ -185,8 +189,8 @@ _FAILSAFEREASON = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=655,
-  serialized_end=765,
+  serialized_start=681,
+  serialized_end=791,
 )
 _sym_db.RegisterEnumDescriptor(_FAILSAFEREASON)
 
@@ -212,8 +216,8 @@ _FAILSAFEACTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=767,
-  serialized_end=839,
+  serialized_start=793,
+  serialized_end=865,
 )
 _sym_db.RegisterEnumDescriptor(_FAILSAFEACTION)
 
@@ -243,8 +247,8 @@ _CRASHREASON = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=841,
-  serialized_end=943,
+  serialized_start=867,
+  serialized_end=969,
 )
 _sym_db.RegisterEnumDescriptor(_CRASHREASON)
 
@@ -270,8 +274,8 @@ _GPSDEGRADEDREASON = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=945,
-  serialized_end=1028,
+  serialized_start=971,
+  serialized_end=1054,
 )
 _sym_db.RegisterEnumDescriptor(_GPSDEGRADEDREASON)
 
@@ -297,8 +301,8 @@ _MOTORFAILURETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1030,
-  serialized_end=1110,
+  serialized_start=1056,
+  serialized_end=1136,
 )
 _sym_db.RegisterEnumDescriptor(_MOTORFAILURETYPE)
 
@@ -324,8 +328,8 @@ _FORMATIONBROKENREASON = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1112,
-  serialized_end=1219,
+  serialized_start=1138,
+  serialized_end=1245,
 )
 _sym_db.RegisterEnumDescriptor(_FORMATIONBROKENREASON)
 
@@ -351,12 +355,43 @@ _CRASHDETECTIONMETHOD = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1221,
-  serialized_end=1340,
+  serialized_start=1247,
+  serialized_end=1366,
 )
 _sym_db.RegisterEnumDescriptor(_CRASHDETECTIONMETHOD)
 
 CrashDetectionMethod = enum_type_wrapper.EnumTypeWrapper(_CRASHDETECTIONMETHOD)
+_COMMANDEXECUTIONSTATUS = _descriptor.EnumDescriptor(
+  name='CommandExecutionStatus',
+  full_name='lynk.event.CommandExecutionStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='COMMAND_STATUS_UNKNOWN', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='COMMAND_STATUS_COMPLETED', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='COMMAND_STATUS_FAILED', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='COMMAND_STATUS_IN_PROGRESS', index=3, number=3,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=1369,
+  serialized_end=1510,
+)
+_sym_db.RegisterEnumDescriptor(_COMMANDEXECUTIONSTATUS)
+
+CommandExecutionStatus = enum_type_wrapper.EnumTypeWrapper(_COMMANDEXECUTIONSTATUS)
 PRIORITY_LOW = 0
 PRIORITY_NORMAL = 1
 PRIORITY_HIGH = 2
@@ -371,6 +406,7 @@ EVENT_EMERGENCY_CRASH = 33
 EVENT_GPS_DEGRADED = 40
 EVENT_LINK_QUALITY_DEGRADED = 41
 EVENT_MOTOR_FAILURE = 42
+EVENT_COMMAND_STATUS = 43
 EVENT_MISSION_WAYPOINT_REACHED = 50
 EVENT_MISSION_COMPLETE = 51
 EVENT_FORMATION_BROKEN = 60
@@ -403,6 +439,10 @@ FORMATION_MANUAL_OVERRIDE = 2
 CRASH_DETECT_TELEMETRY_ANOMALY = 0
 CRASH_DETECT_VISUAL = 1
 CRASH_DETECT_HEARTBEAT_TIMEOUT = 2
+COMMAND_STATUS_UNKNOWN = 0
+COMMAND_STATUS_COMPLETED = 1
+COMMAND_STATUS_FAILED = 2
+COMMAND_STATUS_IN_PROGRESS = 3
 
 
 DESCRIPTOR.enum_types_by_name['EventPriority'] = _EVENTPRIORITY
@@ -415,6 +455,7 @@ DESCRIPTOR.enum_types_by_name['GpsDegradedReason'] = _GPSDEGRADEDREASON
 DESCRIPTOR.enum_types_by_name['MotorFailureType'] = _MOTORFAILURETYPE
 DESCRIPTOR.enum_types_by_name['FormationBrokenReason'] = _FORMATIONBROKENREASON
 DESCRIPTOR.enum_types_by_name['CrashDetectionMethod'] = _CRASHDETECTIONMETHOD
+DESCRIPTOR.enum_types_by_name['CommandExecutionStatus'] = _COMMANDEXECUTIONSTATUS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
