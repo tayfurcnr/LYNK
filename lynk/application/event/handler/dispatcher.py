@@ -6,6 +6,12 @@ from lynk.shared.log.logger import logger
 
 GREEN_BOLD = "\033[92m\033[1m"
 RESET = "\033[0m"
+_COMMAND_STATUS_NAMES = {
+    0: "UNKNOWN",
+    1: "COMPLETED",
+    2: "FAILED",
+    3: "IN_PROGRESS",
+}
 
 # Duplicate detection cache
 _received_events = {}  # (source_vehicle_id, tx_id, event_type, seq_num) -> timestamp_ms
@@ -29,6 +35,25 @@ def _payload_for_log(payload: dict) -> dict:
         data["raw_data_len"] = len(raw_data)
         data.pop("raw_data", None)
     return data
+
+
+def _enrich_command_status_payload_for_log(payload: dict, event_name: str) -> dict:
+    if not isinstance(payload, dict):
+        return payload
+    if str(event_name or "").upper() != "COMMAND_STATUS":
+        return payload
+    if "status" not in payload:
+        return payload
+
+    enriched = dict(payload)
+    try:
+        status_val = int(enriched.get("status"))
+    except Exception:
+        return enriched
+    status_name = _COMMAND_STATUS_NAMES.get(status_val, "UNKNOWN")
+    enriched["status"] = f"{status_name}-[{status_val}]"
+    enriched["status_name"] = status_name
+    return enriched
 
 def cleanup_expired_events():
     """Periyodik cache temizliği"""
@@ -81,6 +106,7 @@ def handle_event(payload: bytes, frame_meta: dict, interface=None):
         event_def = event_definitions.get(event_type)
         if event_def:
             payload_log = _payload_for_log(event_data.get("payload", {}))
+            payload_log = _enrich_command_status_payload_for_log(payload_log, event_def.name)
             logger.info(
                 f"{GREEN_BOLD}[EVENT] RECV | TYPE: {event_def.name} | SRC: {source_vehicle_id} -> DST: {dst_id} | TX_ID: {tx_id}{RESET}"
             )
