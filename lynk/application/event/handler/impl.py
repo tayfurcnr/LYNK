@@ -3,13 +3,18 @@ from lynk.shared.log.logger import logger
 
 GREEN_BOLD = "\033[92m\033[1m"
 RESET = "\033[0m"
+_COMMAND_STATUS_NAMES = {
+    0: "UNKNOWN",
+    1: "COMPLETED",
+    2: "FAILED",
+    3: "IN_PROGRESS",
+}
 
 def default_handler(event_type: int, event_data: dict, src_id: int, interface=None, event_name: str = ""):
     """Default handler for events without specific implementation."""
-    label = (event_name or f"EVENT_TYPE:{event_type}").upper()
-    payload = event_data.get("payload", {}) if isinstance(event_data, dict) else {}
-    logger.info(f"[EVENT] RECV | TYPE: {label} | SRC: {src_id}")
-    logger.info(f"[EVENT] {label} PARAMS: {payload}")
+    # Dispatcher already logs a standardized colored RECV/PARAMS pair.
+    # Keep default handler silent to avoid duplicate event logs.
+    return
 
 # Detection Events
 def qr_detected(event_type: int, event_data: dict, src_id: int, interface=None):
@@ -76,6 +81,24 @@ def motor_failure(event_type: int, event_data: dict, src_id: int, interface=None
     motor_id = payload.get("motor_id", 0)
     failure_type = payload.get("failure_type", 0)
     logger.critical(f"[EVENT] MOTOR FAILURE: Vehicle {src_id}, motor {motor_id}, type={failure_type}")
+
+def command_status(event_type: int, event_data: dict, src_id: int, interface=None):
+    """Handle command status event."""
+    payload = event_data.get("payload", {})
+    command_name = payload.get("command_name", "")
+    command_tx_id = payload.get("command_tx_id", "")
+    raw_status = payload.get("status", 0)
+    error_code = payload.get("error_code", 0)
+    error_message = payload.get("error_message", "")
+    try:
+        status_val = int(raw_status)
+    except Exception:
+        status_val = 0
+    status_name = _COMMAND_STATUS_NAMES.get(status_val, "UNKNOWN")
+    logger.info(
+        f"[EVENT] COMMAND_STATUS: {command_name} tx={command_tx_id} status={status_name}({status_val}) "
+        f"error_code={error_code} error_message='{error_message}' src={src_id}"
+    )
 
 # Mission Events
 def mission_waypoint_reached(event_type: int, event_data: dict, src_id: int, interface=None):
