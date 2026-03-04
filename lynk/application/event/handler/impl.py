@@ -96,7 +96,7 @@ def command_status(event_type: int, event_data: dict, src_id: int, interface=Non
         status_val = 0
     status_name = _COMMAND_STATUS_NAMES.get(status_val, "UNKNOWN")
     logger.info(
-        f"[EVENT] COMMAND_STATUS: {command_name} tx={command_tx_id} status={status_name}({status_val}) "
+        f"[EVENT] COMMAND_STATUS: {command_name} tx={command_tx_id} status={status_name}-[{status_val}] "
         f"error_code={error_code} error_message='{error_message}' src={src_id}"
     )
 
