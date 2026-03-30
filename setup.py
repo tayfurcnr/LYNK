@@ -72,7 +72,7 @@ if __name__ == "__main__":
             'pyserial',
             'crcmod',
             'PyYAML',
-            'protobuf',
+            'protobuf<3.21',
             'lz4',
             'fastapi',
             'uvicorn'
