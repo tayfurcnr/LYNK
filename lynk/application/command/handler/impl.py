@@ -348,7 +348,14 @@ def mission_upload(cmd_id, params, src_id, interface):
         if mission_id is None:
             raise ValueError("`mission_id` is missing")
 
-        parsed = {"mission_id": mission_id, "waypoints": waypoints, "replace_existing": data.get("replace_existing", True)}
+        parsed = {
+            "mission_id": mission_id,
+            "waypoints": waypoints,
+            "replace_existing": data.get("replace_existing", True),
+            "camera_type": data.get("camera_type"),
+            "palette": data.get("palette"),
+            "start_index": data.get("start_index"),
+        }
         
         _log_recv(f"[COMMAND] RECV | TYPE: MISSION_UPLOAD | ID: {mission_id}, WP_COUNT: {len(waypoints)}")
         set_last_command(cmd_id, params, parsed)
