@@ -1,0 +1,16 @@
+syntax = "proto3";
+package lynk.command;
+
+import "msg/command/command_enums.proto";
+
+message SetTrajectoryAlgorithm {
+  TrajectoryAlgorithmType algorithm_type = 1;
+  float param1 = 2;
+  float param2 = 3;
+  float param3 = 4;
+  float param4 = 5;
+  float param5 = 6;
+  float param6 = 7;
+  float param7 = 8;
+  float param8 = 9;
+}

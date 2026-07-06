@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lynk.command',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x1fmsg/command/command_enums.proto\x12\x0clynk.command*W\n\nGimbalMode\x12\x16\n\x12GIMBAL_MODE_FOLLOW\x10\x00\x12\x14\n\x10GIMBAL_MODE_LOCK\x10\x01\x12\x1b\n\x17GIMBAL_MODE_FOLLOW_LOCK\x10\x02*:\n\nStreamType\x12\x13\n\x0fSTREAM_TYPE_RGB\x10\x00\x12\x17\n\x13STREAM_TYPE_THERMAL\x10\x01*\xb5\x02\n\x10WhiteBalanceMode\x12\x1a\n\x16WHITE_BALANCE_AWB_AUTO\x10\x00\x12\x1b\n\x17WHITE_BALANCE_AWB_NIGHT\x10\x01\x12\"\n\x1eWHITE_BALANCE_AWB_INCANDESCENT\x10\x02\x12!\n\x1dWHITE_BALANCE_AWB_FLUORESCENT\x10\x03\x12&\n\"WHITE_BALANCE_AWB_WARM_FLUORESCENT\x10\x04\x12\x1e\n\x1aWHITE_BALANCE_AWB_DAYLIGHT\x10\x05\x12\x1c\n\x18WHITE_BALANCE_AWB_CLOUDY\x10\x06\x12\x1e\n\x1aWHITE_BALANCE_AWB_TWILIGHT\x10\x07\x12\x1b\n\x17WHITE_BALANCE_AWB_SHADE\x10\x08*\x9f\x03\n\x11\x46\x61lseColorPalette\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_UNKNOWN\x10\x00\x12!\n\x1d\x46\x41LSE_COLOR_PALETTE_WHITE_HOT\x10\x01\x12\x1d\n\x19\x46\x41LSE_COLOR_PALETTE_SEPIA\x10\x03\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_IRONBOW\x10\x04\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_RAINBOW\x10\x05\x12\x1d\n\x19\x46\x41LSE_COLOR_PALETTE_NIGHT\x10\x06\x12\x1e\n\x1a\x46\x41LSE_COLOR_PALETTE_AURORA\x10\x07\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_RED_HOT\x10\x08\x12\x1e\n\x1a\x46\x41LSE_COLOR_PALETTE_JUNGLE\x10\t\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_MEDICAL\x10\n\x12!\n\x1d\x46\x41LSE_COLOR_PALETTE_BLACK_HOT\x10\x0b\x12!\n\x1d\x46\x41LSE_COLOR_PALETTE_GLORY_HOT\x10\x0c*\xab\x01\n\x10\x44igitalZoomLevel\x12\x18\n\x14\x44IGITAL_ZOOM_UNKNOWN\x10\x00\x12\x13\n\x0f\x44IGITAL_ZOOM_1X\x10\x01\x12\x13\n\x0f\x44IGITAL_ZOOM_2X\x10\x02\x12\x13\n\x0f\x44IGITAL_ZOOM_3X\x10\x03\x12\x13\n\x0f\x44IGITAL_ZOOM_4X\x10\x04\x12\x13\n\x0f\x44IGITAL_ZOOM_IN\x10\n\x12\x14\n\x10\x44IGITAL_ZOOM_OUT\x10\x0b\x62\x06proto3')
+  serialized_pb=_b('\n\x1fmsg/command/command_enums.proto\x12\x0clynk.command*W\n\nGimbalMode\x12\x16\n\x12GIMBAL_MODE_FOLLOW\x10\x00\x12\x14\n\x10GIMBAL_MODE_LOCK\x10\x01\x12\x1b\n\x17GIMBAL_MODE_FOLLOW_LOCK\x10\x02*:\n\nStreamType\x12\x13\n\x0fSTREAM_TYPE_RGB\x10\x00\x12\x17\n\x13STREAM_TYPE_THERMAL\x10\x01*\xb5\x02\n\x10WhiteBalanceMode\x12\x1a\n\x16WHITE_BALANCE_AWB_AUTO\x10\x00\x12\x1b\n\x17WHITE_BALANCE_AWB_NIGHT\x10\x01\x12\"\n\x1eWHITE_BALANCE_AWB_INCANDESCENT\x10\x02\x12!\n\x1dWHITE_BALANCE_AWB_FLUORESCENT\x10\x03\x12&\n\"WHITE_BALANCE_AWB_WARM_FLUORESCENT\x10\x04\x12\x1e\n\x1aWHITE_BALANCE_AWB_DAYLIGHT\x10\x05\x12\x1c\n\x18WHITE_BALANCE_AWB_CLOUDY\x10\x06\x12\x1e\n\x1aWHITE_BALANCE_AWB_TWILIGHT\x10\x07\x12\x1b\n\x17WHITE_BALANCE_AWB_SHADE\x10\x08*\x9f\x03\n\x11\x46\x61lseColorPalette\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_UNKNOWN\x10\x00\x12!\n\x1d\x46\x41LSE_COLOR_PALETTE_WHITE_HOT\x10\x01\x12\x1d\n\x19\x46\x41LSE_COLOR_PALETTE_SEPIA\x10\x03\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_IRONBOW\x10\x04\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_RAINBOW\x10\x05\x12\x1d\n\x19\x46\x41LSE_COLOR_PALETTE_NIGHT\x10\x06\x12\x1e\n\x1a\x46\x41LSE_COLOR_PALETTE_AURORA\x10\x07\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_RED_HOT\x10\x08\x12\x1e\n\x1a\x46\x41LSE_COLOR_PALETTE_JUNGLE\x10\t\x12\x1f\n\x1b\x46\x41LSE_COLOR_PALETTE_MEDICAL\x10\n\x12!\n\x1d\x46\x41LSE_COLOR_PALETTE_BLACK_HOT\x10\x0b\x12!\n\x1d\x46\x41LSE_COLOR_PALETTE_GLORY_HOT\x10\x0c*\xab\x01\n\x10\x44igitalZoomLevel\x12\x18\n\x14\x44IGITAL_ZOOM_UNKNOWN\x10\x00\x12\x13\n\x0f\x44IGITAL_ZOOM_1X\x10\x01\x12\x13\n\x0f\x44IGITAL_ZOOM_2X\x10\x02\x12\x13\n\x0f\x44IGITAL_ZOOM_3X\x10\x03\x12\x13\n\x0f\x44IGITAL_ZOOM_4X\x10\x04\x12\x13\n\x0f\x44IGITAL_ZOOM_IN\x10\n\x12\x14\n\x10\x44IGITAL_ZOOM_OUT\x10\x0b*y\n\x17TrajectoryAlgorithmType\x12 \n\x1cTRAJECTORY_ALGORITHM_UNKNOWN\x10\x00\x12\x1d\n\x19TRAJECTORY_ALGORITHM_SIDE\x10\x01\x12\x1d\n\x19TRAJECTORY_ALGORITHM_TAIL\x10\x02\x62\x06proto3')
 )
 
 _GIMBALMODE = _descriptor.EnumDescriptor(
@@ -230,6 +230,33 @@ _DIGITALZOOMLEVEL = _descriptor.EnumDescriptor(
 _sym_db.RegisterEnumDescriptor(_DIGITALZOOMLEVEL)
 
 DigitalZoomLevel = enum_type_wrapper.EnumTypeWrapper(_DIGITALZOOMLEVEL)
+_TRAJECTORYALGORITHMTYPE = _descriptor.EnumDescriptor(
+  name='TrajectoryAlgorithmType',
+  full_name='lynk.command.TrajectoryAlgorithmType',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='TRAJECTORY_ALGORITHM_UNKNOWN', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='TRAJECTORY_ALGORITHM_SIDE', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='TRAJECTORY_ALGORITHM_TAIL', index=2, number=2,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=1102,
+  serialized_end=1223,
+)
+_sym_db.RegisterEnumDescriptor(_TRAJECTORYALGORITHMTYPE)
+
+TrajectoryAlgorithmType = enum_type_wrapper.EnumTypeWrapper(_TRAJECTORYALGORITHMTYPE)
 GIMBAL_MODE_FOLLOW = 0
 GIMBAL_MODE_LOCK = 1
 GIMBAL_MODE_FOLLOW_LOCK = 2
@@ -263,6 +290,9 @@ DIGITAL_ZOOM_3X = 3
 DIGITAL_ZOOM_4X = 4
 DIGITAL_ZOOM_IN = 10
 DIGITAL_ZOOM_OUT = 11
+TRAJECTORY_ALGORITHM_UNKNOWN = 0
+TRAJECTORY_ALGORITHM_SIDE = 1
+TRAJECTORY_ALGORITHM_TAIL = 2
 
 
 DESCRIPTOR.enum_types_by_name['GimbalMode'] = _GIMBALMODE
@@ -270,6 +300,7 @@ DESCRIPTOR.enum_types_by_name['StreamType'] = _STREAMTYPE
 DESCRIPTOR.enum_types_by_name['WhiteBalanceMode'] = _WHITEBALANCEMODE
 DESCRIPTOR.enum_types_by_name['FalseColorPalette'] = _FALSECOLORPALETTE
 DESCRIPTOR.enum_types_by_name['DigitalZoomLevel'] = _DIGITALZOOMLEVEL
+DESCRIPTOR.enum_types_by_name['TrajectoryAlgorithmType'] = _TRAJECTORYALGORITHMTYPE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 

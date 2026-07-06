@@ -37,6 +37,8 @@ import "msg/command/camera_set_white_balance.proto";
 import "msg/command/thermal_set_false_color.proto";
 import "msg/command/camera_stream_control.proto";
 import "msg/command/gimbal_get_sd_capacity.proto";
+import "msg/command/set_trajectory_algorithm.proto";
+import "msg/command/trajectory_execute.proto";
 
 message CommandEnvelope {
   // Command ID'yi payload ID ile uyumlu olmasi icin 1-1 esliyoruz.
@@ -86,5 +88,7 @@ message CommandEnvelope {
     ThermalSetFalseColor thermal_set_false_color = 95; // 0x5F
     CameraStreamControl camera_stream_control = 96; // 0x60
     GimbalGetSdCapacity gimbal_get_sd_capacity = 98; // 0x62
+    SetTrajectoryAlgorithm set_trajectory_algorithm = 99; // 0x63
+    TrajectoryExecute trajectory_execute = 101; // 0x65
   }
 }

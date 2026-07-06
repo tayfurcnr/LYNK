@@ -48,3 +48,9 @@ enum DigitalZoomLevel {
   DIGITAL_ZOOM_IN = 10;
   DIGITAL_ZOOM_OUT = 11;
 }
+
+enum TrajectoryAlgorithmType {
+  TRAJECTORY_ALGORITHM_UNKNOWN = 0;
+  TRAJECTORY_ALGORITHM_SIDE = 1;
+  TRAJECTORY_ALGORITHM_TAIL = 2;
+}

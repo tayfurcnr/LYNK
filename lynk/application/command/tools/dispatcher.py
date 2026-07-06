@@ -532,6 +532,73 @@ def cmd_flight_set_home(
         **kwargs
     )
 
+def cmd_set_trajectory_algorithm(
+    interface: SendableInterface,
+    algorithm_type: int,
+    param1: Optional[float] = None,
+    param2: Optional[float] = None,
+    param3: Optional[float] = None,
+    param4: Optional[float] = None,
+    param5: Optional[float] = None,
+    param6: Optional[float] = None,
+    param7: Optional[float] = None,
+    param8: Optional[float] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None,
+    dst_team_id: Optional[int] = None,
+    transaction_id: str = "",
+    wait_for_ack: bool = False,
+    max_retries: int = 0,
+    **kwargs
+) -> None:
+    params = {"algorithm_type": algorithm_type}
+    for key, value in (
+        ("param1", param1),
+        ("param2", param2),
+        ("param3", param3),
+        ("param4", param4),
+        ("param5", param5),
+        ("param6", param6),
+        ("param7", param7),
+        ("param8", param8),
+    ):
+        if value is not None:
+            params[key] = value
+    send_command(
+        interface, "SET_TRAJECTORY_ALGORITHM",
+        dst=dst,
+        src=src,
+        dst_team_id=dst_team_id,
+        transaction_id=transaction_id,
+        wait_for_ack=wait_for_ack,
+        max_retries=max_retries,
+        **params,
+        **kwargs
+    )
+
+def cmd_trajectory_execute(
+    interface: SendableInterface,
+    enable: bool,
+    dst: int = 0xFF,
+    src: Optional[int] = None,
+    dst_team_id: Optional[int] = None,
+    transaction_id: str = "",
+    wait_for_ack: bool = False,
+    max_retries: int = 0,
+    **kwargs
+) -> None:
+    send_command(
+        interface, "TRAJECTORY_EXECUTE",
+        enable=bool(enable),
+        dst=dst,
+        src=src,
+        dst_team_id=dst_team_id,
+        transaction_id=transaction_id,
+        wait_for_ack=wait_for_ack,
+        max_retries=max_retries,
+        **kwargs
+    )
+
 def cmd_mission_upload(
     interface: SendableInterface,
     mission_id: int,

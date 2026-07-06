@@ -294,6 +294,54 @@ def build_cmd_flight_set_home(
     return build_cmd_frame(0x1C, params, dst, src, transaction_id=transaction_id)
 
 # NOTE: This specialized builder is currently unused by the main dispatcher.
+def build_cmd_set_trajectory_algorithm(
+    algorithm_type: int,
+    param1: Optional[float] = None,
+    param2: Optional[float] = None,
+    param3: Optional[float] = None,
+    param4: Optional[float] = None,
+    param5: Optional[float] = None,
+    param6: Optional[float] = None,
+    param7: Optional[float] = None,
+    param8: Optional[float] = None,
+    dst: int = 0xFF,
+    src: Optional[int] = None,
+    team_id: Optional[int] = None,
+    transaction_id: str = ""
+) -> bytes:
+    params = {"algorithm_type": algorithm_type}
+    for key, value in (
+        ("param1", param1),
+        ("param2", param2),
+        ("param3", param3),
+        ("param4", param4),
+        ("param5", param5),
+        ("param6", param6),
+        ("param7", param7),
+        ("param8", param8),
+    ):
+        if value is not None:
+            params[key] = value
+    return build_cmd_frame(0x63, params, dst, src, team_id=team_id, transaction_id=transaction_id)
+
+# NOTE: This specialized builder is currently unused by the main dispatcher.
+def build_cmd_trajectory_execute(
+    enable: bool,
+    dst: int = 0xFF,
+    src: Optional[int] = None,
+    team_id: Optional[int] = None,
+    transaction_id: str = ""
+) -> bytes:
+    return build_cmd_frame(
+        0x65,
+        {"enable": bool(enable)},
+        dst,
+        src,
+        team_id=team_id,
+        transaction_id=transaction_id,
+    )
+
+# NOTE: This specialized builder is currently unused by the main dispatcher.
 def build_cmd_system_set_vehicle_id(
     id: int,
     dst: int = 0xFF,

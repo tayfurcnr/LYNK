@@ -118,6 +118,44 @@ class GcsDashboard(QMainWindow):
         self._init_ui()
         self._load_config_and_start()
 
+    def _find_workspace_config_path(self) -> str:
+        """
+        Prefer the workspace-level LYNK config instead of the bundled node_0 config.
+
+        Search upward from the current working directory so the dashboard works
+        both when launched from the workspace root and from a nested shell dir.
+        """
+        env_override = os.environ.get("LYNK_GCS_CONFIG_PATH", "").strip()
+        if env_override:
+            return env_override
+
+        candidate_targets = [
+            os.path.join("configs", "0", "lynk", "config.yaml"),
+            os.path.join("configs", "vehicle2", "lynk", "config.yaml"),
+            os.path.join("configs", "main", "lynk", "config.yaml"),
+        ]
+        cwd = os.path.abspath(os.getcwd())
+        current = cwd
+
+        while True:
+            for target in candidate_targets:
+                candidate = os.path.join(current, target)
+                if os.path.exists(candidate):
+                    return candidate
+
+            parent = os.path.dirname(current)
+            if parent == current:
+                break
+            current = parent
+
+        # Fallback to the bundled config only if the workspace config is missing.
+        return os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "configs",
+            "node_0",
+            "config.yaml",
+        )
+
     def closeEvent(self, event):
         try:
             if self.reader:
@@ -294,7 +332,7 @@ class GcsDashboard(QMainWindow):
         self.log.append(line)
 
     def _load_config_and_start(self):
-        cfg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "configs", "node_0", "config.yaml")
+        cfg_path = self._find_workspace_config_path()
         if not os.path.exists(cfg_path):
             QMessageBox.critical(self, "Config missing", cfg_path)
             return
