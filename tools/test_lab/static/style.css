@@ -520,6 +520,81 @@ body {
     background: rgba(0, 229, 255, 0.05);
 }
 
+/* Featured Scenarios */
+.featured-section {
+    margin: 1rem 0 1.2rem;
+    padding: 0 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.section-header span:first-child {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+
+.section-subtitle {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+.featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
+}
+
+.featured-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem 1.1rem;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.09), rgba(255, 255, 255, 0.02));
+    color: var(--text-main);
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.featured-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 0 24px var(--accent-glow);
+}
+
+.featured-badge {
+    align-self: flex-start;
+    font-size: 0.5rem;
+    letter-spacing: 2px;
+    font-weight: 800;
+    color: #000;
+    background: var(--accent);
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+.featured-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.featured-subtitle {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+}
+
 /* Validation Roadmap */
 .validation-roadmap {
     display: flex;

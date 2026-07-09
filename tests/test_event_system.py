@@ -108,3 +108,33 @@ def test_full_frame_flow():
     inner_event = deserialize_event(parsed["payload"])
     assert inner_event["event_type"] == 33
     assert inner_event["payload"]["last_error"] == "IMU_FAIL"
+
+
+def test_target_detected_event_serialization():
+    event_type = 63  # EVENT_TARGET_DETECTED
+    priority = 2
+    tx_id = "target-test-1"
+    payload_params = {
+        "latitude": 41.123456,
+        "longitude": 29.654321,
+        "altitude_m": 123.4,
+        "detected_at": "2026-07-09T15:44:00.123Z",
+        "detected_at_unix_ms": 1783604640123,
+    }
+
+    raw_payload = serialize_event(
+        event_type=event_type,
+        priority=priority,
+        transaction_id=tx_id,
+        payload_params=payload_params,
+    )
+
+    decoded = deserialize_event(raw_payload)
+    assert decoded["event_type"] == event_type
+    assert decoded["priority"] == priority
+    assert decoded["transaction_id"] == tx_id
+    assert abs(decoded["payload"]["latitude"] - payload_params["latitude"]) < 1e-9
+    assert abs(decoded["payload"]["longitude"] - payload_params["longitude"]) < 1e-9
+    assert abs(decoded["payload"]["altitude_m"] - payload_params["altitude_m"]) < 1e-6
+    assert decoded["payload"]["detected_at"] == payload_params["detected_at"]
+    assert decoded["payload"]["detected_at_unix_ms"] == payload_params["detected_at_unix_ms"]

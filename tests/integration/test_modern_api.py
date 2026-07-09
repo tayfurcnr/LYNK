@@ -78,3 +78,38 @@ def test_telemetry_register_handler():
     data, meta = mock_cb.call_args[0]
     assert data["level"] == 85.0
     assert meta["src_id"] == 10
+
+
+def test_target_detected_sdk_helper_builds_payload():
+    import sys
+    import types
+
+    if "rospy" not in sys.modules:
+        rospy = types.ModuleType("rospy")
+        rospy.core = types.SimpleNamespace(is_initialized=lambda: True)
+        rospy.init_node = lambda *args, **kwargs: None
+        rospy.get_param = lambda *args, **kwargs: None
+        rospy.wait_for_service = lambda *args, **kwargs: None
+        rospy.ServiceProxy = lambda *args, **kwargs: None
+        sys.modules["rospy"] = rospy
+
+    from lynk_nexus_sdk import target_detected
+
+    with patch("lynk_nexus_sdk.event_api._send_named_event") as mock_send:
+        target_detected(
+            7,
+            latitude=41.0,
+            longitude=29.0,
+            altitude_m=120.5,
+            detected_at="2026-07-09T15:44:00.123Z",
+            detected_at_unix_ms=1783604640123,
+        )
+
+    mock_send.assert_called_once()
+    args, kwargs = mock_send.call_args
+    assert args[0] == 7
+    assert kwargs["name"] == "TARGET_DETECTED"
+    assert kwargs["payload"]["latitude"] == 41.0
+    assert kwargs["payload"]["longitude"] == 29.0
+    assert kwargs["payload"]["altitude_m"] == 120.5
+    assert kwargs["payload"]["detected_at_unix_ms"] == 1783604640123

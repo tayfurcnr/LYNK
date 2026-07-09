@@ -28,6 +28,7 @@ from msg.event import mission_complete_pb2 as msg_dot_event_dot_mission__complet
 from msg.event import formation_broken_pb2 as msg_dot_event_dot_formation__broken__pb2
 from msg.event import vehicle_lost_pb2 as msg_dot_event_dot_vehicle__lost__pb2
 from msg.event import crash_detected_pb2 as msg_dot_event_dot_crash__detected__pb2
+from msg.event import target_detected_pb2 as msg_dot_event_dot_target__detected__pb2
 from msg.event import custom_event_pb2 as msg_dot_event_dot_custom__event__pb2
 
 
@@ -36,9 +37,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lynk.event',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x1emsg/event/event_envelope.proto\x12\nlynk.event\x1a\x1bmsg/event/event_enums.proto\x1a\x1bmsg/event/qr_detected.proto\x1a!msg/event/obstacle_detected.proto\x1a\x1emsg/event/collision_risk.proto\x1a\x1bmsg/event/battery_low.proto\x1a\"msg/event/failsafe_triggered.proto\x1a\x1fmsg/event/emergency_crash.proto\x1a\x1cmsg/event/gps_degraded.proto\x1a%msg/event/link_quality_degraded.proto\x1a\x1dmsg/event/motor_failure.proto\x1a\x1emsg/event/command_status.proto\x1a(msg/event/mission_waypoint_reached.proto\x1a msg/event/mission_complete.proto\x1a msg/event/formation_broken.proto\x1a\x1cmsg/event/vehicle_lost.proto\x1a\x1emsg/event/crash_detected.proto\x1a\x1cmsg/event/custom_event.proto\"\xf8\x07\n\rEventEnvelope\x12)\n\nevent_type\x18\x01 \x01(\x0e\x32\x15.lynk.event.EventType\x12+\n\x08priority\x18\x02 \x01(\x0e\x32\x19.lynk.event.EventPriority\x12\x16\n\x0etransaction_id\x18\x65 \x01(\t\x12-\n\x0bqr_detected\x18\x14 \x01(\x0b\x32\x16.lynk.event.QrDetectedH\x00\x12\x39\n\x11obstacle_detected\x18\x15 \x01(\x0b\x32\x1c.lynk.event.ObstacleDetectedH\x00\x12\x33\n\x0e\x63ollision_risk\x18\x1e \x01(\x0b\x32\x19.lynk.event.CollisionRiskH\x00\x12-\n\x0b\x62\x61ttery_low\x18\x1f \x01(\x0b\x32\x16.lynk.event.BatteryLowH\x00\x12;\n\x12\x66\x61ilsafe_triggered\x18  \x01(\x0b\x32\x1d.lynk.event.FailsafeTriggeredH\x00\x12\x35\n\x0f\x65mergency_crash\x18! \x01(\x0b\x32\x1a.lynk.event.EmergencyCrashH\x00\x12/\n\x0cgps_degraded\x18( \x01(\x0b\x32\x17.lynk.event.GpsDegradedH\x00\x12@\n\x15link_quality_degraded\x18) \x01(\x0b\x32\x1f.lynk.event.LinkQualityDegradedH\x00\x12\x31\n\rmotor_failure\x18* \x01(\x0b\x32\x18.lynk.event.MotorFailureH\x00\x12\x33\n\x0e\x63ommand_status\x18+ \x01(\x0b\x32\x19.lynk.event.CommandStatusH\x00\x12\x46\n\x18mission_waypoint_reached\x18\x32 \x01(\x0b\x32\".lynk.event.MissionWaypointReachedH\x00\x12\x37\n\x10mission_complete\x18\x33 \x01(\x0b\x32\x1b.lynk.event.MissionCompleteH\x00\x12\x37\n\x10\x66ormation_broken\x18< \x01(\x0b\x32\x1b.lynk.event.FormationBrokenH\x00\x12/\n\x0cvehicle_lost\x18= \x01(\x0b\x32\x17.lynk.event.VehicleLostH\x00\x12\x33\n\x0e\x63rash_detected\x18> \x01(\x0b\x32\x19.lynk.event.CrashDetectedH\x00\x12/\n\x0c\x63ustom_event\x18\x64 \x01(\x0b\x32\x17.lynk.event.CustomEventH\x00\x42\t\n\x07payloadb\x06proto3')
+  serialized_pb=_b('\n\x1emsg/event/event_envelope.proto\x12\nlynk.event\x1a\x1bmsg/event/event_enums.proto\x1a\x1bmsg/event/qr_detected.proto\x1a!msg/event/obstacle_detected.proto\x1a\x1emsg/event/collision_risk.proto\x1a\x1bmsg/event/battery_low.proto\x1a\"msg/event/failsafe_triggered.proto\x1a\x1fmsg/event/emergency_crash.proto\x1a\x1cmsg/event/gps_degraded.proto\x1a%msg/event/link_quality_degraded.proto\x1a\x1dmsg/event/motor_failure.proto\x1a\x1emsg/event/command_status.proto\x1a(msg/event/mission_waypoint_reached.proto\x1a msg/event/mission_complete.proto\x1a msg/event/formation_broken.proto\x1a\x1cmsg/event/vehicle_lost.proto\x1a\x1emsg/event/crash_detected.proto\x1a\x1fmsg/event/target_detected.proto\x1a\x1cmsg/event/custom_event.proto\"\xaf\x08\n\rEventEnvelope\x12)\n\nevent_type\x18\x01 \x01(\x0e\x32\x15.lynk.event.EventType\x12+\n\x08priority\x18\x02 \x01(\x0e\x32\x19.lynk.event.EventPriority\x12\x16\n\x0etransaction_id\x18\x65 \x01(\t\x12-\n\x0bqr_detected\x18\x14 \x01(\x0b\x32\x16.lynk.event.QrDetectedH\x00\x12\x39\n\x11obstacle_detected\x18\x15 \x01(\x0b\x32\x1c.lynk.event.ObstacleDetectedH\x00\x12\x33\n\x0e\x63ollision_risk\x18\x1e \x01(\x0b\x32\x19.lynk.event.CollisionRiskH\x00\x12-\n\x0b\x62\x61ttery_low\x18\x1f \x01(\x0b\x32\x16.lynk.event.BatteryLowH\x00\x12;\n\x12\x66\x61ilsafe_triggered\x18  \x01(\x0b\x32\x1d.lynk.event.FailsafeTriggeredH\x00\x12\x35\n\x0f\x65mergency_crash\x18! \x01(\x0b\x32\x1a.lynk.event.EmergencyCrashH\x00\x12/\n\x0cgps_degraded\x18( \x01(\x0b\x32\x17.lynk.event.GpsDegradedH\x00\x12@\n\x15link_quality_degraded\x18) \x01(\x0b\x32\x1f.lynk.event.LinkQualityDegradedH\x00\x12\x31\n\rmotor_failure\x18* \x01(\x0b\x32\x18.lynk.event.MotorFailureH\x00\x12\x33\n\x0e\x63ommand_status\x18+ \x01(\x0b\x32\x19.lynk.event.CommandStatusH\x00\x12\x46\n\x18mission_waypoint_reached\x18\x32 \x01(\x0b\x32\".lynk.event.MissionWaypointReachedH\x00\x12\x37\n\x10mission_complete\x18\x33 \x01(\x0b\x32\x1b.lynk.event.MissionCompleteH\x00\x12\x37\n\x10\x66ormation_broken\x18< \x01(\x0b\x32\x1b.lynk.event.FormationBrokenH\x00\x12/\n\x0cvehicle_lost\x18= \x01(\x0b\x32\x17.lynk.event.VehicleLostH\x00\x12\x33\n\x0e\x63rash_detected\x18> \x01(\x0b\x32\x19.lynk.event.CrashDetectedH\x00\x12\x35\n\x0ftarget_detected\x18? \x01(\x0b\x32\x1a.lynk.event.TargetDetectedH\x00\x12/\n\x0c\x63ustom_event\x18\x64 \x01(\x0b\x32\x17.lynk.event.CustomEventH\x00\x42\t\n\x07payloadb\x06proto3')
   ,
-  dependencies=[msg_dot_event_dot_event__enums__pb2.DESCRIPTOR,msg_dot_event_dot_qr__detected__pb2.DESCRIPTOR,msg_dot_event_dot_obstacle__detected__pb2.DESCRIPTOR,msg_dot_event_dot_collision__risk__pb2.DESCRIPTOR,msg_dot_event_dot_battery__low__pb2.DESCRIPTOR,msg_dot_event_dot_failsafe__triggered__pb2.DESCRIPTOR,msg_dot_event_dot_emergency__crash__pb2.DESCRIPTOR,msg_dot_event_dot_gps__degraded__pb2.DESCRIPTOR,msg_dot_event_dot_link__quality__degraded__pb2.DESCRIPTOR,msg_dot_event_dot_motor__failure__pb2.DESCRIPTOR,msg_dot_event_dot_command__status__pb2.DESCRIPTOR,msg_dot_event_dot_mission__waypoint__reached__pb2.DESCRIPTOR,msg_dot_event_dot_mission__complete__pb2.DESCRIPTOR,msg_dot_event_dot_formation__broken__pb2.DESCRIPTOR,msg_dot_event_dot_vehicle__lost__pb2.DESCRIPTOR,msg_dot_event_dot_crash__detected__pb2.DESCRIPTOR,msg_dot_event_dot_custom__event__pb2.DESCRIPTOR,])
+  dependencies=[msg_dot_event_dot_event__enums__pb2.DESCRIPTOR,msg_dot_event_dot_qr__detected__pb2.DESCRIPTOR,msg_dot_event_dot_obstacle__detected__pb2.DESCRIPTOR,msg_dot_event_dot_collision__risk__pb2.DESCRIPTOR,msg_dot_event_dot_battery__low__pb2.DESCRIPTOR,msg_dot_event_dot_failsafe__triggered__pb2.DESCRIPTOR,msg_dot_event_dot_emergency__crash__pb2.DESCRIPTOR,msg_dot_event_dot_gps__degraded__pb2.DESCRIPTOR,msg_dot_event_dot_link__quality__degraded__pb2.DESCRIPTOR,msg_dot_event_dot_motor__failure__pb2.DESCRIPTOR,msg_dot_event_dot_command__status__pb2.DESCRIPTOR,msg_dot_event_dot_mission__waypoint__reached__pb2.DESCRIPTOR,msg_dot_event_dot_mission__complete__pb2.DESCRIPTOR,msg_dot_event_dot_formation__broken__pb2.DESCRIPTOR,msg_dot_event_dot_vehicle__lost__pb2.DESCRIPTOR,msg_dot_event_dot_crash__detected__pb2.DESCRIPTOR,msg_dot_event_dot_target__detected__pb2.DESCRIPTOR,msg_dot_event_dot_custom__event__pb2.DESCRIPTOR,])
 
 
 
@@ -177,7 +178,14 @@ _EVENTENVELOPE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='custom_event', full_name='lynk.event.EventEnvelope.custom_event', index=18,
+      name='target_detected', full_name='lynk.event.EventEnvelope.target_detected', index=18,
+      number=63, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='custom_event', full_name='lynk.event.EventEnvelope.custom_event', index=19,
       number=100, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -198,8 +206,8 @@ _EVENTENVELOPE = _descriptor.Descriptor(
       name='payload', full_name='lynk.event.EventEnvelope.payload',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=604,
-  serialized_end=1620,
+  serialized_start=637,
+  serialized_end=1708,
 )
 
 _EVENTENVELOPE.fields_by_name['event_type'].enum_type = msg_dot_event_dot_event__enums__pb2._EVENTTYPE
@@ -219,6 +227,7 @@ _EVENTENVELOPE.fields_by_name['mission_complete'].message_type = msg_dot_event_d
 _EVENTENVELOPE.fields_by_name['formation_broken'].message_type = msg_dot_event_dot_formation__broken__pb2._FORMATIONBROKEN
 _EVENTENVELOPE.fields_by_name['vehicle_lost'].message_type = msg_dot_event_dot_vehicle__lost__pb2._VEHICLELOST
 _EVENTENVELOPE.fields_by_name['crash_detected'].message_type = msg_dot_event_dot_crash__detected__pb2._CRASHDETECTED
+_EVENTENVELOPE.fields_by_name['target_detected'].message_type = msg_dot_event_dot_target__detected__pb2._TARGETDETECTED
 _EVENTENVELOPE.fields_by_name['custom_event'].message_type = msg_dot_event_dot_custom__event__pb2._CUSTOMEVENT
 _EVENTENVELOPE.oneofs_by_name['payload'].fields.append(
   _EVENTENVELOPE.fields_by_name['qr_detected'])
@@ -265,6 +274,9 @@ _EVENTENVELOPE.fields_by_name['vehicle_lost'].containing_oneof = _EVENTENVELOPE.
 _EVENTENVELOPE.oneofs_by_name['payload'].fields.append(
   _EVENTENVELOPE.fields_by_name['crash_detected'])
 _EVENTENVELOPE.fields_by_name['crash_detected'].containing_oneof = _EVENTENVELOPE.oneofs_by_name['payload']
+_EVENTENVELOPE.oneofs_by_name['payload'].fields.append(
+  _EVENTENVELOPE.fields_by_name['target_detected'])
+_EVENTENVELOPE.fields_by_name['target_detected'].containing_oneof = _EVENTENVELOPE.oneofs_by_name['payload']
 _EVENTENVELOPE.oneofs_by_name['payload'].fields.append(
   _EVENTENVELOPE.fields_by_name['custom_event'])
 _EVENTENVELOPE.fields_by_name['custom_event'].containing_oneof = _EVENTENVELOPE.oneofs_by_name['payload']

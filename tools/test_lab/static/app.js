@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const testSuites = document.getElementById('test-suites');
     const roadmap = document.getElementById('validation-roadmap');
+    const featuredScenarios = document.getElementById('featured-scenarios');
     const consoleOutput = document.getElementById('console-output');
     const runAllBtn = document.getElementById('run-all-btn');
     const clearConsoleBtn = document.getElementById('clear-console');
@@ -21,6 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let tests = [];
     let stats = { passed: 0, failed: 0 };
     let categoryHealth = {};
+    const featured = [
+        {
+            title: 'Target Detected Mock',
+            subtitle: 'GPS + timestamp flow',
+            path: 'src/LYNK/tests/integration/test_target_detected_mock.py',
+            badge: 'NEW',
+        },
+    ];
 
     // Load tests on startup
     async function loadTests() {
@@ -30,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tests = await response.json();
             renderTests();
             renderRoadmap();
+            renderFeatured();
         } catch (err) {
             console.error("Load error:", err);
             testSuites.innerHTML = `<div class="console-line error">FAILED TO LOAD CORE MODULES: ${err.message}</div>`;
@@ -65,6 +75,31 @@ document.addEventListener('DOMContentLoaded', () => {
             cp.appendChild(labelSpan);
             cp.appendChild(statusSpan);
             roadmap.appendChild(cp);
+        });
+    }
+
+    function renderFeatured() {
+        if (!featuredScenarios) return;
+        featuredScenarios.innerHTML = '';
+
+        featured.forEach(item => {
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = 'featured-card';
+            card.innerHTML = `
+                <span class="featured-badge">${item.badge}</span>
+                <span class="featured-title">${item.title}</span>
+                <span class="featured-subtitle">${item.subtitle}</span>
+            `;
+            card.onclick = () => {
+                const index = tests.findIndex(t => t.path === item.path);
+                if (index === -1) {
+                    log(`[LAB] FEATURED TEST NOT FOUND: ${item.path}`, 'error');
+                    return;
+                }
+                runSingleTest(index);
+            };
+            featuredScenarios.appendChild(card);
         });
     }
 
@@ -241,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateStats();
         updateProgressBar(0);
         renderRoadmap(); // Reset roadmap
+        renderFeatured();
 
         // Reset all icons
         tests.forEach((_, i) => {

@@ -1,0 +1,10 @@
+syntax = "proto3";
+package lynk.event;
+
+message TargetDetected {
+  double latitude = 1;
+  double longitude = 2;
+  double altitude_m = 3;
+  string detected_at = 4;
+  uint64 detected_at_unix_ms = 5;
+}

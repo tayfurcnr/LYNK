@@ -134,6 +134,20 @@ def crash_detected(event_type: int, event_data: dict, src_id: int, interface=Non
     crashed_id = payload.get("crashed_vehicle_id", 0)
     logger.critical(f"[EVENT] CRASH DETECTED: Vehicle {crashed_id} (reported by {src_id})")
 
+def target_detected(event_type: int, event_data: dict, src_id: int, interface=None):
+    """Handle target detected event."""
+    payload = event_data.get("payload", {})
+    latitude = payload.get("latitude", 0.0)
+    longitude = payload.get("longitude", 0.0)
+    altitude_m = payload.get("altitude_m", 0.0)
+    detected_at = payload.get("detected_at", "")
+    detected_at_unix_ms = payload.get("detected_at_unix_ms", 0)
+    logger.info(
+        "[EVENT] TARGET DETECTED: "
+        f"lat={latitude:.6f}, lon={longitude:.6f}, alt={altitude_m:.1f}m, "
+        f"detected_at='{detected_at}', ts_ms={detected_at_unix_ms} (reported by {src_id})"
+    )
+
 def custom_event(event_type: int, event_data: dict, src_id: int, interface=None):
     """Handle custom event."""
     return

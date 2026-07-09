@@ -17,6 +17,7 @@ import "msg/event/mission_complete.proto";
 import "msg/event/formation_broken.proto";
 import "msg/event/vehicle_lost.proto";
 import "msg/event/crash_detected.proto";
+import "msg/event/target_detected.proto";
 import "msg/event/custom_event.proto";
 
 message EventEnvelope {
@@ -40,6 +41,7 @@ message EventEnvelope {
     FormationBroken formation_broken = 60;
     VehicleLost vehicle_lost = 61;
     CrashDetected crash_detected = 62;
+    TargetDetected target_detected = 63;
     CustomEvent custom_event = 100;
   }
 }

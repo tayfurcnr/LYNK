@@ -610,3 +610,37 @@ def camera_stream_control(cmd_id, params, src_id, interface):
 def gimbal_get_sd_capacity(cmd_id, params, src_id, interface):
     _log_recv("[COMMAND] RECV | TYPE: GIMBAL_GET_SD_CAPACITY")
     set_last_command(cmd_id, params, {})
+
+
+def _parse_trajectory_algorithm_params(params):
+    if not _is_dict_params(params):
+        return {}
+    parsed = {"algorithm_type": params.get("algorithm_type")}
+    for key in ("param1", "param2", "param3", "param4", "param5", "param6", "param7", "param8"):
+        if params.get(key) is not None:
+            parsed[key] = params.get(key)
+    return parsed
+
+
+def set_trajectory_algorithm(cmd_id, params, src_id, interface):
+    parsed = _parse_trajectory_algorithm_params(params)
+    if not parsed:
+        logger.warning("[COMMAND] INVALID PARAMS | CMD: SET_TRAJECTORY_ALGORITHM | expected dict")
+        set_last_command(cmd_id, params, {})
+        return
+    if parsed.get("algorithm_type") is None:
+        logger.warning("[COMMAND] INVALID PARAMS | CMD: SET_TRAJECTORY_ALGORITHM | missing: ['algorithm_type']")
+    _log_recv(f"[COMMAND] RECV | TYPE: SET_TRAJECTORY_ALGORITHM | PARAMS: {parsed}")
+    set_last_command(cmd_id, params, parsed)
+
+
+def trajectory_execute(cmd_id, params, src_id, interface):
+    if not _is_dict_params(params):
+        logger.warning("[COMMAND] INVALID PARAMS | CMD: TRAJECTORY_EXECUTE | expected dict")
+        set_last_command(cmd_id, params, {})
+        return
+    if params.get("enable") is None:
+        logger.warning("[COMMAND] INVALID PARAMS | CMD: TRAJECTORY_EXECUTE | missing: ['enable']")
+    parsed = {"enable": bool(params.get("enable", False))}
+    _log_recv(f"[COMMAND] RECV | TYPE: TRAJECTORY_EXECUTE | PARAMS: {parsed}")
+    set_last_command(cmd_id, params, parsed)
