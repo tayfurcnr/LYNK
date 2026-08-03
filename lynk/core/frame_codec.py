@@ -11,7 +11,7 @@ CRC8_FUNC = crcmod.mkCrcFun(0x107, initCrc=0x00, rev=False)
 def load_protocol_config():
     """Config'ten protokol sabitlerini alır."""
     proto = get_config().get("protocol", {})
-    return proto.get("start_byte", 0x55), proto.get("start_byte_2", 0xAA), 0x03
+    return proto.get("start_byte", 0x55), proto.get("start_byte_2", 0xAA), proto.get("version", 3)
 
 def load_device_id():
     """Config'ten cihaz ID'sini alır."""
