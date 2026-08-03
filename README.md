@@ -11,7 +11,7 @@
 ## 🚀 Key Features
 
 - 📡 **Communication Types:** UART, UDP, MOCK (for testing)
-- 🧠 **Protocol Logic:** V2 Frame with 11-byte header, LZ4 compression, and CRC16-CCITT
+- 🧠 **Protocol Logic:** V3 Frame with a CRC-8-protected 15-byte header (16 bytes on the wire) and a CRC16-CCITT frame check
 - 🛡️ **Fleet Management:** Multi-team support with Team ID filtering and "Solo" mode
 - ⚡ **Mission Resilience:** Noise recovery, sequence wrap-around, and auto-mesh routing
 - 🔐 **Hardened Security:** Anti-tamper, anti-replay, and encrypted payload support

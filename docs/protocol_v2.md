@@ -1,5 +1,7 @@
 # 📡 LYNK Protocol v2 Specification
 
+> **Superseded.** This is historical documentation. Current nodes run [protocol v3](protocol_v3.md), which is wire-incompatible with v2.
+
 This document defines the binary frame structure for **LYNK Protocol v2**. It is designed for low-overhead, mission-critical aerial and ground robotics communication.
 
 ## 🧱 Frame Structure (11-Byte Header)
