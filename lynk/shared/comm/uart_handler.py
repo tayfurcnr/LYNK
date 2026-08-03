@@ -6,13 +6,10 @@ import time
 import struct
 from queue import Queue
 from serial import Serial, SerialException
-import crcmod
 
 from lynk.shared.log.logger import logger
 from lynk.shared.config.manager import get_config
-
-# CRC-16-CCITT-FALSE
-CRC_FUNC = crcmod.predefined.mkPredefinedCrcFun('crc-ccitt-false')
+from lynk.core.frame_codec import CRC8_FUNC, CRC16_FUNC
 
 class IncompleteFrame(Exception):
     pass
@@ -125,14 +122,15 @@ class UARTHandler:
 
     def _extract_frame(self, buf: bytearray):
         SYNC = bytes([self.start_byte, self.start_byte_2])
-        # start1(1) + start2(1) + ver(1) + type(1) + team(1) + src(1) + dst(1) + hop(1) + flags(1) + len(2)
-        HEADER_LEN = 11
+        # start1(1) + start2(1) + ver(1) + type(1) + team(1) + src(1) + dst(1) + hop(1) + seq(4) + flags(1) + len(2)
+        HEADER_LEN = 15
+        HEADER_TOTAL = HEADER_LEN + 1  # + 1-byte header CRC-8
 
         idx = buf.find(SYNC)
         if idx < 0:
             return None, bytearray()
 
-        if len(buf) < idx + HEADER_LEN:
+        if len(buf) < idx + HEADER_TOTAL:
             raise IncompleteFrame()
 
         ver = buf[idx + 2]
@@ -140,16 +138,23 @@ class UARTHandler:
             buf.pop(idx)
             return self._extract_frame(buf)
 
-        payload_len = struct.unpack_from(">H", buf, idx + 9)[0]
-        total_len = HEADER_LEN + payload_len + 2  # CRC
+        header = bytes(buf[idx:idx + HEADER_LEN])
+        header_crc_received = buf[idx + HEADER_LEN]
+        header_crc_calc = CRC8_FUNC(header)
+        if header_crc_received != header_crc_calc:
+            buf.pop(idx)
+            raise BadFrame()
+
+        payload_len = struct.unpack_from(">H", buf, idx + 13)[0]
+        total_len = HEADER_TOTAL + payload_len + 2  # + frame CRC-16
 
         if len(buf) < idx + total_len:
             raise IncompleteFrame()
 
         frame = bytes(buf[idx:idx + total_len])
 
-        crc_received = struct.unpack_from(">H", frame, HEADER_LEN + payload_len)[0]
-        crc_calc = CRC_FUNC(frame[:HEADER_LEN + payload_len])
+        crc_received = struct.unpack_from(">H", frame, HEADER_TOTAL + payload_len)[0]
+        crc_calc = CRC16_FUNC(frame[:HEADER_TOTAL + payload_len])
         if crc_received != crc_calc:
             buf.pop(idx)
             raise BadFrame()
