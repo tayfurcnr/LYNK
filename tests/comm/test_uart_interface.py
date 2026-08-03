@@ -13,8 +13,7 @@ def test_uart_handler_extraction(mock_serial_class):
         "protocol": {
             "start_byte": 84,
             "start_byte_2": 199,
-            "version": 2,
-            "compression_enabled": False
+            "version": 2
         },
         "vehicle": {"id": 1, "team_id": 1},
         "uart": {
@@ -58,7 +57,7 @@ def test_uart_handler_extraction(mock_serial_class):
     res3 = handler.read()
     assert res3 is None
     
-    print("\n[SUCCESS] UART Interface test verified with 11-byte header support.")
+    print("\n[SUCCESS] UART Interface test verified with 16-byte header support.")
 
 if __name__ == "__main__":
     pytest.main([__file__])

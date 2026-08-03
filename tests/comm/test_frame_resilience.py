@@ -44,7 +44,7 @@ def test_frame_resilience_with_noise():
     MAGIC_HEAD = bytes([sb1, sb2])
     
     i = 0
-    while i < len(stream) - 11: # Min header size is 11
+    while i < len(stream) - 16: # Min header+CRC-8 size is 16
         if stream[i:i+2] == MAGIC_HEAD:
             # Found a potential header, try to parse
             try:
@@ -54,10 +54,10 @@ def test_frame_resilience_with_noise():
                 # Max frame is around 256 for this test.
                 # result = parse_mesh_frame(stream[i:i + 256]) # Original line, now replaced by more precise slicing
                 try:
-                    # Extract length from header (bytes 9:11)
-                    # Frame structure: [2B Start][1B Ver][1B Type][1B Team][1B Src][1B Dst][1B Hop][1B Flags][2B Len]...
-                    p_len = struct.unpack(">H", stream[i+9:i+11])[0]
-                    total_len = 11 + p_len + 2 # 11 bytes for header, p_len for payload, 2 bytes for CRC
+                    # Extract length from header (bytes 13:15)
+                    # Frame structure: [2B Start][1B Ver][1B Type][1B Team][1B Src][1B Dst][1B Hop][4B Seq][1B Flags][2B Len][1B HdrCRC8]...
+                    p_len = struct.unpack(">H", stream[i+13:i+15])[0]
+                    total_len = 16 + p_len + 2 # 16 bytes for header+CRC-8, p_len for payload, 2 bytes for frame CRC-16
                     
                     # Ensure we don't try to slice beyond the stream length
                     if i + total_len > len(stream):
