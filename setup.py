@@ -73,7 +73,6 @@ if __name__ == "__main__":
             'crcmod',
             'PyYAML',
             'protobuf<3.21',
-            'lz4',
             'fastapi',
             'uvicorn'
         ],
